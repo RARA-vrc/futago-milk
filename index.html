@@ -408,7 +408,7 @@ button { cursor: pointer; }
     dbRecent: [], dbWeights: [],
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
     filter: 'all', daysShown: 3, wShown: 8, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
-    alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 0), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
+    alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
   };
@@ -605,7 +605,7 @@ button { cursor: pointer; }
         </div>
         <div class="actions${IS_IOS ? ' has-timer' : ''}">
           <button type="button" class="milk" data-add="milk" data-baby="${id}">授乳を記録</button>
-          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="iPhone のタイマーを次のミルクまでセット">iPhone<br>タイマー</button>` : ''}
+          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="iPhone のタイマーを次のミルクの${S.alarm.lead ? `${S.alarm.lead}分前` : '時刻'}にセット">iPhone<br>タイマー</button>` : ''}
           <div class="subs">
             <button type="button" class="sub" data-add="pee" data-baby="${id}">おしっこ</button>
             <button type="button" class="sub" data-add="poo" data-baby="${id}">うんち</button>
@@ -1075,8 +1075,8 @@ button { cursor: pointer; }
       <div class="sheet-head"><h2>${only ? `${esc(baby(only).name)}の授乳間隔と量` : '設定'}</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
       ${only ? '' : `<div class="settings-block" id="alarm-block">${alarmBlockHTML()}</div>
         <div class="settings-block">
-          <div class="field"><label for="s-lead">アラームを鳴らすタイミング（この端末）</label>
-            <select id="s-lead">${[0, 5, 10, 15, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>
+          <div class="field"><label for="s-lead">お知らせのタイミング（アラームと iPhone タイマー共通・この端末）</label>
+            <select id="s-lead">${[0, 5, 10, 15, 20, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>
           ${IS_IOS ? `<div class="field"><span class="lbl">iPhone のタイマー（この端末）</span>
             <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> 授乳を記録したら、iPhone のタイマーも自動でセットする</label>
             <button type="button" class="btn ghost" data-act="shortcut-help">ショートカットの作り方を見る</button></div>` : ''}
@@ -1118,9 +1118,18 @@ button { cursor: pointer; }
   // A web page cannot drive the Clock app, so it runs a user-made shortcut named
   // SHORTCUT_NAME and hands it the minutes until the next feed; the shortcut's single
   // "タイマーを開始" action starts the timer with that many minutes.
+  // The timer rings S.alarm.lead minutes before the feed (same setting as the in-page alarm).
+  // If that moment has already passed, it falls back to the feed time itself.
+  function iphoneTimerMinutes(at, now = Date.now()) {
+    const early = Math.ceil((at - S.alarm.lead * MIN - now) / MIN);
+    if (early > 0) return { min: early, early: true };
+    const toFeed = Math.ceil((at - now) / MIN);
+    return { min: toFeed, early: false };
+  }
   function startIphoneTimer(at) {
-    const min = Math.ceil((at - Date.now()) / MIN);
+    const { min, early } = iphoneTimerMinutes(at);
     if (min <= 0) return toast('次のミルクの時刻はもう過ぎています。');
+    if (!early && S.alarm.lead) toast(`${S.alarm.lead}分前はもう過ぎているので、予定時刻までの${min}分でセットします`);
     location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}&input=text&text=${min}`;
   }
   function setIphoneTimer(id) {
