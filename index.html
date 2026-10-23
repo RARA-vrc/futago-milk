@@ -78,11 +78,11 @@ button { cursor: pointer; }
 .pill.on { border-color: color-mix(in srgb, var(--imo) 45%, transparent); background: var(--imo-soft); color: var(--imo); }
 
 /* tabs: a bottom bar on phones, a segmented row on wide screens */
-.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 .tabs button { border: none; background: transparent; color: var(--muted); font-family: var(--f-display); font-weight: 700; font-size: .95rem; min-height: 44px; border-radius: 10px; }
 .tabs button[aria-current="page"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 @media (min-width: 760px) {
-  .tabs { max-width: 420px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 4px; }
+  .tabs { max-width: 520px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 4px; }
 }
 @media (max-width: 759px) {
   .app { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
@@ -244,6 +244,31 @@ button { cursor: pointer; }
 .toast-btn { flex: none; border: 1px solid color-mix(in srgb, var(--bg) 50%, transparent); background: transparent; color: var(--bg); border-radius: 10px; min-height: 40px; padding: 0 14px; font-weight: 700; }
 .fix-last { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 99px; font-size: .78rem; font-weight: 700; padding: 0 12px; min-height: 34px; }
 .item .fix { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; white-space: nowrap; }
+/* feeding timetable: time | 姉 | 妹, one row per time so the twins read side by side */
+.plan-head, .plan-row { display: grid; grid-template-columns: 4.4rem 1fr 1fr; gap: 8px; align-items: stretch; }
+.plan-head { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 1; background: var(--surface); padding: 10px 0 8px; border-bottom: 1px solid var(--line); }
+.plan-head div { font-family: var(--f-display); font-weight: 700; }
+.plan-head .ane { color: var(--ane); }
+.plan-head .imouto { color: var(--imo); }
+.plan-head small { display: block; font-family: var(--f-body); font-weight: 400; font-size: .74rem; color: var(--muted); }
+.plan-row { padding: 5px 0; }
+.plan-row .pt { font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; display: flex; flex-direction: column; justify-content: center; line-height: 1.2; }
+.plan-row .pt small { font-family: var(--f-body); font-weight: 700; font-size: .68rem; color: var(--warn); }
+.pc { border-radius: 10px; padding: 6px 10px; min-height: 44px; display: flex; flex-direction: column; justify-content: center; font-size: .85rem; line-height: 1.35; min-width: 0; }
+.pc:empty { padding: 0; }
+.pc.ane:not(:empty) { --c: var(--ane); --cs: var(--ane-soft); }
+.pc.imouto:not(:empty) { --c: var(--imo); --cs: var(--imo-soft); }
+.pc.plan { background: var(--cs); color: var(--ink); }
+.pc.next { background: var(--cs); box-shadow: inset 0 0 0 2px var(--c); }
+.pc.next b { color: var(--c); }
+.pc.next.due { box-shadow: inset 0 0 0 2px var(--danger); }
+.pc.next.due small { color: var(--danger); font-weight: 700; }
+.pc.done { border: 1px dashed var(--line); color: var(--muted); }
+.pc small { color: var(--muted); font-size: .76rem; }
+.row-past .pt { color: var(--muted); }
+.plan-day { font-family: var(--f-display); font-weight: 700; font-size: .9rem; color: var(--muted); padding: 12px 0 4px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.plan-now { display: flex; align-items: center; gap: 8px; color: var(--danger); font-weight: 700; font-size: .8rem; margin: 6px 0; }
+.plan-now::after { content: ""; flex: 1; height: 2px; background: var(--danger); border-radius: 2px; }
 .settings-block { border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .settings-block h3 { margin: 0; font-family: var(--f-display); font-size: 1rem; }
 
@@ -289,11 +314,20 @@ button { cursor: pointer; }
 
   <nav class="tabs" id="tabs" aria-label="表示の切り替え">
     <button type="button" data-tab="now">いま</button>
+    <button type="button" data-tab="plan">時刻表</button>
     <button type="button" data-tab="log">記録</button>
     <button type="button" data-tab="weight">体重</button>
   </nav>
 
   <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況"></section>
+
+  <section class="panel view" data-view="plan" aria-labelledby="plan-title">
+    <div class="panel-head">
+      <h2 id="plan-title">授乳の時刻表</h2>
+    </div>
+    <p class="hint">これまで12時間の授乳と、これから24時間の予定です。予定は最後の授乳から、それぞれの間隔で計算しています。</p>
+    <div id="plan"></div>
+  </section>
 
   <section class="panel view" data-view="log" aria-labelledby="tl-title">
     <div class="panel-head">
@@ -373,7 +407,7 @@ button { cursor: pointer; }
     babies: {}, logs: [],
     dbRecent: [], dbWeights: [],
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
-    filter: 'all', daysShown: 3, wShown: 8, tab: ['now', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    filter: 'all', daysShown: 3, wShown: 8, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 0), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -524,7 +558,7 @@ button { cursor: pointer; }
 
   // ---------- render ----------
   function render() {
-    renderGate(); renderNames(); renderCards(); renderTimeline(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
+    renderGate(); renderNames(); renderCards(); renderPlan(); renderTimeline(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
   }
   function renderNames() {
     document.querySelectorAll('#filter [data-name]').forEach(b => { b.textContent = baby(b.dataset.name).name; });
@@ -581,6 +615,58 @@ button { cursor: pointer; }
         <div class="today num"><span class="lbl">今日</span>授乳 <b>${st.milkN}</b>回${st.ml ? ` ${st.ml}mL` : ''}${st.breastN ? `（母乳${st.breastN}回）` : ''} ・ おしっこ <b>${st.pee}</b> ・ うんち <b>${st.poo}</b>${lastPoo ? `（最後 ${durText(now - lastPoo.at)}前）` : ''}</div>
       </article>`;
     }).join('');
+  }
+
+  // Timetable: past 12h of actual feeds plus the next 24h projected from each twin's last feed,
+  // merged into one time-ordered list with a column per twin.
+  const PLAN_PAST = 12 * HOUR, PLAN_AHEAD = 24 * HOUR, CLOSE_GAP = 30 * MIN;
+  function renderPlan() {
+    const el = $('#plan');
+    if (S.mode === 'loading') { el.innerHTML = '<p class="empty-note">記録を読み込んでいます…</p>'; return; }
+    const now = Date.now(), items = [], missing = [];
+    for (const id of BABY_IDS) {
+      const b = baby(id), last = lastOf(id, 'milk');
+      S.logs.forEach(l => { if (l.baby === id && l.type === 'milk' && l.at >= now - PLAN_PAST) items.push({ at: l.at, baby: id, kind: 'done', log: l }); });
+      if (!last) { missing.push(id); continue; }
+      const step = b.intervalH * HOUR;
+      for (let t = last.at + step, k = 0; t <= now + PLAN_AHEAD; t += step, k++) items.push({ at: t, baby: id, kind: k === 0 ? 'next' : 'plan' });
+    }
+    if (!items.length) {
+      el.innerHTML = '<p class="empty-note">「いま」タブで授乳を記録すると、ここに次からの予定がふたり並んで表示されます。</p>';
+      return;
+    }
+    items.sort((a, b) => a.at - b.at);
+    // Upcoming feeds of the two twins less than 30 minutes apart get a "続けて" flag.
+    const upcoming = items.filter(i => i.kind !== 'done');
+    upcoming.forEach(i => { i.close = upcoming.some(j => j.baby !== i.baby && Math.abs(j.at - i.at) < CLOSE_GAP); });
+    // One row per minute; both twins share a row when their times match.
+    const rows = [];
+    for (const i of items) {
+      const key = Math.floor(i.at / MIN), r = rows[rows.length - 1];
+      if (r && r.key === key && !r[i.baby]) r[i.baby] = i;
+      else rows.push({ key, at: i.at, [i.baby]: i });
+    }
+    const cell = (id, i) => {
+      if (!i) return `<div class="pc ${id}"></div>`;
+      const b = baby(id), range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
+      if (i.kind === 'done') return `<div class="pc ${id} done">済 ${esc(milkText(i.log))}</div>`;
+      if (i.kind === 'next') {
+        const due = now >= i.at;
+        return `<div class="pc ${id} next${due ? ' due' : ''}"><b>次</b> ${range}<small>${due ? `${durText(now - i.at)} すぎ` : `あと ${durText(i.at - now)}`}</small></div>`;
+      }
+      return `<div class="pc ${id} plan">${range}</div>`;
+    };
+    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${esc(baby(id).name)}<small>${baby(id).intervalH}時間ごと</small></div>`).join('')}</div>`;
+    let lastDay = null, nowShown = false;
+    for (const r of rows) {
+      const day = startOfDay(r.at);
+      if (day !== lastDay) { html += `<div class="plan-day">${dayLabel(r.at)}</div>`; lastDay = day; }
+      if (!nowShown && r.at > now) { html += `<div class="plan-now num">いま ${fmtT(now)}</div>`; nowShown = true; }
+      const close = BABY_IDS.some(id => r[id] && r[id].close);
+      html += `<div class="plan-row${r.at <= now ? ' row-past' : ''}"><div class="pt num">${fmtT(r.at)}${close ? '<small>ふたり続けて</small>' : ''}</div>${BABY_IDS.map(id => cell(id, r[id])).join('')}</div>`;
+    }
+    if (missing.length) html += `<p class="hint">${missing.map(id => esc(baby(id).name)).join('と')}はまだ授乳の記録がないため、予定を出せません。</p>`;
+    el.innerHTML = html;
   }
 
   function renderTimeline() {
@@ -816,9 +902,12 @@ button { cursor: pointer; }
   function ack(id) { S.alarm.ack[id] = nextAt(id); lsSet('futago-alarm-ack', S.alarm.ack); }
 
   // ---------- tick ----------
+  let planMinute = 0;
   function tick() {
     const now = Date.now();
     $('#clock').textContent = fmtT(now);
+    // The timetable's "あと…" and the いま line move once a minute.
+    if (S.tab === 'plan' && Math.floor(now / MIN) !== planMinute) { planMinute = Math.floor(now / MIN); renderPlan(); }
     for (const id of BABY_IDS) {
       const cd = document.querySelector(`[data-cd="${id}"]`); if (!cd) continue;
       const bar = document.querySelector(`[data-bar="${id}"]`), sub = document.querySelector(`[data-cdsub="${id}"]`);
@@ -1082,7 +1171,12 @@ button { cursor: pointer; }
     if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
     if (d.add) return openForm(d.add, d.baby);
     if (d.bset) return openSettings(d.bset);
-    if (d.tab) { S.tab = d.tab; lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0); return; }
+    if (d.tab) {
+      S.tab = d.tab; lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0);
+      // The timetable opens at the いま line rather than at 12 hours ago.
+      if (S.tab === 'plan') { renderPlan(); const line = $('.plan-now'); if (line) line.scrollIntoView({ block: 'center' }); }
+      return;
+    }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.int) {
       const [id, h] = d.int.split(':'), input = document.getElementById(`s-${id}-int`);
