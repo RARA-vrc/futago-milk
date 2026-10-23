@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="ミルク帳">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: two side-by-side baby cards (stacked on phones) → timeline → weight chart. Large tap targets for night use. */
 :root {
@@ -47,6 +47,12 @@
   --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F;
   --danger: #FF8A7D; --danger-soft: #3D1C19; --warn: #E8BC62; --warn-soft: #33290F; --scrim: rgba(0,0,0,.6);
   color-scheme: dark;
+}
+
+/* Traditional Chinese needs glyphs the Japanese faces lack, so zh uses one Taiwanese face throughout. */
+:root[lang^="zh"] {
+  --f-display: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -304,36 +310,36 @@ button { cursor: pointer; }
 
 <div class="app">
   <header class="top">
-    <h1>ふたごミルク帳</h1>
+    <h1 data-zh="雙胞胎餵奶紀錄">ふたごミルク帳</h1>
     <div class="top-right">
       <div class="clock num" id="clock">--:--</div>
       <button class="pill" id="alarm-pill" type="button" data-act="alarm-toggle" aria-live="polite">アラーム</button>
-      <button class="icon-btn" id="open-settings" type="button">設定</button>
+      <button class="icon-btn" id="open-settings" type="button" data-zh="設定">設定</button>
     </div>
   </header>
 
-  <nav class="tabs" id="tabs" aria-label="表示の切り替え">
-    <button type="button" data-tab="now">いま</button>
-    <button type="button" data-tab="plan">時刻表</button>
-    <button type="button" data-tab="log">記録</button>
-    <button type="button" data-tab="weight">体重</button>
+  <nav class="tabs" id="tabs" aria-label="表示の切り替え" data-zh-aria="切換顯示">
+    <button type="button" data-tab="now" data-zh="現在">いま</button>
+    <button type="button" data-tab="plan" data-zh="時刻表">時刻表</button>
+    <button type="button" data-tab="log" data-zh="紀錄">記録</button>
+    <button type="button" data-tab="weight" data-zh="體重">体重</button>
   </nav>
 
-  <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況"></section>
+  <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況" data-zh-aria="寶寶狀況"></section>
 
   <section class="panel view" data-view="plan" aria-labelledby="plan-title">
     <div class="panel-head">
-      <h2 id="plan-title">授乳の時刻表</h2>
+      <h2 id="plan-title" data-zh="餵奶時刻表">授乳の時刻表</h2>
     </div>
-    <p class="hint">これまで12時間の授乳と、これから24時間の予定です。予定は最後の授乳から、それぞれの間隔で計算しています。</p>
+    <p class="hint" data-zh="顯示過去12小時的餵奶與接下來24小時的預定。預定時間是依最後一次餵奶加上各自的間隔計算。">これまで12時間の授乳と、これから24時間の予定です。予定は最後の授乳から、それぞれの間隔で計算しています。</p>
     <div id="plan"></div>
   </section>
 
   <section class="panel view" data-view="log" aria-labelledby="tl-title">
     <div class="panel-head">
-      <h2 id="tl-title">記録</h2>
-      <div class="seg" id="filter" role="group" aria-label="表示する子">
-        <button type="button" data-filter="all" aria-pressed="true">ふたり</button>
+      <h2 id="tl-title" data-zh="紀錄">記録</h2>
+      <div class="seg" id="filter" role="group" aria-label="表示する子" data-zh-aria="顯示哪個寶寶">
+        <button type="button" data-filter="all" aria-pressed="true" data-zh="兩人">ふたり</button>
         <button type="button" data-filter="ane" aria-pressed="false" data-name="ane">姉</button>
         <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
       </div>
@@ -343,7 +349,7 @@ button { cursor: pointer; }
 
   <section class="panel view" data-view="weight" aria-labelledby="w-title">
     <div class="panel-head">
-      <h2 id="w-title">体重の推移</h2>
+      <h2 id="w-title" data-zh="體重變化">体重の推移</h2>
       <div class="row" id="w-add"></div>
     </div>
     <div class="legend" id="legend"></div>
@@ -369,10 +375,6 @@ button { cursor: pointer; }
     ane:    { name: '姉', intervalH: 4, minMl: 80, maxMl: 80 },
     imouto: { name: '妹', intervalH: 3, minMl: 40, maxMl: 50 },
   };
-  const KIND = { formula: 'ミルク', expressed: '搾母乳', breast: '母乳' };
-  const POO_COLOR = { yellow: '黄色', green: '緑', brown: '茶色', pale: '白っぽい' };
-  const POO_AMT = { small: '少なめ', normal: 'ふつう', large: '多め' };
-  const TYPE_LABEL = { milk: '授乳', pee: 'おしっこ', poo: 'うんち', weight: '体重' };
   const LS_DATA = 'futago-data-v1';
   const SHORTCUT_NAME = 'ミルクタイマー';
   const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -388,18 +390,54 @@ button { cursor: pointer; }
   const fromLocalInput = s => { const t = new Date(s).getTime(); return isNaN(t) ? null : t; };
   function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+  // ---------- language (per device): 'ja' or 'zh' (Taiwanese Mandarin, Traditional Chinese) ----------
+  // Every visible string is written as L(japanese, chinese) next to where it is used.
+  let LANG = ['ja', 'zh'].includes(lsGet('futago-lang', '')) ? lsGet('futago-lang', '') : (/^zh/i.test(navigator.language || '') ? 'zh' : 'ja');
+  const L = (ja, zh) => LANG === 'zh' ? zh : ja;
+  let KIND, POO_COLOR, POO_AMT, TYPE_LABEL;
+  function setLabels() {
+    KIND = { formula: L('ミルク', '配方奶'), expressed: L('搾母乳', '擠出母乳'), breast: L('母乳', '親餵') };
+    POO_COLOR = { yellow: L('黄色', '黃色'), green: L('緑', '綠色'), brown: L('茶色', '褐色'), pale: L('白っぽい', '偏白') };
+    POO_AMT = { small: L('少なめ', '少'), normal: L('ふつう', '普通'), large: L('多め', '多') };
+    TYPE_LABEL = { milk: L('授乳', '餵奶'), pee: L('おしっこ', '尿尿'), poo: L('うんち', '便便'), weight: L('体重', '體重') };
+  }
+  setLabels();
+  // Static HTML carries its Chinese in data-zh / data-zh-aria; the Japanese original is kept in data-ja.
+  function applyLang() {
+    document.documentElement.lang = L('ja', 'zh-Hant-TW');
+    document.querySelectorAll('[data-zh]').forEach(el => {
+      if (el.dataset.ja === undefined) el.dataset.ja = el.textContent;
+      el.textContent = L(el.dataset.ja, el.dataset.zh);
+    });
+    document.querySelectorAll('[data-zh-aria]').forEach(el => {
+      if (el.dataset.jaAria === undefined) el.dataset.jaAria = el.getAttribute('aria-label') || '';
+      el.setAttribute('aria-label', L(el.dataset.jaAria, el.dataset.zhAria));
+    });
+  }
+  function setLang(lang) {
+    LANG = lang; lsSet('futago-lang', lang);
+    setLabels(); applyLang(); render(); renderRing();
+    if (S.form && S.form.type === 'settings') renderSettings(); else renderForm();
+  }
+  const langSwitchHTML = () => `<div class="seg" role="group" aria-label="言語 / 語言">${[['ja', '日本語'], ['zh', '繁體中文']].map(([k, label]) =>
+    `<button type="button" data-lang="${k}" aria-pressed="${LANG === k}">${label}</button>`).join('')}</div>`;
+
   function dayLabel(ms) {
     const d = new Date(ms), today = startOfDay(Date.now()), k = startOfDay(ms);
-    const base = `${d.getMonth() + 1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`;
-    if (k === today) return `今日 ${base}`;
-    if (k === today - DAY) return `きのう ${base}`;
+    const base = L(`${d.getMonth() + 1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`, `${d.getMonth() + 1}月${d.getDate()}日（週${'日一二三四五六'[d.getDay()]}）`);
+    if (k === today) return `${L('今日', '今天')} ${base}`;
+    if (k === today - DAY) return `${L('きのう', '昨天')} ${base}`;
     return base;
   }
   function durParts(ms) {
     const m = Math.max(0, Math.floor(ms / MIN));
     return { h: Math.floor(m / 60), m: m % 60 };
   }
-  function durText(ms) { const { h, m } = durParts(ms); return h ? `${h}時間${m}分` : `${m}分`; }
+  function durText(ms) {
+    const { h, m } = durParts(ms);
+    return h ? L(`${h}時間${m}分`, `${h}小時${m}分`) : L(`${m}分`, `${m}分鐘`);
+  }
 
   // ---------- state ----------
   const S = {
@@ -412,7 +450,13 @@ button { cursor: pointer; }
     ringing: [],
     form: null,
   };
-  const baby = id => ({ ...DEFAULTS[id], ...(S.babies[id] || {}) });
+  // The default names 姉/妹 are shown as 姊姊/妹妹 in Chinese; a name the family typed is shown as typed.
+  const ZH_DEFAULT_NAME = { ane: '姊姊', imouto: '妹妹' };
+  const baby = id => {
+    const b = { ...DEFAULTS[id], ...(S.babies[id] || {}) };
+    if (LANG === 'zh' && b.name === DEFAULTS[id].name) b.name = ZH_DEFAULT_NAME[id];
+    return b;
+  };
 
   function setLogs(list) {
     S.logs = list.filter(l => l && BABY_IDS.includes(l.baby) && TYPE_LABEL[l.type] && typeof l.at === 'number').sort((a, b) => b.at - a.at);
@@ -451,7 +495,7 @@ button { cursor: pointer; }
     const fs = S.db;
     const onErr = e => {
       if (e && e.code === 'permission-denied') { S.mode = 'denied'; stopSubs(); render(); }
-      else toast('記録を読み込めませんでした。通信状況を確認してください。');
+      else toast(L('記録を読み込めませんでした。通信状況を確認してください。', '無法載入紀錄，請確認網路連線。'));
     };
     unsubs.push(fs.collection('babies').onSnapshot(s => {
       const b = {}; s.docs.forEach(d => { b[d.id] = d.data(); }); S.babies = b; render();
@@ -468,18 +512,18 @@ button { cursor: pointer; }
     p.setCustomParameters({ prompt: 'select_account' });
     S.auth.signInWithPopup(p).catch(e => {
       if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
-      if (e && e.code === 'auth/popup-blocked') return toast('ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。');
-      if (e && e.code === 'auth/unauthorized-domain') return toast('このURLはまだ Firebase に登録されていません。手順書の「承認済みドメイン」を設定してください。');
-      toast('ログインできませんでした（' + (e && e.code || '不明なエラー') + '）');
+      if (e && e.code === 'auth/popup-blocked') return toast(L('ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。', '彈出視窗被封鎖了，請在瀏覽器設定中允許此網站的彈出視窗。'));
+      if (e && e.code === 'auth/unauthorized-domain') return toast(L('このURLはまだ Firebase に登録されていません。手順書の「承認済みドメイン」を設定してください。', '此網址尚未在 Firebase 登記，請設定「已授權網域」。'));
+      toast(L('ログインできませんでした（', '無法登入（') + (e && e.code || L('不明なエラー', '未知錯誤')) + L('）', '）'));
     });
   }
   function signOut() { S.auth && S.auth.signOut(); }
 
   function errMsg(e) {
     const c = e && e.code;
-    if (c === 'permission-denied') return '保存できませんでした。許可された Google アカウントでログインしているか確認してください。';
-    if (c === 'resource-exhausted') return '保存の上限に達しました。しばらくしてからもう一度お試しください。';
-    return '保存できませんでした。もう一度お試しください。';
+    if (c === 'permission-denied') return L('保存できませんでした。許可された Google アカウントでログインしているか確認してください。', '無法儲存。請確認是否使用已授權的 Google 帳號登入。');
+    if (c === 'resource-exhausted') return L('保存の上限に達しました。しばらくしてからもう一度お試しください。', '已達儲存上限，請稍後再試。');
+    return L('保存できませんでした。もう一度お試しください。', '無法儲存，請再試一次。');
   }
   const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   // Firestore applies writes locally right away and syncs in the background (also when offline),
@@ -512,15 +556,17 @@ button { cursor: pointer; }
     if (S.mode === 'signin') {
       root.innerHTML = `<div class="gate"><div class="gate-box">
         <div class="twin" aria-hidden="true"><i></i><i></i></div>
-        <h1>ふたごミルク帳</h1>
-        <p>家族専用の記録帳です。登録した Google アカウントでログインしてください。</p>
-        <button type="button" class="btn solid" data-act="signin">Google でログイン</button>
+        <h1>${L('ふたごミルク帳', '雙胞胎餵奶紀錄')}</h1>
+        <p>${L('家族専用の記録帳です。登録した Google アカウントでログインしてください。', '這是家人專用的紀錄。請使用已登記的 Google 帳號登入。')}</p>
+        <button type="button" class="btn solid" data-act="signin">${L('Google でログイン', '使用 Google 登入')}</button>
+        <div>${langSwitchHTML()}</div>
       </div></div>`;
     } else if (S.mode === 'denied') {
       root.innerHTML = `<div class="gate"><div class="gate-box">
-        <h1>このアカウントでは見られません</h1>
-        <p>${esc(S.user && S.user.email)} は、この記録帳を見られるアカウントに登録されていません。</p>
-        <button type="button" class="btn" data-act="signout">別のアカウントでログイン</button>
+        <h1>${L('このアカウントでは見られません', '此帳號無法查看')}</h1>
+        <p>${L(`${esc(S.user && S.user.email)} は、この記録帳を見られるアカウントに登録されていません。`, `${esc(S.user && S.user.email)} 尚未登記為可查看此紀錄的帳號。`)}</p>
+        <button type="button" class="btn" data-act="signout">${L('別のアカウントでログイン', '使用其他帳號登入')}</button>
+        <div>${langSwitchHTML()}</div>
       </div></div>`;
     } else root.innerHTML = '';
   }
@@ -530,8 +576,8 @@ button { cursor: pointer; }
   const weightsOf = id => S.logs.filter(l => l.baby === id && l.type === 'weight');
   function nextAt(id) { const m = lastOf(id, 'milk'); return m ? m.at + baby(id).intervalH * HOUR : null; }
   function milkText(l) {
-    if (l.kind === 'breast') return `母乳 ${l.min || '?'}分`;
-    return `${KIND[l.kind] || 'ミルク'} ${l.ml ?? '?'}mL`;
+    if (l.kind === 'breast') return `${KIND.breast} ${l.min || '?'}${L('分', '分鐘')}`;
+    return `${KIND[l.kind] || KIND.formula} ${l.ml ?? '?'}mL`;
   }
   function dayStats(id, from, to) {
     const st = { milkN: 0, ml: 0, breastN: 0, pee: 0, poo: 0 };
@@ -545,12 +591,12 @@ button { cursor: pointer; }
   }
   function describe(l) {
     if (l.type === 'milk') return esc(milkText(l));
-    if (l.type === 'pee') return 'おしっこ';
+    if (l.type === 'pee') return TYPE_LABEL.pee;
     if (l.type === 'poo') {
       const parts = [];
       if (l.color) parts.push(l.color === 'pale' ? `<span class="pale-flag">${POO_COLOR.pale}</span>` : POO_COLOR[l.color]);
       if (l.amount) parts.push(POO_AMT[l.amount]);
-      return 'うんち' + (parts.length ? ' · ' + parts.join(' · ') : '');
+      return TYPE_LABEL.poo + (parts.length ? ' · ' + parts.join(' · ') : '');
     }
     if (l.type === 'weight') return `${fmtG(l.grams)}g`;
     return '';
@@ -565,11 +611,11 @@ button { cursor: pointer; }
   }
   function renderModeNote() {
     const el = $('#mode-note'), acc = $('#account');
-    if (S.mode === 'db') el.textContent = '記録はクラウドに保存され、登録したふたりのアカウントで共有されます。';
-    else if (S.mode === 'local') el.textContent = 'Firebase が未設定のため、記録はこの端末のブラウザだけに保存されています。';
-    else el.textContent = '読み込み中…';
+    if (S.mode === 'db') el.textContent = L('記録はクラウドに保存され、登録したふたりのアカウントで共有されます。', '紀錄儲存在雲端，由兩個登記的帳號共享。');
+    else if (S.mode === 'local') el.textContent = L('Firebase が未設定のため、記録はこの端末のブラウザだけに保存されています。', 'Firebase 尚未設定，紀錄只儲存在此裝置的瀏覽器中。');
+    else el.textContent = L('読み込み中…', '載入中…');
     acc.hidden = S.mode !== 'db' || !S.user;
-    if (!acc.hidden) acc.innerHTML = `${esc(S.user.email)} でログイン中 <button type="button" class="linklike" data-act="signout">ログアウト</button>`;
+    if (!acc.hidden) acc.innerHTML = `${L(`${esc(S.user.email)} でログイン中`, `已用 ${esc(S.user.email)} 登入`)} <button type="button" class="linklike" data-act="signout">${L('ログアウト', '登出')}</button>`;
   }
 
   function renderCards() {
@@ -579,12 +625,13 @@ button { cursor: pointer; }
       const st = dayStats(id, t0, t0 + DAY);
       const lastPoo = lastOf(id, 'poo'), lastMilk = lastOf(id, 'milk');
       const range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
-      let wHTML = '<b>—</b><small>体重未記録</small>';
+      let wHTML = `<b>—</b><small>${L('体重未記録', '尚未記錄體重')}</small>`;
       if (w) {
         const diff = prev ? w.grams - prev.grams : null;
         const d = new Date(w.at);
-        wHTML = `<b class="num">${fmtG(w.grams)}g</b><small>${d.getMonth() + 1}/${d.getDate()}${diff !== null ? ` · 前回比 ${diff >= 0 ? '+' : ''}${fmtG(diff)}g` : ''}</small>`;
+        wHTML = `<b class="num">${fmtG(w.grams)}g</b><small>${d.getMonth() + 1}/${d.getDate()}${diff !== null ? ` · ${L('前回比', '比上次')} ${diff >= 0 ? '+' : ''}${fmtG(diff)}g` : ''}</small>`;
       }
+      const leadTxt = S.alarm.lead ? L(`${S.alarm.lead}分前`, `前${S.alarm.lead}分鐘`) : L('時刻', '時間');
       // Card reads top to bottom: when is the next feed → what was the last one → record → today's totals.
       return `<article class="card" data-baby="${id}">
         <div class="card-head">
@@ -593,26 +640,26 @@ button { cursor: pointer; }
         </div>
         <div class="next">
           <div class="next-top">
-            <span class="label">次の授乳</span>
-            <button type="button" class="rule" data-bset="${id}" aria-label="${esc(b.name)}の授乳間隔と量を変更">${b.intervalH}時間ごと・${range}<span>変更</span></button>
+            <span class="label">${L('次の授乳', '下次餵奶')}</span>
+            <button type="button" class="rule" data-bset="${id}" aria-label="${L(`${esc(b.name)}の授乳間隔と量を変更`, `更改${esc(b.name)}的餵奶間隔與量`)}">${L(`${b.intervalH}時間ごと`, `每${b.intervalH}小時`)}・${range}<span>${L('変更', '更改')}</span></button>
           </div>
           <div class="cd" data-cd="${id}"></div>
           <div class="bar" data-bar="${id}"><i></i></div>
           <div class="last-row">
             <div class="cd-sub num" data-cdsub="${id}"></div>
-            ${lastMilk ? `<button type="button" class="fix-last" data-edit="${esc(lastMilk.id)}" aria-label="前回の授乳（${fmtT(lastMilk.at)}）を修正・削除">修正</button>` : ''}
+            ${lastMilk ? `<button type="button" class="fix-last" data-edit="${esc(lastMilk.id)}" aria-label="${L(`前回の授乳（${fmtT(lastMilk.at)}）を修正・削除`, `修改或刪除上次餵奶（${fmtT(lastMilk.at)}）`)}">${L('修正', '修改')}</button>` : ''}
           </div>
         </div>
         <div class="actions${IS_IOS ? ' has-timer' : ''}">
-          <button type="button" class="milk" data-add="milk" data-baby="${id}">授乳を記録</button>
-          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="iPhone のタイマーを次のミルクの${S.alarm.lead ? `${S.alarm.lead}分前` : '時刻'}にセット">iPhone<br>タイマー</button>` : ''}
+          <button type="button" class="milk" data-add="milk" data-baby="${id}">${L('授乳を記録', '記錄餵奶')}</button>
+          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="${L(`iPhone のタイマーを次のミルクの${leadTxt}にセット`, `把 iPhone 計時器設在下次餵奶${leadTxt}`)}">iPhone<br>${L('タイマー', '計時器')}</button>` : ''}
           <div class="subs">
-            <button type="button" class="sub" data-add="pee" data-baby="${id}">おしっこ</button>
-            <button type="button" class="sub" data-add="poo" data-baby="${id}">うんち</button>
-            <button type="button" class="sub" data-add="weight" data-baby="${id}">体重</button>
+            <button type="button" class="sub" data-add="pee" data-baby="${id}">${TYPE_LABEL.pee}</button>
+            <button type="button" class="sub" data-add="poo" data-baby="${id}">${TYPE_LABEL.poo}</button>
+            <button type="button" class="sub" data-add="weight" data-baby="${id}">${TYPE_LABEL.weight}</button>
           </div>
         </div>
-        <div class="today num"><span class="lbl">今日</span>授乳 <b>${st.milkN}</b>回${st.ml ? ` ${st.ml}mL` : ''}${st.breastN ? `（母乳${st.breastN}回）` : ''} ・ おしっこ <b>${st.pee}</b> ・ うんち <b>${st.poo}</b>${lastPoo ? `（最後 ${durText(now - lastPoo.at)}前）` : ''}</div>
+        <div class="today num"><span class="lbl">${L('今日', '今天')}</span>${TYPE_LABEL.milk} <b>${st.milkN}</b>${L('回', '次')}${st.ml ? ` ${st.ml}mL` : ''}${st.breastN ? L(`（母乳${st.breastN}回）`, `（親餵${st.breastN}次）`) : ''} ・ ${TYPE_LABEL.pee} <b>${st.pee}</b> ・ ${TYPE_LABEL.poo} <b>${st.poo}</b>${lastPoo ? L(`（最後 ${durText(now - lastPoo.at)}前）`, `（最後一次 ${durText(now - lastPoo.at)}前）`) : ''}</div>
       </article>`;
     }).join('');
   }
@@ -622,7 +669,7 @@ button { cursor: pointer; }
   const PLAN_PAST = 12 * HOUR, PLAN_AHEAD = 24 * HOUR, CLOSE_GAP = 30 * MIN;
   function renderPlan() {
     const el = $('#plan');
-    if (S.mode === 'loading') { el.innerHTML = '<p class="empty-note">記録を読み込んでいます…</p>'; return; }
+    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
     const now = Date.now(), items = [], missing = [];
     for (const id of BABY_IDS) {
       const b = baby(id), last = lastOf(id, 'milk');
@@ -632,7 +679,7 @@ button { cursor: pointer; }
       for (let t = last.at + step, k = 0; t <= now + PLAN_AHEAD; t += step, k++) items.push({ at: t, baby: id, kind: k === 0 ? 'next' : 'plan' });
     }
     if (!items.length) {
-      el.innerHTML = '<p class="empty-note">「いま」タブで授乳を記録すると、ここに次からの予定がふたり並んで表示されます。</p>';
+      el.innerHTML = `<p class="empty-note">${L('「いま」タブで授乳を記録すると、ここに次からの予定がふたり並んで表示されます。', '在「現在」分頁記錄餵奶後，這裡會並排顯示兩人接下來的預定時間。')}</p>`;
       return;
     }
     items.sort((a, b) => a.at - b.at);
@@ -649,32 +696,32 @@ button { cursor: pointer; }
     const cell = (id, i) => {
       if (!i) return `<div class="pc ${id}"></div>`;
       const b = baby(id), range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
-      if (i.kind === 'done') return `<div class="pc ${id} done">済 ${esc(milkText(i.log))}</div>`;
+      if (i.kind === 'done') return `<div class="pc ${id} done">${L('済', '已餵')} ${esc(milkText(i.log))}</div>`;
       if (i.kind === 'next') {
         const due = now >= i.at;
-        return `<div class="pc ${id} next${due ? ' due' : ''}"><b>次</b> ${range}<small>${due ? `${durText(now - i.at)} すぎ` : `あと ${durText(i.at - now)}`}</small></div>`;
+        return `<div class="pc ${id} next${due ? ' due' : ''}"><b>${L('次', '下次')}</b> ${range}<small>${due ? L(`${durText(now - i.at)} すぎ`, `已超過 ${durText(now - i.at)}`) : L(`あと ${durText(i.at - now)}`, `還有 ${durText(i.at - now)}`)}</small></div>`;
       }
       return `<div class="pc ${id} plan">${range}</div>`;
     };
-    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${esc(baby(id).name)}<small>${baby(id).intervalH}時間ごと</small></div>`).join('')}</div>`;
+    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${esc(baby(id).name)}<small>${L(`${baby(id).intervalH}時間ごと`, `每${baby(id).intervalH}小時`)}</small></div>`).join('')}</div>`;
     let lastDay = null, nowShown = false;
     for (const r of rows) {
       const day = startOfDay(r.at);
       if (day !== lastDay) { html += `<div class="plan-day">${dayLabel(r.at)}</div>`; lastDay = day; }
-      if (!nowShown && r.at > now) { html += `<div class="plan-now num">いま ${fmtT(now)}</div>`; nowShown = true; }
+      if (!nowShown && r.at > now) { html += `<div class="plan-now num">${L('いま', '現在')} ${fmtT(now)}</div>`; nowShown = true; }
       const close = BABY_IDS.some(id => r[id] && r[id].close);
-      html += `<div class="plan-row${r.at <= now ? ' row-past' : ''}"><div class="pt num">${fmtT(r.at)}${close ? '<small>ふたり続けて</small>' : ''}</div>${BABY_IDS.map(id => cell(id, r[id])).join('')}</div>`;
+      html += `<div class="plan-row${r.at <= now ? ' row-past' : ''}"><div class="pt num">${fmtT(r.at)}${close ? `<small>${L('ふたり続けて', '兩人接連')}</small>` : ''}</div>${BABY_IDS.map(id => cell(id, r[id])).join('')}</div>`;
     }
-    if (missing.length) html += `<p class="hint">${missing.map(id => esc(baby(id).name)).join('と')}はまだ授乳の記録がないため、予定を出せません。</p>`;
+    if (missing.length) html += `<p class="hint">${L(`${missing.map(id => esc(baby(id).name)).join('と')}はまだ授乳の記録がないため、予定を出せません。`, `${missing.map(id => esc(baby(id).name)).join('和')}還沒有餵奶紀錄，無法顯示預定時間。`)}</p>`;
     el.innerHTML = html;
   }
 
   function renderTimeline() {
     const el = $('#timeline');
-    if (S.mode === 'loading') { el.innerHTML = '<p class="empty-note">記録を読み込んでいます…</p>'; return; }
+    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
     const list = S.logs.filter(l => S.filter === 'all' || l.baby === S.filter);
     if (!list.length) {
-      el.innerHTML = '<p class="empty-note">まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。</p>';
+      el.innerHTML = `<p class="empty-note">${L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。')}</p>`;
       return;
     }
     const groups = new Map();
@@ -685,24 +732,24 @@ button { cursor: pointer; }
     el.innerHTML = shown.map(k => {
       const sums = ids.map(id => {
         const st = dayStats(id, k, k + DAY);
-        return `<span><em class="${id}">${esc(baby(id).name)}</em> 授乳${st.milkN}回 ${st.ml}mL · 尿${st.pee} · 便${st.poo}</span>`;
+        return `<span><em class="${id}">${esc(baby(id).name)}</em> ${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`)} ${st.ml}mL · ${L('尿', '尿')}${st.pee} · ${L('便', '便')}${st.poo}</span>`;
       }).join('　');
       return `<div class="day"><div class="day-head"><h3>${dayLabel(k)}</h3><div class="sum num">${sums}</div></div>
-        <ul class="items">${groups.get(k).map(l => `<li><button type="button" class="item" data-edit="${esc(l.id)}" aria-label="${esc(baby(l.baby).name)} ${TYPE_LABEL[l.type]} ${fmtT(l.at)} を修正">
+        <ul class="items">${groups.get(k).map(l => `<li><button type="button" class="item" data-edit="${esc(l.id)}" aria-label="${L(`${esc(baby(l.baby).name)} ${TYPE_LABEL[l.type]} ${fmtT(l.at)} を修正`, `修改 ${esc(baby(l.baby).name)} ${fmtT(l.at)} 的${TYPE_LABEL[l.type]}`)}">
           <span class="t num">${fmtT(l.at)}</span>
           <span class="chip ${l.baby}">${esc(baby(l.baby).name)}</span>
           <span class="k">${TYPE_LABEL[l.type]}</span>
           <span class="d">${describe(l)}${l.note ? `<small>${esc(l.note)}</small>` : ''}</span>
-          <span class="fix" aria-hidden="true">修正</span>
+          <span class="fix" aria-hidden="true">${L('修正', '修改')}</span>
         </button></li>`).join('')}</ul></div>`;
-    }).join('') + (keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">さらに前の日を表示（残り${keys.length - S.daysShown}日）</button></div>` : '');
+    }).join('') + (keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`)}</button></div>` : '');
   }
 
   function renderWeights() {
-    $('#w-add').innerHTML = BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="weight" data-baby="${id}">${esc(baby(id).name)}の体重を記録</button>`).join('');
+    $('#w-add').innerHTML = BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="weight" data-baby="${id}">${L(`${esc(baby(id).name)}の体重を記録`, `記錄${esc(baby(id).name)}的體重`)}</button>`).join('');
     $('#wtable').innerHTML = BABY_IDS.map(id => {
       const ws = weightsOf(id);
-      if (!ws.length) return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3><p class="empty-note">まだ記録がありません。</p></div>`;
+      if (!ws.length) return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3><p class="empty-note">${L('まだ記録がありません。', '還沒有紀錄。')}</p></div>`;
       const rows = ws.slice(0, S.wShown).map((w, i) => {
         const prev = ws[i + 1], d = new Date(w.at);
         let diff = '', perDay = '';
@@ -710,14 +757,14 @@ button { cursor: pointer; }
           const g = w.grams - prev.grams, days = (w.at - prev.at) / DAY;
           const cls = g < 0 ? 'down' : 'up';
           diff = `<span class="${cls}">${g >= 0 ? '+' : ''}${fmtG(g)}g</span>`;
-          if (days >= 0.5) { const pd = Math.round(g / days); perDay = `<span class="${cls}">${pd >= 0 ? '+' : ''}${pd}g/日</span>`; }
+          if (days >= 0.5) { const pd = Math.round(g / days); perDay = `<span class="${cls}">${pd >= 0 ? '+' : ''}${pd}g/${L('日', '天')}</span>`; }
         }
-        return `<button type="button" class="wrow num" data-edit="${esc(w.id)}" aria-label="${esc(baby(id).name)}の体重 ${d.getMonth() + 1}月${d.getDate()}日 ${fmtG(w.grams)}g を修正">
+        return `<button type="button" class="wrow num" data-edit="${esc(w.id)}" aria-label="${L(`${esc(baby(id).name)}の体重 ${d.getMonth() + 1}月${d.getDate()}日 ${fmtG(w.grams)}g を修正`, `修改${esc(baby(id).name)} ${d.getMonth() + 1}月${d.getDate()}日的體重 ${fmtG(w.grams)}g`)}">
           <span>${d.getMonth() + 1}/${d.getDate()} ${fmtT(w.at)}${w.note ? ` <small>${esc(w.note)}</small>` : ''}</span><b>${fmtG(w.grams)}g</b><span>${diff}</span><span>${perDay}</span></button>`;
       }).join('');
       return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3>
-        <div class="wrow head" aria-hidden="true"><span>日時</span><span>体重</span><span>前回比</span><span>1日あたり</span></div>${rows}
-        ${ws.length > S.wShown ? `<button type="button" class="btn ghost more" data-act="wmore">さらに表示（残り${ws.length - S.wShown}件）</button>` : ''}</div>`;
+        <div class="wrow head" aria-hidden="true"><span>${L('日時', '日期時間')}</span><span>${L('体重', '體重')}</span><span>${L('前回比', '比上次')}</span><span>${L('1日あたり', '每天')}</span></div>${rows}
+        ${ws.length > S.wShown ? `<button type="button" class="btn ghost more" data-act="wmore">${L(`さらに表示（残り${ws.length - S.wShown}件）`, `顯示更多（還有${ws.length - S.wShown}筆）`)}</button>` : ''}</div>`;
     }).join('');
   }
 
@@ -725,7 +772,7 @@ button { cursor: pointer; }
     const series = BABY_IDS.map(id => ({ id, pts: weightsOf(id).map(l => ({ t: l.at, g: Number(l.grams) })).filter(p => p.g > 0).sort((a, b) => a.t - b.t) }));
     $('#legend').innerHTML = BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'})"></i>${esc(baby(id).name)}</span>`).join('');
     const all = series.flatMap(s => s.pts);
-    if (!all.length) { $('#chart').innerHTML = '<p class="empty-note">体重を記録するとここにグラフが表示されます。</p>'; return; }
+    if (!all.length) { $('#chart').innerHTML = `<p class="empty-note">${L('体重を記録するとここにグラフが表示されます。', '記錄體重後，這裡會顯示圖表。')}</p>`; return; }
     const W = 640, H = 260, pl = 58, pr = 92, pt = 16, pb = 34;
     let t0 = Math.min(...all.map(p => p.t)), t1 = Math.max(...all.map(p => p.t));
     if (t1 - t0 < 3 * DAY) { const mid = (t0 + t1) / 2; t0 = mid - 1.5 * DAY; t1 = mid + 1.5 * DAY; }
@@ -736,7 +783,7 @@ button { cursor: pointer; }
     g0 = Math.floor(g0 / step) * step; g1 = Math.ceil(g1 / step) * step;
     const x = t => pl + (t - t0) / (t1 - t0) * (W - pl - pr);
     const y = g => pt + (1 - (g - g0) / (g1 - g0)) * (H - pt - pb);
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="体重の推移グラフ">`;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L('体重の推移グラフ', '體重變化圖表')}">`;
     for (let g = g0; g <= g1; g += step) {
       svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width="1"/>`;
       svg += `<text x="${pl - 8}" y="${y(g) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" class="num">${fmtG(g)}g</text>`;
@@ -779,20 +826,21 @@ button { cursor: pointer; }
   // ---------- alarm state (header pill + the block in 設定) ----------
   let wakeLock = null;
   function alarmBlockHTML() {
-    const leadTxt = S.alarm.lead ? `予定の${S.alarm.lead}分前` : '予定時刻';
+    const leadTxt = S.alarm.lead ? L(`予定の${S.alarm.lead}分前`, `預定前${S.alarm.lead}分鐘`) : L('予定時刻', '預定時間');
     const state = S.alarm.active
-      ? `オン：${leadTxt}に音とバイブでお知らせします。画面のスリープ防止は${wakeLock ? 'オン' : 'この端末では使えません'}。`
-      : 'オフです。オンにすると、次の授乳時刻に音とバイブでお知らせします。';
-    return `<h3>アラーム（この端末）</h3>
-      <p class="hint">${state}アラームはこの画面を開いている間だけ鳴ります。夜間は iPhone のタイマーも併用してください。</p>
-      <div class="row"><button type="button" class="btn" data-act="test">音を試す</button>${S.alarm.active
-        ? '<button type="button" class="btn ghost" data-act="alarm-off">オフにする</button>'
-        : '<button type="button" class="btn solid" data-act="alarm-on">オンにする</button>'}</div>`;
+      ? L(`オン：${leadTxt}に音とバイブでお知らせします。画面のスリープ防止は${wakeLock ? 'オン' : 'この端末では使えません'}。`,
+          `已開啟：會在${leadTxt}以聲音和震動提醒。螢幕防休眠：${wakeLock ? '已開啟' : '此裝置不支援'}。`)
+      : L('オフです。オンにすると、次の授乳時刻に音とバイブでお知らせします。', '目前關閉。開啟後會在下次餵奶時以聲音和震動提醒。');
+    return `<h3>${L('アラーム（この端末）', '提醒（此裝置）')}</h3>
+      <p class="hint">${state}${L('アラームはこの画面を開いている間だけ鳴ります。夜間は iPhone のタイマーも併用してください。', '提醒只會在此畫面開著時響起。夜間請同時使用 iPhone 計時器。')}</p>
+      <div class="row"><button type="button" class="btn" data-act="test">${L('音を試す', '試聽聲音')}</button>${S.alarm.active
+        ? `<button type="button" class="btn ghost" data-act="alarm-off">${L('オフにする', '關閉')}</button>`
+        : `<button type="button" class="btn solid" data-act="alarm-on">${L('オンにする', '開啟')}</button>`}</div>`;
   }
   function renderAlarmBar() {
     const el = $('#alarm-pill');
     el.className = 'pill' + (S.alarm.active ? ' on' : '');
-    el.textContent = S.alarm.active ? 'アラーム オン' : 'アラーム オフ';
+    el.textContent = S.alarm.active ? L('アラーム オン', '提醒 開') : L('アラーム オフ', '提醒 關');
     const blk = $('#alarm-block'); if (blk) blk.innerHTML = alarmBlockHTML();
   }
 
@@ -874,28 +922,31 @@ button { cursor: pointer; }
     if (changed) renderRing();
   }
   function notify(ids) {
-    const names = ids.map(id => baby(id).name).join('と');
+    const names = ids.map(id => baby(id).name).join(L('と', '和'));
     try { navigator.vibrate && navigator.vibrate([400, 200, 400, 200, 400]); } catch {}
-    try { if ('Notification' in window && Notification.permission === 'granted') new Notification('ミルクの時間です', { body: `${names}の授乳時刻になりました`, tag: 'futago-' + ids.join('-') }); } catch {}
+    try { if ('Notification' in window && Notification.permission === 'granted') new Notification(L('ミルクの時間です', '餵奶時間到了'), { body: L(`${names}の授乳時刻になりました`, `${names}該餵奶了`), tag: 'futago-' + ids.join('-') }); } catch {}
   }
+  const appTitle = () => L('ふたごミルク帳', '雙胞胎餵奶紀錄');
   function renderRing() {
     const root = $('#ring-root');
     if (!S.ringing.length) {
       root.innerHTML = ''; if (ringTimer) { clearInterval(ringTimer); ringTimer = null; }
-      document.title = 'ふたごミルク帳'; return;
+      document.title = appTitle(); return;
     }
-    document.title = '【ミルクの時間】ふたごミルク帳';
+    document.title = L('【ミルクの時間】', '【餵奶時間】') + appTitle();
     if (!ringTimer) { chime(); ringTimer = setInterval(() => { chime(); try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch {} }, 3000); }
     const now = Date.now();
-    root.innerHTML = `<div class="ring" role="alertdialog" aria-label="授乳アラーム"><div class="ring-inner">${S.ringing.map(id => {
+    root.innerHTML = `<div class="ring" role="alertdialog" aria-label="${L('授乳アラーム', '餵奶提醒')}"><div class="ring-inner">${S.ringing.map(id => {
       const b = baby(id), n = nextAt(id), m = lastOf(id, 'milk');
-      const when = now >= n ? `予定 ${fmtT(n)}（${durText(now - n)}経過）` : `予定 ${fmtT(n)}（あと${durText(n - now)}）`;
-      return `<div class="ring-item"><h2>${esc(b.name)}のミルクの時間です</h2>
-        <p class="num">${when}<br>前回 ${fmtT(m.at)} ${esc(milkText(m))}</p>
+      const when = now >= n
+        ? L(`予定 ${fmtT(n)}（${durText(now - n)}経過）`, `預定 ${fmtT(n)}（已過 ${durText(now - n)}）`)
+        : L(`予定 ${fmtT(n)}（あと${durText(n - now)}）`, `預定 ${fmtT(n)}（還有 ${durText(n - now)}）`);
+      return `<div class="ring-item"><h2>${L(`${esc(b.name)}のミルクの時間です`, `${esc(b.name)}的餵奶時間到了`)}</h2>
+        <p class="num">${when}<br>${L('前回', '上次')} ${fmtT(m.at)} ${esc(milkText(m))}</p>
         <div class="row">
-          <button type="button" class="primary" data-ring="record" data-baby="${id}">授乳を記録する</button>
-          <button type="button" data-ring="snooze" data-baby="${id}">5分後にもう一度</button>
-          <button type="button" data-ring="stop" data-baby="${id}">止める</button>
+          <button type="button" class="primary" data-ring="record" data-baby="${id}">${L('授乳を記録する', '記錄餵奶')}</button>
+          <button type="button" data-ring="snooze" data-baby="${id}">${L('5分後にもう一度', '5分鐘後再提醒')}</button>
+          <button type="button" data-ring="stop" data-baby="${id}">${L('止める', '停止')}</button>
         </div></div>`;
     }).join('')}</div></div>`;
   }
@@ -913,15 +964,15 @@ button { cursor: pointer; }
       const bar = document.querySelector(`[data-bar="${id}"]`), sub = document.querySelector(`[data-cdsub="${id}"]`);
       const m = lastOf(id, 'milk'), b = baby(id);
       if (!m) {
-        cd.className = 'cd empty'; cd.textContent = S.mode === 'loading' ? '読み込み中…' : '最初の授乳を記録すると、ここに次の時間が出ます';
+        cd.className = 'cd empty'; cd.textContent = S.mode === 'loading' ? L('読み込み中…', '載入中…') : L('最初の授乳を記録すると、ここに次の時間が出ます', '記錄第一次餵奶後，這裡會顯示下次時間');
         bar.className = 'bar'; bar.firstElementChild.style.width = '0'; sub.textContent = ''; continue;
       }
       const n = m.at + b.intervalH * HOUR, frac = Math.min(1, (now - m.at) / (b.intervalH * HOUR));
-      const dayTag = startOfDay(n) > startOfDay(now) ? '<small>翌日</small>' : '';
-      if (now < n) { cd.className = 'cd'; cd.innerHTML = `${dayTag}<b>${fmtT(n)}</b><span class="cd-rel">あと ${durText(n - now)}</span>`; bar.className = 'bar'; }
-      else { cd.className = 'cd due'; cd.innerHTML = `<b>${fmtT(n)}</b><span class="cd-rel">予定から ${durText(now - n)} すぎています</span>`; bar.className = 'bar due'; }
+      const dayTag = startOfDay(n) > startOfDay(now) ? `<small>${L('翌日', '隔天')}</small>` : '';
+      if (now < n) { cd.className = 'cd'; cd.innerHTML = `${dayTag}<b>${fmtT(n)}</b><span class="cd-rel">${L('あと', '還有')} ${durText(n - now)}</span>`; bar.className = 'bar'; }
+      else { cd.className = 'cd due'; cd.innerHTML = `<b>${fmtT(n)}</b><span class="cd-rel">${L(`予定から ${durText(now - n)} すぎています`, `已超過預定 ${durText(now - n)}`)}</span>`; bar.className = 'bar due'; }
       bar.firstElementChild.style.width = (Math.max(0, frac) * 100).toFixed(1) + '%';
-      sub.textContent = `前回 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`;
+      sub.textContent = L(`前回 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`, `上次 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`);
     }
     checkAlarms(now);
   }
@@ -969,49 +1020,54 @@ button { cursor: pointer; }
     if (F.type === 'milk') {
       const presets = new Set();
       for (let ml = b.minMl - 10; ml <= b.maxMl + 10; ml += 10) if (ml > 0) presets.add(ml);
-      body += `<div class="field"><span class="lbl">種類</span>${chipsHTML('kind', KIND, F.kind)}</div>`;
+      body += `<div class="field"><span class="lbl">${L('種類', '種類')}</span>${chipsHTML('kind', KIND, F.kind)}</div>`;
       if (F.kind === 'breast') {
-        body += `<div class="field"><label for="f-min">授乳した時間（分）</label>
+        body += `<div class="field"><label for="f-min">${L('授乳した時間（分）', '餵奶時間（分鐘）')}</label>
           <div class="stepper"><button type="button" data-step="min:-5">−5</button><input type="number" inputmode="numeric" id="f-min" min="1" max="90" value="${esc(F.min)}"><button type="button" data-step="min:5">+5</button></div></div>`;
       } else {
-        body += `<div class="field"><label for="f-ml">量（mL）</label>
+        const rangeTxt = `${b.minMl === b.maxMl ? b.minMl : `${b.minMl}〜${b.maxMl}`}mL`;
+        body += `<div class="field"><label for="f-ml">${L('量（mL）', '奶量（mL）')}</label>
           <div class="stepper"><button type="button" data-step="ml:-10">−10</button><input type="number" inputmode="numeric" id="f-ml" min="1" max="300" value="${esc(F.ml)}"><button type="button" data-step="ml:10">+10</button></div>
           <div class="chips">${[...presets].map(ml => `<button type="button" data-ml="${ml}" aria-pressed="${Number(F.ml) === ml}">${ml}mL</button>`).join('')}</div>
-          <p class="hint">${esc(b.name)}の目安：${b.minMl === b.maxMl ? b.minMl : `${b.minMl}〜${b.maxMl}`}mL・${b.intervalH}時間ごと</p></div>`;
+          <p class="hint">${L(`${esc(b.name)}の目安：${rangeTxt}・${b.intervalH}時間ごと`, `${esc(b.name)}的參考量：${rangeTxt}・每${b.intervalH}小時`)}</p></div>`;
       }
     } else if (F.type === 'poo') {
-      body += `<div class="field"><span class="lbl">色</span>${chipsHTML('color', POO_COLOR, F.color)}
-        ${F.color === 'pale' ? '<p class="caution">白っぽい・クリーム色の便は、母子手帳の便色カードと見比べてください。近い色が続くときは早めに小児科へ相談を。</p>' : ''}</div>
-        <div class="field"><span class="lbl">量</span>${chipsHTML('amount', POO_AMT, F.amount)}</div>`;
-      if (!F.editing) body += `<label class="check"><input type="checkbox" id="f-withpee" ${F.withPee ? 'checked' : ''}> おしっこも一緒に記録する</label>`;
+      body += `<div class="field"><span class="lbl">${L('色', '顏色')}</span>${chipsHTML('color', POO_COLOR, F.color)}
+        ${F.color === 'pale' ? `<p class="caution">${L('白っぽい・クリーム色の便は、母子手帳の便色カードと見比べてください。近い色が続くときは早めに小児科へ相談を。', '偏白或奶油色的便便，請與兒童健康手冊中的嬰兒大便辨識卡比對。若持續出現相近顏色，請盡早諮詢小兒科。')}</p>` : ''}</div>
+        <div class="field"><span class="lbl">${L('量', '量')}</span>${chipsHTML('amount', POO_AMT, F.amount)}</div>`;
+      if (!F.editing) body += `<label class="check"><input type="checkbox" id="f-withpee" ${F.withPee ? 'checked' : ''}> ${L('おしっこも一緒に記録する', '同時記錄尿尿')}</label>`;
     } else if (F.type === 'weight') {
       const w = weightsOf(F.baby).find(l => l.id !== F.editing);
-      body += `<div class="field"><label for="f-g">体重（g）</label>
+      body += `<div class="field"><label for="f-g">${L('体重（g）', '體重（g）')}</label>
         <div class="stepper"><button type="button" data-step="grams:-10">−10</button><input type="number" inputmode="numeric" id="f-g" min="500" max="15000" value="${esc(F.grams)}"><button type="button" data-step="grams:10">+10</button></div>
-        ${w ? `<p class="hint">前回：${fmtG(w.grams)}g（${new Date(w.at).getMonth() + 1}/${new Date(w.at).getDate()}）</p>` : ''}</div>`;
+        ${w ? `<p class="hint">${L('前回', '上次')}：${fmtG(w.grams)}g（${new Date(w.at).getMonth() + 1}/${new Date(w.at).getDate()}）</p>` : ''}</div>`;
     }
-    const title = (F.editing ? '修正：' : '') + TYPE_LABEL[F.type];
+    const title = (F.editing ? L('修正：', '修改：') : '') + TYPE_LABEL[F.type];
+    const agoMin = L('分前', '分鐘前');
     root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${title}</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
-      <div class="field"><span class="lbl">だれ</span><div class="chips who" role="group">${BABY_IDS.map(id => `<button type="button" data-who="${id}" data-baby="${id}" aria-pressed="${F.baby === id}">${esc(baby(id).name)}</button>`).join('')}</div></div>
+      <div class="sheet-head"><h2>${title}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <div class="field"><span class="lbl">${L('だれ', '誰')}</span><div class="chips who" role="group">${BABY_IDS.map(id => `<button type="button" data-who="${id}" data-baby="${id}" aria-pressed="${F.baby === id}">${esc(baby(id).name)}</button>`).join('')}</div></div>
       ${body}
-      <div class="field"><label for="f-at">時刻</label><input type="datetime-local" id="f-at" value="${toLocalInput(F.at)}">
-        <div class="chips"><button type="button" data-ago="0">今</button><button type="button" data-ago="5">5分前</button><button type="button" data-ago="15">15分前</button><button type="button" data-ago="30">30分前</button><button type="button" data-ago="60">1時間前</button></div></div>
+      <div class="field"><label for="f-at">${L('時刻', '時間')}</label><input type="datetime-local" id="f-at" value="${toLocalInput(F.at)}">
+        <div class="chips"><button type="button" data-ago="0">${L('今', '現在')}</button><button type="button" data-ago="5">5${agoMin}</button><button type="button" data-ago="15">15${agoMin}</button><button type="button" data-ago="30">30${agoMin}</button><button type="button" data-ago="60">${L('1時間前', '1小時前')}</button></div></div>
       ${F.type === 'milk' ? `<p class="next-preview num" id="f-next" aria-live="polite">${nextPreview()}</p>` : ''}
-      <div class="field"><label for="f-note">メモ（任意）</label><input type="text" id="f-note" maxlength="200" value="${esc(F.note)}" placeholder="吐き戻し、飲みムラなど"></div>
+      <div class="field"><label for="f-note">${L('メモ（任意）', '備註（選填）')}</label><input type="text" id="f-note" maxlength="200" value="${esc(F.note)}" placeholder="${L('吐き戻し、飲みムラなど', '吐奶、沒喝完等')}"></div>
       <div class="sheet-actions">
-        ${F.editing ? (F.confirmDelete ? '<button type="button" class="btn danger" data-act="delete-yes">本当に削除する</button><button type="button" class="btn ghost" data-act="delete-no">やめる</button>' : '<button type="button" class="btn danger" data-act="delete">削除</button>') : ''}
+        ${F.editing ? (F.confirmDelete
+          ? `<button type="button" class="btn danger" data-act="delete-yes">${L('本当に削除する', '確定刪除')}</button><button type="button" class="btn ghost" data-act="delete-no">${L('やめる', '不刪除')}</button>`
+          : `<button type="button" class="btn danger" data-act="delete">${L('削除', '刪除')}</button>`) : ''}
         <span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">キャンセル</button>
-        <button type="submit" class="btn solid" id="f-save">保存</button>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
       </div>
     </form></div>`;
   }
 
   function nextPreview() {
     const F = S.form, b = baby(F.baby), n = F.at + b.intervalH * HOUR;
-    const tag = startOfDay(n) > startOfDay(F.at) ? '翌日 ' : '';
-    return `次の授乳は ${tag}<b>${fmtT(n)}</b>（${b.intervalH}時間後）。アラームがオンならこの時刻に鳴ります。`;
+    const tag = startOfDay(n) > startOfDay(F.at) ? L('翌日 ', '隔天 ') : '';
+    return L(`次の授乳は ${tag}<b>${fmtT(n)}</b>（${b.intervalH}時間後）。アラームがオンならこの時刻に鳴ります。`,
+      `下次餵奶是 ${tag}<b>${fmtT(n)}</b>（${b.intervalH}小時後）。提醒開啟時會在這個時間響起。`);
   }
   document.addEventListener('input', e => {
     if (e.target.id !== 'f-at' || !S.form || S.form.type !== 'milk') return;
@@ -1023,23 +1079,23 @@ button { cursor: pointer; }
     readForm();
     const F = S.form; if (!F) return;
     const now = Date.now();
-    if (!F.at || F.at > now + 5 * MIN) return toast('時刻を確認してください（未来の時刻は記録できません）。');
+    if (!F.at || F.at > now + 5 * MIN) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
     const data = { baby: F.baby, type: F.type, at: F.at, note: (F.note || '').trim(), updatedAt: now };
     if (F.type === 'milk') {
       data.kind = F.kind;
-      if (F.kind === 'breast') { if (!(F.min >= 1 && F.min <= 90)) return toast('授乳時間は1〜90分で入力してください。'); data.min = F.min; }
-      else { if (!(F.ml >= 1 && F.ml <= 300)) return toast('量は1〜300mLで入力してください。'); data.ml = F.ml; }
+      if (F.kind === 'breast') { if (!(F.min >= 1 && F.min <= 90)) return toast(L('授乳時間は1〜90分で入力してください。', '餵奶時間請輸入1〜90分鐘。')); data.min = F.min; }
+      else { if (!(F.ml >= 1 && F.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。')); data.ml = F.ml; }
     } else if (F.type === 'poo') {
       data.color = F.color; data.amount = F.amount;
     } else if (F.type === 'weight') {
-      if (!(F.grams >= 500 && F.grams <= 15000)) return toast('体重は500〜15,000gで入力してください。');
+      if (!(F.grams >= 500 && F.grams <= 15000)) return toast(L('体重は500〜15,000gで入力してください。', '體重請輸入500〜15,000g。'));
       data.grams = F.grams;
     }
     const prevLast = lastOf(F.baby, 'milk');
     const isLatestMilk = F.type === 'milk' && (!prevLast || prevLast.id === F.editing || F.at >= prevLast.at);
     const editingId = F.editing || null;
     const before = editingId ? S.logs.find(l => l.id === editingId) : null;
-    const btn = $('#f-save'); if (btn) { btn.disabled = true; btn.textContent = '保存中…'; }
+    const btn = $('#f-save'); if (btn) { btn.disabled = true; btn.textContent = L('保存中…', '儲存中…'); }
     try {
       const savedIds = [await saveLog(editingId, data)];
       if (F.type === 'poo' && !editingId && F.withPee) savedIds.push(await saveLog(null, { baby: F.baby, type: 'pee', at: F.at, note: '', updatedAt: now }));
@@ -1051,14 +1107,15 @@ button { cursor: pointer; }
       const nb = baby(data.baby);
       // "取り消す" puts things back: a new record is deleted, an edited one gets its old values.
       const undo = editingId
-        ? () => { if (!before) return; const { id: _drop, ...prev } = before; saveLog(editingId, prev).then(() => toast('修正を取り消しました')); }
-        : () => { savedIds.forEach(id => deleteLog(id)); toast('記録を取り消しました'); };
-      const verb = editingId ? '修正しました' : '記録しました';
+        ? () => { if (!before) return; const { id: _drop, ...prev } = before; saveLog(editingId, prev).then(() => toast(L('修正を取り消しました', '已復原修改'))); }
+        : () => { savedIds.forEach(id => deleteLog(id)); toast(L('記録を取り消しました', '已取消這筆紀錄')); };
+      const verb = editingId ? L('修正しました', '修改') : L('記録しました', '記錄');
+      const nextT = fmtT(data.at + nb.intervalH * HOUR);
       toast(isLatestMilk
-        ? `${nb.name}の授乳を${verb}。次は ${fmtT(data.at + nb.intervalH * HOUR)} です`
-        : `${nb.name}の${TYPE_LABEL[data.type]}を${verb}`, { label: '取り消す', fn: undo });
+        ? L(`${nb.name}の授乳を${verb}。次は ${nextT} です`, `已${verb}${nb.name}的餵奶。下次是 ${nextT}`)
+        : L(`${nb.name}の${TYPE_LABEL[data.type]}を${verb}`, `已${verb}${nb.name}的${TYPE_LABEL[data.type]}`), { label: L('取り消す', '復原'), fn: undo });
     } catch (e) {
-      if (btn) { btn.disabled = false; btn.textContent = '保存'; }
+      if (btn) { btn.disabled = false; btn.textContent = L('保存', '儲存'); }
       toast(errMsg(e));
     }
   }
@@ -1072,27 +1129,28 @@ button { cursor: pointer; }
   function renderSettings() {
     const only = S.form.only, ids = only ? [only] : BABY_IDS;
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${only ? `${esc(baby(only).name)}の授乳間隔と量` : '設定'}</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
-      ${only ? '' : `<div class="settings-block" id="alarm-block">${alarmBlockHTML()}</div>
+      <div class="sheet-head"><h2>${only ? L(`${esc(baby(only).name)}の授乳間隔と量`, `${esc(baby(only).name)}的餵奶間隔與量`) : L('設定', '設定')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      ${only ? '' : `<div class="settings-block"><h3>言語 / 語言</h3>${langSwitchHTML()}<p class="hint">${L('この端末だけの設定です。', '只會套用在此裝置。')}</p></div>
+        <div class="settings-block" id="alarm-block">${alarmBlockHTML()}</div>
         <div class="settings-block">
-          <div class="field"><label for="s-lead">お知らせのタイミング（アラームと iPhone タイマー共通・この端末）</label>
-            <select id="s-lead">${[0, 5, 10, 15, 20, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>
-          ${IS_IOS ? `<div class="field"><span class="lbl">iPhone のタイマー（この端末）</span>
-            <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> 授乳を記録したら、iPhone のタイマーも自動でセットする</label>
-            <button type="button" class="btn ghost" data-act="shortcut-help">ショートカットの作り方を見る</button></div>` : ''}
+          <div class="field"><label for="s-lead">${L('お知らせのタイミング（アラームと iPhone タイマー共通・この端末）', '提醒時間（提醒與 iPhone 計時器共用・此裝置）')}</label>
+            <select id="s-lead">${[0, 5, 10, 15, 20, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? L(`予定の${m}分前`, `預定前${m}分鐘`) : L('予定時刻ちょうど', '預定時間準時')}</option>`).join('')}</select></div>
+          ${IS_IOS ? `<div class="field"><span class="lbl">${L('iPhone のタイマー（この端末）', 'iPhone 計時器（此裝置）')}</span>
+            <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> ${L('授乳を記録したら、iPhone のタイマーも自動でセットする', '記錄餵奶時，自動設定 iPhone 計時器')}</label>
+            <button type="button" class="btn ghost" data-act="shortcut-help">${L('ショートカットの作り方を見る', '查看捷徑製作方法')}</button></div>` : ''}
         </div>`}
       ${ids.map(id => { const b = baby(id); return `<div class="settings-baby">
-        <h3>${id === 'ane' ? '姉' : '妹'}</h3>
-        <div class="field wide"><label for="s-${id}-name">呼び名</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
-        <div class="field wide"><label for="s-${id}-int">授乳の間隔（何時間ごと）</label>
-          <div class="chips" role="group">${INTERVAL_CHOICES.map(h => `<button type="button" data-int="${id}:${h}" aria-pressed="${b.intervalH === h}">${h}時間</button>`).join('')}</div>
+        <h3>${id === 'ane' ? L('姉', '姊姊') : L('妹', '妹妹')}</h3>
+        <div class="field wide"><label for="s-${id}-name">${L('呼び名', '稱呼')}</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
+        <div class="field wide"><label for="s-${id}-int">${L('授乳の間隔（何時間ごと）', '餵奶間隔（每幾小時）')}</label>
+          <div class="chips" role="group">${INTERVAL_CHOICES.map(h => `<button type="button" data-int="${id}:${h}" aria-pressed="${b.intervalH === h}">${h}${L('時間', '小時')}</button>`).join('')}</div>
           <input type="number" inputmode="decimal" step="0.25" min="1" max="8" id="s-${id}-int" value="${b.intervalH}">
-          <p class="hint">次の授乳時刻とアラームは、最後の授乳からこの間隔で計算します。15分単位（例：2.75）でも入力できます。</p></div>
-        <div class="field"><label for="s-${id}-min">量の目安 下限（mL）</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-min" value="${b.minMl}"></div>
-        <div class="field"><label for="s-${id}-max">上限（mL）</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-max" value="${b.maxMl}"></div>
+          <p class="hint">${L('次の授乳時刻とアラームは、最後の授乳からこの間隔で計算します。15分単位（例：2.75）でも入力できます。', '下次餵奶時間與提醒，會依最後一次餵奶加上這個間隔計算。也可以用15分鐘為單位輸入（例：2.75）。')}</p></div>
+        <div class="field"><label for="s-${id}-min">${L('量の目安 下限（mL）', '參考量 下限（mL）')}</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-min" value="${b.minMl}"></div>
+        <div class="field"><label for="s-${id}-max">${L('上限（mL）', '上限（mL）')}</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-max" value="${b.maxMl}"></div>
       </div>`; }).join('')}
-      <p class="hint">間隔や量の目安は、医師・助産師の指示に合わせて変更してください。</p>
-      <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">キャンセル</button><button type="submit" class="btn solid" id="f-save">保存</button></div>
+      <p class="hint">${L('間隔や量の目安は、医師・助産師の指示に合わせて変更してください。', '間隔與參考量請依醫師或助產師的指示調整。')}</p>
+      <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button><button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button></div>
     </form></div>`;
   }
   async function submitSettings() {
@@ -1100,17 +1158,19 @@ button { cursor: pointer; }
     if ($('#s-iosauto')) lsSet('futago-ios-auto', $('#s-iosauto').checked);
     try {
       for (const id of (S.form.only ? [S.form.only] : BABY_IDS)) {
-        const name = $(`#s-${id}-name`).value.trim() || DEFAULTS[id].name;
+        let name = $(`#s-${id}-name`).value.trim() || DEFAULTS[id].name;
+        // Keep the shared default stored as 姉/妹 so each device shows it in its own language.
+        if (name === ZH_DEFAULT_NAME[id]) name = DEFAULTS[id].name;
         const intervalH = Number($(`#s-${id}-int`).value);
         let minMl = Number($(`#s-${id}-min`).value), maxMl = Number($(`#s-${id}-max`).value);
-        if (!(intervalH >= 1 && intervalH <= 8)) return toast('授乳の間隔は1〜8時間で入力してください。');
-        if (!(minMl >= 5 && maxMl >= 5 && minMl <= 300 && maxMl <= 300)) return toast('量の目安は5〜300mLで入力してください。');
+        if (!(intervalH >= 1 && intervalH <= 8)) return toast(L('授乳の間隔は1〜8時間で入力してください。', '餵奶間隔請輸入1〜8小時。'));
+        if (!(minMl >= 5 && maxMl >= 5 && minMl <= 300 && maxMl <= 300)) return toast(L('量の目安は5〜300mLで入力してください。', '參考量請輸入5〜300mL。'));
         if (minMl > maxMl) [minMl, maxMl] = [maxMl, minMl];
         const next = { name, intervalH, minMl, maxMl };
-        const cur = baby(id);
+        const cur = { ...DEFAULTS[id], ...(S.babies[id] || {}) };
         if (cur.name !== name || cur.intervalH !== intervalH || cur.minMl !== minMl || cur.maxMl !== maxMl) await saveBaby(id, next);
       }
-      S.form = null; renderForm(); render(); toast('設定を保存しました');
+      S.form = null; renderForm(); render(); toast(L('設定を保存しました', '已儲存設定'));
     } catch (e) { toast(errMsg(e)); }
   }
 
@@ -1128,13 +1188,13 @@ button { cursor: pointer; }
   }
   function startIphoneTimer(at) {
     const { min, early } = iphoneTimerMinutes(at);
-    if (min <= 0) return toast('次のミルクの時刻はもう過ぎています。');
-    if (!early && S.alarm.lead) toast(`${S.alarm.lead}分前はもう過ぎているので、予定時刻までの${min}分でセットします`);
+    if (min <= 0) return toast(L('次のミルクの時刻はもう過ぎています。', '下次餵奶時間已經過了。'));
+    if (!early && S.alarm.lead) toast(L(`${S.alarm.lead}分前はもう過ぎているので、予定時刻までの${min}分でセットします`, `已經過了預定前${S.alarm.lead}分鐘，改設定到預定時間的${min}分鐘`));
     location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}&input=text&text=${min}`;
   }
   function setIphoneTimer(id) {
     const n = nextAt(id);
-    if (!n) return toast('先に授乳を記録してください。次のミルクまでの時間でタイマーをセットします。');
+    if (!n) return toast(L('先に授乳を記録してください。次のミルクまでの時間でタイマーをセットします。', '請先記錄餵奶，才能依下次餵奶時間設定計時器。'));
     if (!lsGet('futago-shortcut-ready', false)) return openShortcutHelp(id);
     startIphoneTimer(n);
   }
@@ -1144,20 +1204,26 @@ button { cursor: pointer; }
   }
   function renderShortcutHelp() {
     const id = S.form.baby;
-    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-label="iPhone のタイマー連携">
-      <div class="sheet-head"><h2>iPhone のタイマー連携</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
-      <p class="hint">最初に1回だけ、iPhone の「ショートカット」アプリでタイマー用のショートカットを作ります（2分ほど）。</p>
-      <ol class="steps">
+    const copyBtn = `<button type="button" class="fix-last" data-act="copy-shortcut">${L('コピー', '複製')}</button>`;
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-label="${L('iPhone のタイマー連携', 'iPhone 計時器連動')}">
+      <div class="sheet-head"><h2>${L('iPhone のタイマー連携', 'iPhone 計時器連動')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <p class="hint">${L('最初に1回だけ、iPhone の「ショートカット」アプリでタイマー用のショートカットを作ります（2分ほど）。', '第一次使用時，請在 iPhone 的「捷徑」App 建立一個計時器用的捷徑（約2分鐘）。')}</p>
+      <ol class="steps">${L(`
         <li>「ショートカット」アプリを開き、右上の <b>＋</b> で新しいショートカットを作ります。</li>
-        <li>名前を <code>${SHORTCUT_NAME}</code> にします（一字一句このとおりに）。</li>
+        <li>名前を <code>${SHORTCUT_NAME}</code> ${copyBtn} にします（一字一句このとおりに）。</li>
         <li>「アクションを追加」で <b>タイマー</b> と検索し、<b>「タイマーを開始」</b>を追加します。</li>
         <li>「30 分」の数字の部分をタップし、変数の <b>「ショートカットの入力」</b> を選びます。単位は <b>分</b> のままにします。</li>
-        <li>右上の「完了」で保存します。</li>
+        <li>右上の「完了」で保存します。</li>`, `
+        <li>打開「捷徑」App，點右上角的 <b>＋</b> 新增捷徑。</li>
+        <li>把名稱設為 <code>${SHORTCUT_NAME}</code> ${copyBtn}（請完全照這樣輸入，可以點「複製」後貼上）。</li>
+        <li>點「加入動作」，搜尋 <b>計時器</b>，加入 <b>「開始計時器」</b>。</li>
+        <li>點「30 分鐘」的數字部分，選擇變數 <b>「捷徑輸入」</b>，單位保持 <b>分鐘</b>。</li>
+        <li>點右上角的「完成」儲存。</li>`)}
       </ol>
-      <p class="hint">初回は「"ショートカット"で開きますか？」などの確認が出るので、「開く」「許可」を選んでください。ショートカットはご夫婦それぞれの iPhone で作る必要があります。</p>
+      <p class="hint">${L('初回は「"ショートカット"で開きますか？」などの確認が出るので、「開く」「許可」を選んでください。ショートカットはご夫婦それぞれの iPhone で作る必要があります。', '第一次執行時會出現「要用"捷徑"打開嗎？」等確認，請選「打開」「允許」。兩個人的 iPhone 都需要各自建立這個捷徑。')}</p>
       <div class="sheet-actions"><span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">あとで</button>
-        <button type="button" class="btn solid" data-act="shortcut-ready">${id ? '作った・タイマーをセット' : '作った'}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('あとで', '稍後')}</button>
+        <button type="button" class="btn solid" data-act="shortcut-ready">${id ? L('作った・タイマーをセット', '建好了・設定計時器') : L('作った', '建好了')}</button>
       </div>
     </div></div>`;
   }
@@ -1178,6 +1244,7 @@ button { cursor: pointer; }
     if (!t) return;
     const d = t.dataset;
     if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
+    if (d.lang) return setLang(d.lang);
     if (d.add) return openForm(d.add, d.baby);
     if (d.bset) return openSettings(d.bset);
     if (d.tab) {
@@ -1213,7 +1280,12 @@ button { cursor: pointer; }
       case 'alarm-toggle':
         // Turning on is one tap; turning off goes through 設定 so a sleepy tap can't silence it.
         if (S.alarm.active) return openSettings();
-        alarmOn(true); toast('アラームをオンにしました。この画面を開いたままにしてください'); return;
+        alarmOn(true); toast(L('アラームをオンにしました。この画面を開いたままにしてください', '已開啟提醒。請保持此畫面開啟')); return;
+      case 'copy-shortcut':
+        try {
+          navigator.clipboard.writeText(SHORTCUT_NAME).then(() => toast(L('コピーしました', '已複製')), () => toast(SHORTCUT_NAME));
+        } catch { toast(SHORTCUT_NAME); }
+        return;
       case 'alarm-off': return alarmOff();
       case 'test': ensureAudio(); chime(); return;
       case 'toast-action': {
@@ -1235,7 +1307,7 @@ button { cursor: pointer; }
       case 'delete-no': readForm(); S.form.confirmDelete = false; return renderForm();
       case 'delete-yes': {
         const id = S.form.editing;
-        deleteLog(id).then(() => { S.form = null; renderForm(); toast('記録を削除しました'); }).catch(err => toast(errMsg(err)));
+        deleteLog(id).then(() => { S.form = null; renderForm(); toast(L('記録を削除しました', '已刪除紀錄')); }).catch(err => toast(errMsg(err)));
         return;
       }
     }
@@ -1259,6 +1331,8 @@ button { cursor: pointer; }
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
   $('#open-settings').addEventListener('click', () => openSettings());
 
+  applyLang();
+  document.title = appTitle();
   applyTab();
   render();
   init();
