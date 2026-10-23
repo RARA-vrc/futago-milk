@@ -68,21 +68,30 @@ button { cursor: pointer; }
 }
 
 /* header */
-.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
-.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 1.55rem; letter-spacing: .02em; text-wrap: balance; }
-.brand p { margin: 0; color: var(--muted); font-size: .85rem; }
-.top-right { display: flex; align-items: center; gap: 10px; }
-.clock { font-family: var(--f-display); font-size: 1.6rem; font-weight: 700; }
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.top h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 1.35rem; letter-spacing: .02em; }
+.top-right { display: flex; align-items: center; gap: 8px; }
+.clock { font-family: var(--f-display); font-size: 1.35rem; font-weight: 700; margin-right: 2px; }
 .icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 40px; padding: 0 12px; font-size: .88rem; }
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 99px; min-height: 40px; padding: 0 12px; font-size: .82rem; font-weight: 700; border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); background: var(--warn-soft); color: var(--warn); }
+.pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pill.on { border-color: color-mix(in srgb, var(--imo) 45%, transparent); background: var(--imo-soft); color: var(--imo); }
 
-/* alarm bar */
-.alarmbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 14px; border-radius: 14px; background: var(--warn-soft); color: var(--ink); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); }
-.alarmbar.on { background: var(--surface); border-color: var(--line); }
-.alarmbar .msg { flex: 1 1 260px; min-width: 0; font-size: .92rem; }
-.alarmbar .msg b { font-family: var(--f-display); }
-.alarmbar .state-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--warn); margin-right: 6px; vertical-align: 1px; }
-.alarmbar.on .state-dot { background: var(--imo); }
-.alarmbar .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+/* tabs: a bottom bar on phones, a segmented row on wide screens */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.tabs button { border: none; background: transparent; color: var(--muted); font-family: var(--f-display); font-weight: 700; font-size: .95rem; min-height: 44px; border-radius: 10px; }
+.tabs button[aria-current="page"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+@media (min-width: 760px) {
+  .tabs { max-width: 420px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 4px; }
+}
+@media (max-width: 759px) {
+  .app { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+    padding: 6px max(12px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+  .tabs button { min-height: 50px; font-size: 1rem; }
+  .tabs button[aria-current="page"] { background: var(--surface-2); box-shadow: none; }
+  .toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important; }
+}
 .btn { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; min-height: 44px; padding: 0 16px; font-weight: 700; }
 .btn.solid { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .btn.ghost { background: transparent; }
@@ -92,17 +101,19 @@ button { cursor: pointer; }
 .babies { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
 .card { --c: var(--ane); --cs: var(--ane-soft); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
 .card[data-baby="imouto"] { --c: var(--imo); --cs: var(--imo-soft); }
-.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 14px 18px 12px; background: var(--cs); }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 18px; background: var(--cs); }
 .card-head h2 { margin: 0; font-family: var(--f-display); font-size: 1.45rem; font-weight: 700; color: var(--c); }
-.card-head .rule { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; border: none; background: transparent; padding: 4px 0; min-height: 32px; color: var(--muted); font-size: .82rem; text-align: left; }
-.card-head .rule b { color: var(--ink); }
-.card-head .rule span { color: var(--c); font-weight: 700; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); border-radius: 99px; padding: 0 8px; font-size: .75rem; }
-.card-head .rule:hover span { background: var(--surface); }
+.next-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.next .rule { display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent; padding: 2px 0; min-height: 32px; color: var(--muted); font-size: .8rem; }
+.next .rule span { color: var(--c); font-weight: 700; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); border-radius: 99px; padding: 0 8px; font-size: .75rem; }
+.next .rule:hover span { background: var(--cs); }
+.last-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.last-row .cd-sub { margin: 0; min-width: 0; }
 .weight { text-align: right; }
 .weight b { font-family: var(--f-display); font-size: 1.15rem; }
 .weight small { display: block; color: var(--muted); font-size: .75rem; line-height: 1.3; }
 
-.next { padding: 16px 18px 4px; }
+.next { padding: 12px 18px 4px; }
 .next .label { font-size: .8rem; color: var(--muted); letter-spacing: .04em; }
 .cd { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin-top: 2px; min-height: 2.6rem; display: flex; align-items: baseline; gap: 2px; flex-wrap: wrap; }
 .cd b { font-size: 2.5rem; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
@@ -113,7 +124,6 @@ button { cursor: pointer; }
 .cd.due .cd-rel { color: var(--danger); }
 .next-preview { margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-size: .92rem; }
 .next-preview b { font-family: var(--f-display); font-size: 1.3rem; }
-.ios-timer { width: 100%; margin-top: 10px; min-height: 44px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--c) 50%, transparent); background: var(--cs); color: var(--c); font-weight: 700; }
 .steps { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; }
 .steps b { font-family: var(--f-display); }
 .steps code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; font-family: ui-monospace, monospace; }
@@ -123,17 +133,17 @@ button { cursor: pointer; }
 .bar.due i { background: var(--danger); }
 .cd-sub { color: var(--muted); font-size: .85rem; margin-top: 6px; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 12px 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.stats div { padding: 10px 0; min-width: 0; }
-.stats div + div { border-left: 1px solid var(--line); padding-left: 12px; }
-.stats span { display: block; font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
-.stats b { font-family: var(--f-display); font-size: 1.05rem; }
-.stats small { color: var(--muted); font-size: .78rem; }
-
-.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 18px 18px; }
-.actions .milk { grid-column: 1 / -1; background: var(--c); color: var(--surface); border: none; border-radius: 14px; min-height: 56px; font-family: var(--f-display); font-size: 1.1rem; font-weight: 700; }
+.actions { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 14px 18px 14px; }
+.actions.has-timer { grid-template-columns: 1fr 5.6rem; }
+.actions .milk { background: var(--c); color: var(--surface); border: none; border-radius: 14px; min-height: 56px; font-family: var(--f-display); font-size: 1.1rem; font-weight: 700; }
+.actions .timer { border-radius: 14px; min-height: 56px; border: 1px solid color-mix(in srgb, var(--c) 50%, transparent); background: var(--cs); color: var(--c); font-weight: 700; font-size: .78rem; line-height: 1.3; }
+.actions .subs { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .actions .sub { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; min-height: 48px; font-weight: 700; }
-.actions .sub:hover, .actions .milk:hover { filter: brightness(1.05); }
+.actions .sub:hover, .actions .milk:hover, .actions .timer:hover { filter: brightness(1.05); }
+
+.today { margin-top: auto; padding: 10px 18px 12px; border-top: 1px solid var(--line); font-size: .84rem; color: var(--muted); }
+.today .lbl { font-weight: 700; color: var(--ink); margin-right: 6px; }
+.today b { color: var(--ink); font-family: var(--f-display); font-size: 1rem; }
 
 /* sections */
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; min-width: 0; }
@@ -232,11 +242,18 @@ button { cursor: pointer; }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 8px 8px 16px; border-radius: 12px; z-index: 50; font-size: .9rem; width: max-content; max-width: calc(100% - 32px); display: flex; align-items: center; gap: 12px; }
 .toast span { padding-block: 4px; }
 .toast-btn { flex: none; border: 1px solid color-mix(in srgb, var(--bg) 50%, transparent); background: transparent; color: var(--bg); border-radius: 10px; min-height: 40px; padding: 0 14px; font-weight: 700; }
-.fix-last { display: block; margin-top: 6px; border: none; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-size: .82rem; padding: 4px 0; min-height: 32px; }
+.fix-last { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 99px; font-size: .78rem; font-weight: 700; padding: 0 12px; min-height: 34px; }
 .item .fix { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 8px; white-space: nowrap; }
-.tl-hint { margin: 0 0 4px; font-size: .8rem; color: var(--muted); }
+.settings-block { border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.settings-block h3 { margin: 0; font-family: var(--f-display); font-size: 1rem; }
 
 @media (max-width: 420px) {
+  .clock { display: none; }
+  .top { flex-wrap: nowrap; }
+  .top h1 { font-size: 1.15rem; white-space: nowrap; }
+  .top-right { gap: 6px; }
+  .pill { font-size: .76rem; padding: 0 10px; }
+  .icon-btn { padding: 0 10px; }
   .cd b { font-size: 2.2rem; }
   .item { grid-template-columns: 3.1rem 2.4rem 1fr auto; }
   .item .k { display: none; }
@@ -262,21 +279,23 @@ button { cursor: pointer; }
 
 <div class="app">
   <header class="top">
-    <div class="brand">
-      <h1>ふたごミルク帳</h1>
-      <p>授乳・おしっこ・うんち・体重の記録</p>
-    </div>
+    <h1>ふたごミルク帳</h1>
     <div class="top-right">
       <div class="clock num" id="clock">--:--</div>
+      <button class="pill" id="alarm-pill" type="button" data-act="alarm-toggle" aria-live="polite">アラーム</button>
       <button class="icon-btn" id="open-settings" type="button">設定</button>
     </div>
   </header>
 
-  <section class="alarmbar" id="alarmbar" aria-live="polite"></section>
+  <nav class="tabs" id="tabs" aria-label="表示の切り替え">
+    <button type="button" data-tab="now">いま</button>
+    <button type="button" data-tab="log">記録</button>
+    <button type="button" data-tab="weight">体重</button>
+  </nav>
 
-  <section class="babies" id="babies" aria-label="赤ちゃんごとの状況"></section>
+  <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況"></section>
 
-  <section class="panel" aria-labelledby="tl-title">
+  <section class="panel view" data-view="log" aria-labelledby="tl-title">
     <div class="panel-head">
       <h2 id="tl-title">記録</h2>
       <div class="seg" id="filter" role="group" aria-label="表示する子">
@@ -285,11 +304,10 @@ button { cursor: pointer; }
         <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
       </div>
     </div>
-    <p class="tl-hint">行をタップすると、時刻・量の修正や削除ができます。</p>
     <div id="timeline"></div>
   </section>
 
-  <section class="panel" aria-labelledby="w-title">
+  <section class="panel view" data-view="weight" aria-labelledby="w-title">
     <div class="panel-head">
       <h2 id="w-title">体重の推移</h2>
       <div class="row" id="w-add"></div>
@@ -302,7 +320,6 @@ button { cursor: pointer; }
   <footer class="foot">
     <p id="mode-note">読み込み中…</p>
     <p id="account" hidden></p>
-    <p>アラームはこの画面を開いている間だけ鳴ります。念のためスマホの時計アプリのタイマーも併用してください。</p>
   </footer>
 </div>
 
@@ -356,7 +373,7 @@ button { cursor: pointer; }
     babies: {}, logs: [],
     dbRecent: [], dbWeights: [],
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
-    filter: 'all', daysShown: 3, wShown: 8,
+    filter: 'all', daysShown: 3, wShown: 8, tab: ['now', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 0), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -534,31 +551,34 @@ button { cursor: pointer; }
         const d = new Date(w.at);
         wHTML = `<b class="num">${fmtG(w.grams)}g</b><small>${d.getMonth() + 1}/${d.getDate()}${diff !== null ? ` · 前回比 ${diff >= 0 ? '+' : ''}${fmtG(diff)}g` : ''}</small>`;
       }
-      const milkStat = st.milkN ? `<b class="num">${st.milkN}</b><small>回</small> <small class="num">${st.ml}mL${st.breastN ? ` +母乳${st.breastN}` : ''}</small>` : '<b>0</b><small>回</small>';
+      // Card reads top to bottom: when is the next feed → what was the last one → record → today's totals.
       return `<article class="card" data-baby="${id}">
         <div class="card-head">
-          <div><h2>${esc(b.name)}</h2><button type="button" class="rule" data-bset="${id}" aria-label="${esc(b.name)}の授乳間隔と量を変更"><b>${b.intervalH}時間ごと</b> · ${range}<span>変更</span></button></div>
+          <h2>${esc(b.name)}</h2>
           <div class="weight">${wHTML}</div>
         </div>
         <div class="next">
-          <div class="label">次の授乳（この時刻にアラーム）</div>
+          <div class="next-top">
+            <span class="label">次の授乳</span>
+            <button type="button" class="rule" data-bset="${id}" aria-label="${esc(b.name)}の授乳間隔と量を変更">${b.intervalH}時間ごと・${range}<span>変更</span></button>
+          </div>
           <div class="cd" data-cd="${id}"></div>
           <div class="bar" data-bar="${id}"><i></i></div>
-          <div class="cd-sub" data-cdsub="${id}"></div>
-          ${lastMilk ? `<button type="button" class="fix-last" data-edit="${esc(lastMilk.id)}">前回の授乳（${fmtT(lastMilk.at)}）を修正・削除</button>` : ''}
-          ${IS_IOS ? `<button type="button" class="ios-timer" data-iostimer="${id}">iPhone のタイマーを次のミルクまでセット</button>` : ''}
+          <div class="last-row">
+            <div class="cd-sub num" data-cdsub="${id}"></div>
+            ${lastMilk ? `<button type="button" class="fix-last" data-edit="${esc(lastMilk.id)}" aria-label="前回の授乳（${fmtT(lastMilk.at)}）を修正・削除">修正</button>` : ''}
+          </div>
         </div>
-        <div class="stats">
-          <div><span>今日の授乳</span>${milkStat}</div>
-          <div><span>おしっこ</span><b class="num">${st.pee}</b><small>回</small></div>
-          <div><span>うんち</span><b class="num">${st.poo}</b><small>回</small>${lastPoo ? `<br><small>最後 ${durText(now - lastPoo.at)}前</small>` : ''}</div>
-        </div>
-        <div class="actions">
+        <div class="actions${IS_IOS ? ' has-timer' : ''}">
           <button type="button" class="milk" data-add="milk" data-baby="${id}">授乳を記録</button>
-          <button type="button" class="sub" data-add="pee" data-baby="${id}">おしっこ</button>
-          <button type="button" class="sub" data-add="poo" data-baby="${id}">うんち</button>
-          <button type="button" class="sub" data-add="weight" data-baby="${id}">体重</button>
+          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="iPhone のタイマーを次のミルクまでセット">iPhone<br>タイマー</button>` : ''}
+          <div class="subs">
+            <button type="button" class="sub" data-add="pee" data-baby="${id}">おしっこ</button>
+            <button type="button" class="sub" data-add="poo" data-baby="${id}">うんち</button>
+            <button type="button" class="sub" data-add="weight" data-baby="${id}">体重</button>
+          </div>
         </div>
+        <div class="today num"><span class="lbl">今日</span>授乳 <b>${st.milkN}</b>回${st.ml ? ` ${st.ml}mL` : ''}${st.breastN ? `（母乳${st.breastN}回）` : ''} ・ おしっこ <b>${st.pee}</b> ・ うんち <b>${st.poo}</b>${lastPoo ? `（最後 ${durText(now - lastPoo.at)}前）` : ''}</div>
       </article>`;
     }).join('');
   }
@@ -568,7 +588,7 @@ button { cursor: pointer; }
     if (S.mode === 'loading') { el.innerHTML = '<p class="empty-note">記録を読み込んでいます…</p>'; return; }
     const list = S.logs.filter(l => S.filter === 'all' || l.baby === S.filter);
     if (!list.length) {
-      el.innerHTML = '<p class="empty-note">まだ記録がありません。上のカードの「授乳を記録」から始めると、次の授乳時刻とアラームが動き出します。</p>';
+      el.innerHTML = '<p class="empty-note">まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。</p>';
       return;
     }
     const groups = new Map();
@@ -670,20 +690,24 @@ button { cursor: pointer; }
     $('#chart').innerHTML = svg;
   }
 
-  // ---------- alarm bar ----------
+  // ---------- alarm state (header pill + the block in 設定) ----------
   let wakeLock = null;
-  function renderAlarmBar() {
-    const el = $('#alarmbar');
+  function alarmBlockHTML() {
     const leadTxt = S.alarm.lead ? `予定の${S.alarm.lead}分前` : '予定時刻';
-    if (S.alarm.active) {
-      el.className = 'alarmbar on';
-      el.innerHTML = `<div class="msg"><span class="state-dot"></span><b>アラーム オン</b>（${leadTxt}に鳴ります）<br><small>この画面を開いたままにしてください。画面のスリープ防止：${wakeLock ? 'オン' : 'この端末では使えません'}</small></div>
-        <div class="btns"><button type="button" class="btn" data-act="test">音を試す</button><button type="button" class="btn ghost" data-act="alarm-off">オフにする</button></div>`;
-    } else {
-      el.className = 'alarmbar';
-      el.innerHTML = `<div class="msg"><span class="state-dot"></span><b>アラームはオフです</b><br><small>${S.alarm.pref ? '画面をタップするとアラームが再開します。' : 'ボタンを押すと、次の授乳時刻に音とバイブでお知らせします。'}</small></div>
-        <div class="btns"><button type="button" class="btn solid" data-act="alarm-on">アラームをオンにする</button></div>`;
-    }
+    const state = S.alarm.active
+      ? `オン：${leadTxt}に音とバイブでお知らせします。画面のスリープ防止は${wakeLock ? 'オン' : 'この端末では使えません'}。`
+      : 'オフです。オンにすると、次の授乳時刻に音とバイブでお知らせします。';
+    return `<h3>アラーム（この端末）</h3>
+      <p class="hint">${state}アラームはこの画面を開いている間だけ鳴ります。夜間は iPhone のタイマーも併用してください。</p>
+      <div class="row"><button type="button" class="btn" data-act="test">音を試す</button>${S.alarm.active
+        ? '<button type="button" class="btn ghost" data-act="alarm-off">オフにする</button>'
+        : '<button type="button" class="btn solid" data-act="alarm-on">オンにする</button>'}</div>`;
+  }
+  function renderAlarmBar() {
+    const el = $('#alarm-pill');
+    el.className = 'pill' + (S.alarm.active ? ' on' : '');
+    el.textContent = S.alarm.active ? 'アラーム オン' : 'アラーム オフ';
+    const blk = $('#alarm-block'); if (blk) blk.innerHTML = alarmBlockHTML();
   }
 
   // ---------- sound ----------
@@ -731,9 +755,18 @@ button { cursor: pointer; }
     try { wakeLock && wakeLock.release(); } catch {}
     wakeLock = null; S.ringing = []; renderRing(); renderAlarmBar();
   }
+  // Sound needs a tap after each page load, so the first tap anywhere resumes an alarm that was on.
   document.addEventListener('pointerdown', () => {
     if (S.alarm.pref && !S.alarm.active) alarmOn(false);
   }, { capture: true });
+
+  // ---------- tabs ----------
+  function applyTab() {
+    document.querySelectorAll('.view').forEach(v => { v.hidden = v.dataset.view !== S.tab; });
+    document.querySelectorAll('#tabs button').forEach(b => {
+      if (b.dataset.tab === S.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') { if (S.alarm.active && !wakeLock) requestWakeLock(); tick(); }
   });
@@ -799,7 +832,7 @@ button { cursor: pointer; }
       if (now < n) { cd.className = 'cd'; cd.innerHTML = `${dayTag}<b>${fmtT(n)}</b><span class="cd-rel">あと ${durText(n - now)}</span>`; bar.className = 'bar'; }
       else { cd.className = 'cd due'; cd.innerHTML = `<b>${fmtT(n)}</b><span class="cd-rel">予定から ${durText(now - n)} すぎています</span>`; bar.className = 'bar due'; }
       bar.firstElementChild.style.width = (Math.max(0, frac) * 100).toFixed(1) + '%';
-      sub.textContent = `前回 ${fmtT(m.at)} ${milkText(m)}（${durText(now - m.at)}前） ＋ ${b.intervalH}時間`;
+      sub.textContent = `前回 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`;
     }
     checkAlarms(now);
   }
@@ -951,6 +984,14 @@ button { cursor: pointer; }
     const only = S.form.only, ids = only ? [only] : BABY_IDS;
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
       <div class="sheet-head"><h2>${only ? `${esc(baby(only).name)}の授乳間隔と量` : '設定'}</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
+      ${only ? '' : `<div class="settings-block" id="alarm-block">${alarmBlockHTML()}</div>
+        <div class="settings-block">
+          <div class="field"><label for="s-lead">アラームを鳴らすタイミング（この端末）</label>
+            <select id="s-lead">${[0, 5, 10, 15, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>
+          ${IS_IOS ? `<div class="field"><span class="lbl">iPhone のタイマー（この端末）</span>
+            <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> 授乳を記録したら、iPhone のタイマーも自動でセットする</label>
+            <button type="button" class="btn ghost" data-act="shortcut-help">ショートカットの作り方を見る</button></div>` : ''}
+        </div>`}
       ${ids.map(id => { const b = baby(id); return `<div class="settings-baby">
         <h3>${id === 'ane' ? '姉' : '妹'}</h3>
         <div class="field wide"><label for="s-${id}-name">呼び名</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
@@ -961,11 +1002,6 @@ button { cursor: pointer; }
         <div class="field"><label for="s-${id}-min">量の目安 下限（mL）</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-min" value="${b.minMl}"></div>
         <div class="field"><label for="s-${id}-max">上限（mL）</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-max" value="${b.maxMl}"></div>
       </div>`; }).join('')}
-      ${only ? '' : `<div class="field"><label for="s-lead">アラームを鳴らすタイミング（この端末）</label>
-        <select id="s-lead">${[0, 5, 10, 15, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>`}
-      ${IS_IOS ? `<div class="field"><span class="lbl">iPhone のタイマー（この端末）</span>
-        <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> 授乳を記録したら、iPhone のタイマーも自動でセットする</label>
-        <button type="button" class="btn ghost" data-act="shortcut-help">ショートカットの作り方を見る</button></div>` : ''}
       <p class="hint">間隔や量の目安は、医師・助産師の指示に合わせて変更してください。</p>
       <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">キャンセル</button><button type="submit" class="btn solid" id="f-save">保存</button></div>
     </form></div>`;
@@ -1046,6 +1082,7 @@ button { cursor: pointer; }
     if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
     if (d.add) return openForm(d.add, d.baby);
     if (d.bset) return openSettings(d.bset);
+    if (d.tab) { S.tab = d.tab; lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0); return; }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.int) {
       const [id, h] = d.int.split(':'), input = document.getElementById(`s-${id}-int`);
@@ -1070,6 +1107,10 @@ button { cursor: pointer; }
       case 'signin': return signIn();
       case 'signout': return signOut();
       case 'alarm-on': return alarmOn(true);
+      case 'alarm-toggle':
+        // Turning on is one tap; turning off goes through 設定 so a sleepy tap can't silence it.
+        if (S.alarm.active) return openSettings();
+        alarmOn(true); toast('アラームをオンにしました。この画面を開いたままにしてください'); return;
       case 'alarm-off': return alarmOff();
       case 'test': ensureAudio(); chime(); return;
       case 'toast-action': {
@@ -1115,6 +1156,7 @@ button { cursor: pointer; }
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
   $('#open-settings').addEventListener('click', () => openSettings());
 
+  applyTab();
   render();
   init();
 })();
