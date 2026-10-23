@@ -113,6 +113,10 @@ button { cursor: pointer; }
 .cd.due .cd-rel { color: var(--danger); }
 .next-preview { margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-size: .92rem; }
 .next-preview b { font-family: var(--f-display); font-size: 1.3rem; }
+.ios-timer { width: 100%; margin-top: 10px; min-height: 44px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--c) 50%, transparent); background: var(--cs); color: var(--c); font-weight: 700; }
+.steps { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 8px; }
+.steps b { font-family: var(--f-display); }
+.steps code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; font-family: ui-monospace, monospace; }
 .cd.empty { font-size: .95rem; font-weight: 500; color: var(--muted); font-family: var(--f-body); min-height: 2.6rem; align-items: center; }
 .bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 8px; border: 1px solid var(--line); }
 .bar i { display: block; height: 100%; width: 0; background: var(--c); border-radius: 99px; transition: width .6s; }
@@ -313,6 +317,8 @@ button { cursor: pointer; }
   const POO_AMT = { small: '少なめ', normal: 'ふつう', large: '多め' };
   const TYPE_LABEL = { milk: '授乳', pee: 'おしっこ', poo: 'うんち', weight: '体重' };
   const LS_DATA = 'futago-data-v1';
+  const SHORTCUT_NAME = 'ミルクタイマー';
+  const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const HOUR = 3600e3, MIN = 60e3, DAY = 86400e3;
 
   const $ = (s, r = document) => r.querySelector(s);
@@ -529,6 +535,7 @@ button { cursor: pointer; }
           <div class="cd" data-cd="${id}"></div>
           <div class="bar" data-bar="${id}"><i></i></div>
           <div class="cd-sub" data-cdsub="${id}"></div>
+          ${IS_IOS ? `<button type="button" class="ios-timer" data-iostimer="${id}">iPhone のタイマーを次のミルクまでセット</button>` : ''}
         </div>
         <div class="stats">
           <div><span>今日の授乳</span>${milkStat}</div>
@@ -822,6 +829,7 @@ button { cursor: pointer; }
     const root = $('#sheet-root'), F = S.form;
     if (!F) { root.innerHTML = ''; return; }
     if (F.type === 'settings') return renderSettings();
+    if (F.type === 'shortcut') return renderShortcutHelp();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -900,6 +908,9 @@ button { cursor: pointer; }
       await saveLog(F.editing || null, data);
       if (F.type === 'poo' && !F.editing && F.withPee) await saveLog(null, { baby: F.baby, type: 'pee', at: F.at, note: '', updatedAt: now });
       if (F.type === 'milk') S.ringing = S.ringing.filter(id => id !== F.baby);
+      if (isLatestMilk && IS_IOS && lsGet('futago-ios-auto', false) && lsGet('futago-shortcut-ready', false)) {
+        startIphoneTimer(data.at + baby(data.baby).intervalH * HOUR);
+      }
       S.form = null; renderForm();
       const nb = baby(data.baby);
       toast(isLatestMilk
@@ -933,12 +944,16 @@ button { cursor: pointer; }
       </div>`; }).join('')}
       ${only ? '' : `<div class="field"><label for="s-lead">アラームを鳴らすタイミング（この端末）</label>
         <select id="s-lead">${[0, 5, 10, 15, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>`}
+      ${IS_IOS ? `<div class="field"><span class="lbl">iPhone のタイマー（この端末）</span>
+        <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> 授乳を記録したら、iPhone のタイマーも自動でセットする</label>
+        <button type="button" class="btn ghost" data-act="shortcut-help">ショートカットの作り方を見る</button></div>` : ''}
       <p class="hint">間隔や量の目安は、医師・助産師の指示に合わせて変更してください。</p>
       <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">キャンセル</button><button type="submit" class="btn solid" id="f-save">保存</button></div>
     </form></div>`;
   }
   async function submitSettings() {
     if ($('#s-lead')) { const lead = Number($('#s-lead').value) || 0; S.alarm.lead = lead; lsSet('futago-alarm-lead', lead); }
+    if ($('#s-iosauto')) lsSet('futago-ios-auto', $('#s-iosauto').checked);
     try {
       for (const id of (S.form.only ? [S.form.only] : BABY_IDS)) {
         const name = $(`#s-${id}-name`).value.trim() || DEFAULTS[id].name;
@@ -953,6 +968,45 @@ button { cursor: pointer; }
       }
       S.form = null; renderForm(); render(); toast('設定を保存しました');
     } catch (e) { toast(errMsg(e)); }
+  }
+
+  // ---------- iPhone timer (via the Shortcuts app) ----------
+  // A web page cannot drive the Clock app, so it runs a user-made shortcut named
+  // SHORTCUT_NAME and hands it the minutes until the next feed; the shortcut's single
+  // "タイマーを開始" action starts the timer with that many minutes.
+  function startIphoneTimer(at) {
+    const min = Math.ceil((at - Date.now()) / MIN);
+    if (min <= 0) return toast('次のミルクの時刻はもう過ぎています。');
+    location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}&input=text&text=${min}`;
+  }
+  function setIphoneTimer(id) {
+    const n = nextAt(id);
+    if (!n) return toast('先に授乳を記録してください。次のミルクまでの時間でタイマーをセットします。');
+    if (!lsGet('futago-shortcut-ready', false)) return openShortcutHelp(id);
+    startIphoneTimer(n);
+  }
+  function openShortcutHelp(id) {
+    S.form = { type: 'shortcut', baby: id };
+    renderShortcutHelp();
+  }
+  function renderShortcutHelp() {
+    const id = S.form.baby;
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-label="iPhone のタイマー連携">
+      <div class="sheet-head"><h2>iPhone のタイマー連携</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
+      <p class="hint">最初に1回だけ、iPhone の「ショートカット」アプリでタイマー用のショートカットを作ります（2分ほど）。</p>
+      <ol class="steps">
+        <li>「ショートカット」アプリを開き、右上の <b>＋</b> で新しいショートカットを作ります。</li>
+        <li>名前を <code>${SHORTCUT_NAME}</code> にします（一字一句このとおりに）。</li>
+        <li>「アクションを追加」で <b>タイマー</b> と検索し、<b>「タイマーを開始」</b>を追加します。</li>
+        <li>「30 分」の数字の部分をタップし、変数の <b>「ショートカットの入力」</b> を選びます。単位は <b>分</b> のままにします。</li>
+        <li>右上の「完了」で保存します。</li>
+      </ol>
+      <p class="hint">初回は「"ショートカット"で開きますか？」などの確認が出るので、「開く」「許可」を選んでください。ショートカットはご夫婦それぞれの iPhone で作る必要があります。</p>
+      <div class="sheet-actions"><span class="spacer"></span>
+        <button type="button" class="btn ghost" data-act="close">あとで</button>
+        <button type="button" class="btn solid" data-act="shortcut-ready">${id ? '作った・タイマーをセット' : '作った'}</button>
+      </div>
+    </div></div>`;
   }
 
   // ---------- toast ----------
@@ -971,6 +1025,7 @@ button { cursor: pointer; }
     if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
     if (d.add) return openForm(d.add, d.baby);
     if (d.bset) return openSettings(d.bset);
+    if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.int) {
       const [id, h] = d.int.split(':'), input = document.getElementById(`s-${id}-int`);
       if (input) input.value = h;
@@ -996,6 +1051,13 @@ button { cursor: pointer; }
       case 'alarm-on': return alarmOn(true);
       case 'alarm-off': return alarmOff();
       case 'test': ensureAudio(); chime(); return;
+      case 'shortcut-help': return openShortcutHelp(null);
+      case 'shortcut-ready': {
+        lsSet('futago-shortcut-ready', true);
+        const id = S.form && S.form.baby; S.form = null; renderForm();
+        if (id) setIphoneTimer(id);
+        return;
+      }
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
       case 'close': S.form = null; return renderForm();
