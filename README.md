@@ -1,0 +1,51 @@
+# ふたごミルク帳
+
+双子の授乳・おしっこ・うんち・体重を記録し、子どもごとの授乳間隔に合わせてアラームで知らせるウェブアプリです。
+
+- 画面：GitHub Pages（インターネット上ならどこからでも開けます）
+- 記録の保存先：Firebase Firestore（無料の Spark プランで足ります）
+- 見られる人：firestore.rules に書いた2つの Google アカウントだけ
+
+GitHub Pages を無料で使うにはリポジトリを「公開」にする必要があります。公開されるのはアプリのコードだけで、記録は Firebase 側にあり、ふたり以外は読めません。
+
+## セットアップ（初回だけ・30分ほど）
+
+### 1. Firebase プロジェクトを作る
+1. https://console.firebase.google.com を開き、「プロジェクトを作成」を押します。
+2. 名前は例えば `futago-milk` にします。Google アナリティクスはオフで構いません。
+
+### 2. Google ログインを有効にする
+1. 左メニューの「構築」から「Authentication」を開き、「始める」を押します。
+2. 「ログイン方法」タブで「Google」を選び、有効にして保存します。
+
+### 3. データベースを作る
+1. 「構築」から「Firestore Database」を開き、「データベースの作成」を押します。
+2. ロケーションは `asia-northeast1（東京）` を選び、「本番環境モード」で作成します。
+3. 「ルール」タブを開き、このフォルダの `firestore.rules` の中身を全部貼り付けます。
+4. `YOUR_EMAIL@gmail.com` と `PARTNER_EMAIL@gmail.com` を、ふたりの Google アカウントに書き換えて「公開」を押します。
+
+### 4. アプリの設定値を入れる
+1. 「プロジェクトの設定」（歯車アイコン）を開き、「マイアプリ」のウェブ（`</>`）を押します。
+2. アプリ名を入れて登録します。Firebase Hosting はチェック不要です。
+3. 表示された `firebaseConfig = { ... }` の中身を、`firebase-config.js` の `null` の代わりに貼り付けます。
+
+### 5. GitHub Pages で公開する
+1. GitHub で新しいリポジトリ（例：`futago-milk`）を「Public」で作ります。
+2. このフォルダのファイル（`index.html`、`firebase-config.js`、`README.md`、`firestore.rules`）をアップロードします。
+3. リポジトリの「Settings」から「Pages」を開き、Source に「Deploy from a branch」、Branch に `main` / `(root)` を選んで保存します。
+4. 1〜2分待つと `https://<GitHubのユーザー名>.github.io/futago-milk/` で開けるようになります。
+
+### 6. 公開URLを Firebase に登録する
+1. Firebase の「Authentication」から「設定」タブを開き、「承認済みドメイン」に `<GitHubのユーザー名>.github.io` を追加します。
+
+### 7. ふたりのスマホで開く
+1. 公開URLを開き、「Google でログイン」を押します。
+2. ホーム画面に追加すると、アプリのように開けます（iPhone は Safari の共有ボタンから「ホーム画面に追加」）。
+
+## アラームについて
+- 「アラームをオンにする」を押すと、次の授乳時刻に音・バイブ・画面表示でお知らせします。
+- ブラウザの制約で、**画面を開いている間だけ**鳴ります。夜間はスマホの時計アプリのタイマーも併用してください。
+
+## 困ったとき
+- 「このURLはまだ Firebase に登録されていません」と出る → 手順 6 の承認済みドメインを確認してください。
+- 「このアカウントでは見られません」と出る → firestore.rules のメールアドレスを確認し、もう一度「公開」を押してください。

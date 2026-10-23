@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ふたごミルク帳</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F2F4F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E131B" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ミルク帳">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: two side-by-side baby cards (stacked on phones) → timeline → weight chart. Large tap targets for night use. */
+:root {
+  --bg: #F2F4F7;
+  --surface: #FFFFFF;
+  --surface-2: #F7F8FA;
+  --ink: #1B2230;
+  --muted: #5D687A;
+  --line: #DDE2EA;
+  --ane: #C94A6E;
+  --ane-soft: #FBE7ED;
+  --imo: #23808A;
+  --imo-soft: #DDF0F1;
+  --danger: #C2362B;
+  --danger-soft: #FCE6E3;
+  --warn: #9A6A12;
+  --warn-soft: #FBF0D9;
+  --scrim: rgba(20, 26, 38, .45);
+  --f-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "BIZ UDPGothic", sans-serif;
+  --f-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E131B; --surface: #161D28; --surface-2: #1B2431; --ink: #E4E9F0; --muted: #94A0B2; --line: #283244;
+    --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F;
+    --danger: #FF8A7D; --danger-soft: #3D1C19; --warn: #E8BC62; --warn-soft: #33290F; --scrim: rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E131B; --surface: #161D28; --surface-2: #1B2431; --ink: #E4E9F0; --muted: #94A0B2; --line: #283244;
+  --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F;
+  --danger: #FF8A7D; --danger-soft: #3D1C19; --warn: #E8BC62; --warn-soft: #33290F; --scrim: rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
+body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--imo) 60%, transparent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.app {
+  max-width: 1060px; margin: 0 auto;
+  padding-block: 16px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 18px;
+}
+
+/* header */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 1.55rem; letter-spacing: .02em; text-wrap: balance; }
+.brand p { margin: 0; color: var(--muted); font-size: .85rem; }
+.top-right { display: flex; align-items: center; gap: 10px; }
+.clock { font-family: var(--f-display); font-size: 1.6rem; font-weight: 700; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 40px; padding: 0 12px; font-size: .88rem; }
+
+/* alarm bar */
+.alarmbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 14px; border-radius: 14px; background: var(--warn-soft); color: var(--ink); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); }
+.alarmbar.on { background: var(--surface); border-color: var(--line); }
+.alarmbar .msg { flex: 1 1 260px; min-width: 0; font-size: .92rem; }
+.alarmbar .msg b { font-family: var(--f-display); }
+.alarmbar .state-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--warn); margin-right: 6px; vertical-align: 1px; }
+.alarmbar.on .state-dot { background: var(--imo); }
+.alarmbar .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; min-height: 44px; padding: 0 16px; font-weight: 700; }
+.btn.solid { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); background: transparent; }
+
+/* baby cards */
+.babies { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.card { --c: var(--ane); --cs: var(--ane-soft); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
+.card[data-baby="imouto"] { --c: var(--imo); --cs: var(--imo-soft); }
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 14px 18px 12px; background: var(--cs); }
+.card-head h2 { margin: 0; font-family: var(--f-display); font-size: 1.45rem; font-weight: 700; color: var(--c); }
+.card-head .rule { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; border: none; background: transparent; padding: 4px 0; min-height: 32px; color: var(--muted); font-size: .82rem; text-align: left; }
+.card-head .rule b { color: var(--ink); }
+.card-head .rule span { color: var(--c); font-weight: 700; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); border-radius: 99px; padding: 0 8px; font-size: .75rem; }
+.card-head .rule:hover span { background: var(--surface); }
+.weight { text-align: right; }
+.weight b { font-family: var(--f-display); font-size: 1.15rem; }
+.weight small { display: block; color: var(--muted); font-size: .75rem; line-height: 1.3; }
+
+.next { padding: 16px 18px 4px; }
+.next .label { font-size: .8rem; color: var(--muted); letter-spacing: .04em; }
+.cd { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin-top: 2px; min-height: 2.6rem; display: flex; align-items: baseline; gap: 2px; flex-wrap: wrap; }
+.cd b { font-size: 2.5rem; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.cd { align-items: baseline; gap: 4px 10px; }
+.cd small { font-size: .8rem; color: var(--muted); align-self: center; }
+.cd-rel { font-size: 1rem; color: var(--muted); font-weight: 700; }
+.cd.due { color: var(--danger); }
+.cd.due .cd-rel { color: var(--danger); }
+.next-preview { margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-size: .92rem; }
+.next-preview b { font-family: var(--f-display); font-size: 1.3rem; }
+.cd.empty { font-size: .95rem; font-weight: 500; color: var(--muted); font-family: var(--f-body); min-height: 2.6rem; align-items: center; }
+.bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-top: 8px; border: 1px solid var(--line); }
+.bar i { display: block; height: 100%; width: 0; background: var(--c); border-radius: 99px; transition: width .6s; }
+.bar.due i { background: var(--danger); }
+.cd-sub { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 12px 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stats div { padding: 10px 0; min-width: 0; }
+.stats div + div { border-left: 1px solid var(--line); padding-left: 12px; }
+.stats span { display: block; font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
+.stats b { font-family: var(--f-display); font-size: 1.05rem; }
+.stats small { color: var(--muted); font-size: .78rem; }
+
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 18px 18px; }
+.actions .milk { grid-column: 1 / -1; background: var(--c); color: var(--surface); border: none; border-radius: 14px; min-height: 56px; font-family: var(--f-display); font-size: 1.1rem; font-weight: 700; }
+.actions .sub { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; min-height: 48px; font-weight: 700; }
+.actions .sub:hover, .actions .milk:hover { filter: brightness(1.05); }
+
+/* sections */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 8px; }
+.panel h2 { margin: 0; font-family: var(--f-display); font-size: 1.15rem; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; }
+.seg button { border: none; background: transparent; border-radius: 9px; min-height: 36px; padding: 0 12px; font-size: .88rem; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+
+.day { margin-top: 10px; }
+.day-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding: 8px 0 6px; border-bottom: 1px solid var(--line); position: sticky; top: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 1; }
+.day-head h3 { margin: 0; font-family: var(--f-display); font-size: 1rem; }
+.day-head .sum { font-size: .78rem; color: var(--muted); }
+.day-head .sum em { font-style: normal; font-weight: 700; }
+.day-head .sum em.ane { color: var(--ane); }
+.day-head .sum em.imouto { color: var(--imo); }
+.items { list-style: none; margin: 0; padding: 0; }
+.item { width: 100%; display: grid; grid-template-columns: 3.4rem 2.6rem 4.6rem 1fr; align-items: center; gap: 8px; text-align: left; border: none; border-bottom: 1px solid var(--line); background: transparent; padding: 9px 2px; min-height: 46px; }
+.item:hover { background: var(--surface-2); }
+.item .t { font-weight: 700; }
+.chip { display: inline-block; text-align: center; border-radius: 99px; font-size: .78rem; font-weight: 700; padding: 1px 0; }
+.chip.ane { background: var(--ane-soft); color: var(--ane); }
+.chip.imouto { background: var(--imo-soft); color: var(--imo); }
+.item .k { font-size: .85rem; color: var(--muted); }
+.item .d { min-width: 0; overflow-wrap: anywhere; }
+.item .d small { color: var(--muted); margin-left: 6px; }
+.pale-flag { color: var(--danger); font-weight: 700; }
+.empty-note { color: var(--muted); padding: 18px 0 6px; }
+.more { margin-top: 12px; }
+
+.chart-wrap { overflow-x: auto; }
+.chart-wrap svg { display: block; width: 100%; min-width: 480px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: var(--muted); }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+
+.legend { margin-bottom: 4px; }
+.w-btn { border: none; border-radius: 12px; min-height: 44px; padding: 0 14px; font-weight: 700; color: var(--surface); }
+.w-btn.ane { background: var(--ane); }
+.w-btn.imouto { background: var(--imo); }
+.wtables { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 12px 20px; margin-top: 12px; }
+.wtable { min-width: 0; }
+.wtable h3 { margin: 0 0 4px; font-family: var(--f-display); font-size: .95rem; }
+.wtable h3.ane { color: var(--ane); }
+.wtable h3.imouto { color: var(--imo); }
+.wrow { width: 100%; display: grid; grid-template-columns: 1fr 4.6rem 4rem 4.6rem; gap: 6px; align-items: center; text-align: right; border: none; border-bottom: 1px solid var(--line); background: transparent; padding: 8px 2px; min-height: 42px; font-size: .88rem; }
+.wrow:hover { background: var(--surface-2); }
+.wrow > :first-child { text-align: left; color: var(--muted); }
+.wrow.head { font-size: .72rem; color: var(--muted); letter-spacing: .04em; min-height: 0; padding-block: 4px; }
+.wrow .up { color: var(--imo); font-weight: 700; }
+.wrow .down { color: var(--danger); font-weight: 700; }
+.foot { color: var(--muted); font-size: .8rem; text-align: center; }
+.foot p { margin: 2px 0; }
+
+/* sheet (record form) */
+.overlay { position: fixed; inset: 0; background: var(--scrim); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--surface); width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; border-radius: 20px 20px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px)); padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 14px; }
+@media (min-width: 640px) { .overlay { align-items: center; } .sheet { border-radius: 20px; } }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sheet-head h2 { margin: 0; font-family: var(--f-display); font-size: 1.25rem; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > label, .field > .lbl { font-size: .8rem; color: var(--muted); font-weight: 700; letter-spacing: .04em; }
+.field input[type="text"], .field input[type="number"], .field input[type="datetime-local"], .field select { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; min-height: 46px; padding: 0 12px; width: 100%; min-width: 0; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.stepper { display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
+.stepper input { text-align: center; font-family: var(--f-display); font-size: 1.5rem !important; font-weight: 700; }
+.stepper button { min-height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; min-height: 36px; padding: 0 14px; font-size: .88rem; }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.who button[data-baby="ane"][aria-pressed="true"] { background: var(--ane); border-color: var(--ane); color: var(--surface); }
+.who button[data-baby="imouto"][aria-pressed="true"] { background: var(--imo); border-color: var(--imo); color: var(--surface); }
+.hint { font-size: .82rem; color: var(--muted); margin: 0; }
+.caution { font-size: .85rem; background: var(--danger-soft); color: var(--danger); border-radius: 10px; padding: 8px 12px; margin: 0; }
+.check { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+.check input { width: 20px; height: 20px; }
+.sheet-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; padding-top: 4px; }
+.sheet-actions .spacer { flex: 1; }
+.sheet-actions .btn.solid { min-width: 120px; }
+.settings-baby { border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.settings-baby h3 { grid-column: 1 / -1; margin: 0; font-family: var(--f-display); font-size: 1rem; }
+.settings-baby .field.wide { grid-column: 1 / -1; }
+
+/* alarm ringing */
+.ring { position: fixed; inset: 0; z-index: 40; background: var(--danger); color: #fff; display: flex; align-items: center; justify-content: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
+.ring-inner { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 16px; }
+.ring-item { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.35); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.ring-item h2 { margin: 0; font-family: var(--f-display); font-size: 1.8rem; line-height: 1.3; }
+.ring-item p { margin: 0; opacity: .92; }
+.ring-item .row button { flex: 1 1 140px; min-height: 52px; border-radius: 14px; border: 1px solid rgba(255,255,255,.6); background: transparent; color: #fff; font-weight: 700; }
+.ring-item .row button.primary { background: #fff; color: #9B1C14; border-color: #fff; }
+@media (prefers-reduced-motion: no-preference) {
+  .ring { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { background: #8E1F17; } }
+}
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; z-index: 50; font-size: .9rem; max-width: calc(100% - 32px); }
+
+@media (max-width: 420px) {
+  .cd b { font-size: 2.2rem; }
+  .item { grid-template-columns: 3.1rem 2.4rem 1fr; }
+  .item .k { display: none; }
+}
+
+/* sign-in gate */
+.gate { position: fixed; inset: 0; z-index: 35; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
+.gate-box { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px 22px; display: flex; flex-direction: column; gap: 14px; text-align: center; }
+.gate-box h1 { margin: 0; font-family: var(--f-display); font-size: 1.6rem; }
+.gate-box p { margin: 0; color: var(--muted); }
+.gate-box .twin { display: flex; justify-content: center; gap: 8px; }
+.gate-box .twin i { width: 14px; height: 14px; border-radius: 50%; background: var(--ane); }
+.gate-box .twin i + i { background: var(--imo); }
+.gate-box .btn { min-height: 52px; }
+.foot .linklike { border: none; background: transparent; color: var(--muted); text-decoration: underline; font-size: .8rem; padding: 4px 6px; min-height: 32px; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>ふたごミルク帳</h1>
+      <p>授乳・おしっこ・うんち・体重の記録</p>
+    </div>
+    <div class="top-right">
+      <div class="clock num" id="clock">--:--</div>
+      <button class="icon-btn" id="open-settings" type="button">設定</button>
+    </div>
+  </header>
+
+  <section class="alarmbar" id="alarmbar" aria-live="polite"></section>
+
+  <section class="babies" id="babies" aria-label="赤ちゃんごとの状況"></section>
+
+  <section class="panel" aria-labelledby="tl-title">
+    <div class="panel-head">
+      <h2 id="tl-title">記録</h2>
+      <div class="seg" id="filter" role="group" aria-label="表示する子">
+        <button type="button" data-filter="all" aria-pressed="true">ふたり</button>
+        <button type="button" data-filter="ane" aria-pressed="false" data-name="ane">姉</button>
+        <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
+      </div>
+    </div>
+    <div id="timeline"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="w-title">
+    <div class="panel-head">
+      <h2 id="w-title">体重の推移</h2>
+      <div class="row" id="w-add"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="chart-wrap" id="chart"></div>
+    <div class="wtables" id="wtable"></div>
+  </section>
+
+  <footer class="foot">
+    <p id="mode-note">読み込み中…</p>
+    <p id="account" hidden></p>
+    <p>アラームはこの画面を開いている間だけ鳴ります。念のためスマホの時計アプリのタイマーも併用してください。</p>
+  </footer>
+</div>
+
+<div id="gate-root"></div>
+<div id="sheet-root"></div>
+<div id="ring-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(() => {
+  const BABY_IDS = ['ane', 'imouto'];
+  const DEFAULTS = {
+    ane:    { name: '姉', intervalH: 4, minMl: 80, maxMl: 80 },
+    imouto: { name: '妹', intervalH: 3, minMl: 40, maxMl: 50 },
+  };
+  const KIND = { formula: 'ミルク', expressed: '搾母乳', breast: '母乳' };
+  const POO_COLOR = { yellow: '黄色', green: '緑', brown: '茶色', pale: '白っぽい' };
+  const POO_AMT = { small: '少なめ', normal: 'ふつう', large: '多め' };
+  const TYPE_LABEL = { milk: '授乳', pee: 'おしっこ', poo: 'うんち', weight: '体重' };
+  const LS_DATA = 'futago-data-v1';
+  const HOUR = 3600e3, MIN = 60e3, DAY = 86400e3;
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const p2 = n => String(n).padStart(2, '0');
+  const fmtT = ms => { const d = new Date(ms); return `${d.getHours()}:${p2(d.getMinutes())}`; };
+  const fmtG = g => Number(g).toLocaleString('ja-JP');
+  const startOfDay = ms => { const d = new Date(ms); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  const toLocalInput = ms => { const d = new Date(ms); return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`; };
+  const fromLocalInput = s => { const t = new Date(s).getTime(); return isNaN(t) ? null : t; };
+  function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  function dayLabel(ms) {
+    const d = new Date(ms), today = startOfDay(Date.now()), k = startOfDay(ms);
+    const base = `${d.getMonth() + 1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`;
+    if (k === today) return `今日 ${base}`;
+    if (k === today - DAY) return `きのう ${base}`;
+    return base;
+  }
+  function durParts(ms) {
+    const m = Math.max(0, Math.floor(ms / MIN));
+    return { h: Math.floor(m / 60), m: m % 60 };
+  }
+  function durText(ms) { const { h, m } = durParts(ms); return h ? `${h}時間${m}分` : `${m}分`; }
+
+  // ---------- state ----------
+  const S = {
+    mode: 'loading', db: null,
+    babies: {}, logs: [],
+    dbRecent: [], dbWeights: [],
+    local: lsGet(LS_DATA, { babies: {}, logs: {} }),
+    filter: 'all', daysShown: 3, wShown: 8,
+    alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 0), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
+    ringing: [],
+    form: null,
+  };
+  const baby = id => ({ ...DEFAULTS[id], ...(S.babies[id] || {}) });
+
+  function setLogs(list) {
+    S.logs = list.filter(l => l && BABY_IDS.includes(l.baby) && TYPE_LABEL[l.type] && typeof l.at === 'number').sort((a, b) => b.at - a.at);
+  }
+  function fromLocal() {
+    S.babies = S.local.babies || {};
+    setLogs(Object.entries(S.local.logs || {}).map(([id, v]) => ({ ...v, id })));
+  }
+  function mergeDb() {
+    const m = new Map();
+    for (const l of S.dbWeights) m.set(l.id, l);
+    for (const l of S.dbRecent) m.set(l.id, l);
+    setLogs([...m.values()]);
+  }
+
+  // ---------- storage ----------
+  // Records live in Firebase Firestore. Who may read/write is enforced by firestore.rules
+  // (only the two family Google accounts); the page itself just signs in with Google.
+  // Without a Firebase config the page falls back to this browser's localStorage.
+  let unsubs = [];
+  function stopSubs() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; S.dbRecent = []; S.dbWeights = []; }
+  async function init() {
+    const cfg = window.FIREBASE_CONFIG;
+    if (!cfg || !cfg.apiKey || !window.firebase) { S.mode = 'local'; fromLocal(); render(); return; }
+    firebase.initializeApp(cfg);
+    const fs = firebase.firestore();
+    try { await fs.enablePersistence({ synchronizeTabs: true }); } catch {}
+    S.db = fs; S.auth = firebase.auth();
+    S.auth.onAuthStateChanged(u => {
+      S.user = u; stopSubs(); S.logs = []; S.babies = {};
+      if (!u) { S.mode = 'signin'; render(); return; }
+      S.mode = 'db'; subscribe(); render();
+    });
+  }
+  function subscribe() {
+    const fs = S.db;
+    const onErr = e => {
+      if (e && e.code === 'permission-denied') { S.mode = 'denied'; stopSubs(); render(); }
+      else toast('記録を読み込めませんでした。通信状況を確認してください。');
+    };
+    unsubs.push(fs.collection('babies').onSnapshot(s => {
+      const b = {}; s.docs.forEach(d => { b[d.id] = d.data(); }); S.babies = b; render();
+    }, onErr));
+    unsubs.push(fs.collection('logs').orderBy('at', 'desc').limit(1000).onSnapshot(s => {
+      S.dbRecent = s.docs.map(d => ({ ...d.data(), id: d.id })); mergeDb(); render();
+    }, onErr));
+    unsubs.push(fs.collection('logs').where('type', '==', 'weight').onSnapshot(s => {
+      S.dbWeights = s.docs.map(d => ({ ...d.data(), id: d.id })); mergeDb(); render();
+    }, onErr));
+  }
+  function signIn() {
+    const p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({ prompt: 'select_account' });
+    S.auth.signInWithPopup(p).catch(e => {
+      if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
+      if (e && e.code === 'auth/popup-blocked') return toast('ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。');
+      if (e && e.code === 'auth/unauthorized-domain') return toast('このURLはまだ Firebase に登録されていません。手順書の「承認済みドメイン」を設定してください。');
+      toast('ログインできませんでした（' + (e && e.code || '不明なエラー') + '）');
+    });
+  }
+  function signOut() { S.auth && S.auth.signOut(); }
+
+  function errMsg(e) {
+    const c = e && e.code;
+    if (c === 'permission-denied') return '保存できませんでした。許可された Google アカウントでログインしているか確認してください。';
+    if (c === 'resource-exhausted') return '保存の上限に達しました。しばらくしてからもう一度お試しください。';
+    return '保存できませんでした。もう一度お試しください。';
+  }
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  // Firestore applies writes locally right away and syncs in the background (also when offline),
+  // so the UI does not wait for the server; a later rejection shows up as a toast.
+  const bg = p => { p.catch(e => toast(errMsg(e))); };
+
+  async function saveLog(id, data) {
+    if (S.mode === 'db') {
+      const col = S.db.collection('logs');
+      bg(id ? col.doc(id).set(data) : col.add(data));
+    } else {
+      S.local.logs[id || newId()] = data; lsSet(LS_DATA, S.local); fromLocal(); render();
+    }
+  }
+  async function deleteLog(id) {
+    if (S.mode === 'db') bg(S.db.collection('logs').doc(id).delete());
+    else { delete S.local.logs[id]; lsSet(LS_DATA, S.local); fromLocal(); render(); }
+  }
+  async function saveBaby(id, data) {
+    if (S.mode === 'db') bg(S.db.doc('babies/' + id).set(data));
+    else { S.local.babies[id] = data; lsSet(LS_DATA, S.local); fromLocal(); render(); }
+  }
+
+  function renderGate() {
+    const root = $('#gate-root');
+    if (S.mode === 'signin') {
+      root.innerHTML = `<div class="gate"><div class="gate-box">
+        <div class="twin" aria-hidden="true"><i></i><i></i></div>
+        <h1>ふたごミルク帳</h1>
+        <p>家族専用の記録帳です。登録した Google アカウントでログインしてください。</p>
+        <button type="button" class="btn solid" data-act="signin">Google でログイン</button>
+      </div></div>`;
+    } else if (S.mode === 'denied') {
+      root.innerHTML = `<div class="gate"><div class="gate-box">
+        <h1>このアカウントでは見られません</h1>
+        <p>${esc(S.user && S.user.email)} は、この記録帳を見られるアカウントに登録されていません。</p>
+        <button type="button" class="btn" data-act="signout">別のアカウントでログイン</button>
+      </div></div>`;
+    } else root.innerHTML = '';
+  }
+
+  // ---------- derived ----------
+  const lastOf = (id, type) => S.logs.find(l => l.baby === id && l.type === type);
+  const weightsOf = id => S.logs.filter(l => l.baby === id && l.type === 'weight');
+  function nextAt(id) { const m = lastOf(id, 'milk'); return m ? m.at + baby(id).intervalH * HOUR : null; }
+  function milkText(l) {
+    if (l.kind === 'breast') return `母乳 ${l.min || '?'}分`;
+    return `${KIND[l.kind] || 'ミルク'} ${l.ml ?? '?'}mL`;
+  }
+  function dayStats(id, from, to) {
+    const st = { milkN: 0, ml: 0, breastN: 0, pee: 0, poo: 0 };
+    for (const l of S.logs) {
+      if (l.baby !== id || l.at < from || l.at >= to) continue;
+      if (l.type === 'milk') { st.milkN++; if (l.kind === 'breast') st.breastN++; else st.ml += Number(l.ml) || 0; }
+      else if (l.type === 'pee') st.pee++;
+      else if (l.type === 'poo') st.poo++;
+    }
+    return st;
+  }
+  function describe(l) {
+    if (l.type === 'milk') return esc(milkText(l));
+    if (l.type === 'pee') return 'おしっこ';
+    if (l.type === 'poo') {
+      const parts = [];
+      if (l.color) parts.push(l.color === 'pale' ? `<span class="pale-flag">${POO_COLOR.pale}</span>` : POO_COLOR[l.color]);
+      if (l.amount) parts.push(POO_AMT[l.amount]);
+      return 'うんち' + (parts.length ? ' · ' + parts.join(' · ') : '');
+    }
+    if (l.type === 'weight') return `${fmtG(l.grams)}g`;
+    return '';
+  }
+
+  // ---------- render ----------
+  function render() {
+    renderGate(); renderNames(); renderCards(); renderTimeline(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
+  }
+  function renderNames() {
+    document.querySelectorAll('#filter [data-name]').forEach(b => { b.textContent = baby(b.dataset.name).name; });
+  }
+  function renderModeNote() {
+    const el = $('#mode-note'), acc = $('#account');
+    if (S.mode === 'db') el.textContent = '記録はクラウドに保存され、登録したふたりのアカウントで共有されます。';
+    else if (S.mode === 'local') el.textContent = 'Firebase が未設定のため、記録はこの端末のブラウザだけに保存されています。';
+    else el.textContent = '読み込み中…';
+    acc.hidden = S.mode !== 'db' || !S.user;
+    if (!acc.hidden) acc.innerHTML = `${esc(S.user.email)} でログイン中 <button type="button" class="linklike" data-act="signout">ログアウト</button>`;
+  }
+
+  function renderCards() {
+    const now = Date.now(), t0 = startOfDay(now);
+    $('#babies').innerHTML = BABY_IDS.map(id => {
+      const b = baby(id), ws = weightsOf(id), w = ws[0], prev = ws[1];
+      const st = dayStats(id, t0, t0 + DAY);
+      const lastPoo = lastOf(id, 'poo');
+      const range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
+      let wHTML = '<b>—</b><small>体重未記録</small>';
+      if (w) {
+        const diff = prev ? w.grams - prev.grams : null;
+        const d = new Date(w.at);
+        wHTML = `<b class="num">${fmtG(w.grams)}g</b><small>${d.getMonth() + 1}/${d.getDate()}${diff !== null ? ` · 前回比 ${diff >= 0 ? '+' : ''}${fmtG(diff)}g` : ''}</small>`;
+      }
+      const milkStat = st.milkN ? `<b class="num">${st.milkN}</b><small>回</small> <small class="num">${st.ml}mL${st.breastN ? ` +母乳${st.breastN}` : ''}</small>` : '<b>0</b><small>回</small>';
+      return `<article class="card" data-baby="${id}">
+        <div class="card-head">
+          <div><h2>${esc(b.name)}</h2><button type="button" class="rule" data-bset="${id}" aria-label="${esc(b.name)}の授乳間隔と量を変更"><b>${b.intervalH}時間ごと</b> · ${range}<span>変更</span></button></div>
+          <div class="weight">${wHTML}</div>
+        </div>
+        <div class="next">
+          <div class="label">次の授乳（この時刻にアラーム）</div>
+          <div class="cd" data-cd="${id}"></div>
+          <div class="bar" data-bar="${id}"><i></i></div>
+          <div class="cd-sub" data-cdsub="${id}"></div>
+        </div>
+        <div class="stats">
+          <div><span>今日の授乳</span>${milkStat}</div>
+          <div><span>おしっこ</span><b class="num">${st.pee}</b><small>回</small></div>
+          <div><span>うんち</span><b class="num">${st.poo}</b><small>回</small>${lastPoo ? `<br><small>最後 ${durText(now - lastPoo.at)}前</small>` : ''}</div>
+        </div>
+        <div class="actions">
+          <button type="button" class="milk" data-add="milk" data-baby="${id}">授乳を記録</button>
+          <button type="button" class="sub" data-add="pee" data-baby="${id}">おしっこ</button>
+          <button type="button" class="sub" data-add="poo" data-baby="${id}">うんち</button>
+          <button type="button" class="sub" data-add="weight" data-baby="${id}">体重</button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function renderTimeline() {
+    const el = $('#timeline');
+    if (S.mode === 'loading') { el.innerHTML = '<p class="empty-note">記録を読み込んでいます…</p>'; return; }
+    const list = S.logs.filter(l => S.filter === 'all' || l.baby === S.filter);
+    if (!list.length) {
+      el.innerHTML = '<p class="empty-note">まだ記録がありません。上のカードの「授乳を記録」から始めると、次の授乳時刻とアラームが動き出します。</p>';
+      return;
+    }
+    const groups = new Map();
+    for (const l of list) { const k = startOfDay(l.at); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(l); }
+    const keys = [...groups.keys()];
+    const shown = keys.slice(0, S.daysShown);
+    const ids = S.filter === 'all' ? BABY_IDS : [S.filter];
+    el.innerHTML = shown.map(k => {
+      const sums = ids.map(id => {
+        const st = dayStats(id, k, k + DAY);
+        return `<span><em class="${id}">${esc(baby(id).name)}</em> 授乳${st.milkN}回 ${st.ml}mL · 尿${st.pee} · 便${st.poo}</span>`;
+      }).join('　');
+      return `<div class="day"><div class="day-head"><h3>${dayLabel(k)}</h3><div class="sum num">${sums}</div></div>
+        <ul class="items">${groups.get(k).map(l => `<li><button type="button" class="item" data-edit="${esc(l.id)}" aria-label="${esc(baby(l.baby).name)} ${TYPE_LABEL[l.type]} ${fmtT(l.at)} を編集">
+          <span class="t num">${fmtT(l.at)}</span>
+          <span class="chip ${l.baby}">${esc(baby(l.baby).name)}</span>
+          <span class="k">${TYPE_LABEL[l.type]}</span>
+          <span class="d">${describe(l)}${l.note ? `<small>${esc(l.note)}</small>` : ''}</span>
+        </button></li>`).join('')}</ul></div>`;
+    }).join('') + (keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">さらに前の日を表示（残り${keys.length - S.daysShown}日）</button></div>` : '');
+  }
+
+  function renderWeights() {
+    $('#w-add').innerHTML = BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="weight" data-baby="${id}">${esc(baby(id).name)}の体重を記録</button>`).join('');
+    $('#wtable').innerHTML = BABY_IDS.map(id => {
+      const ws = weightsOf(id);
+      if (!ws.length) return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3><p class="empty-note">まだ記録がありません。</p></div>`;
+      const rows = ws.slice(0, S.wShown).map((w, i) => {
+        const prev = ws[i + 1], d = new Date(w.at);
+        let diff = '', perDay = '';
+        if (prev) {
+          const g = w.grams - prev.grams, days = (w.at - prev.at) / DAY;
+          const cls = g < 0 ? 'down' : 'up';
+          diff = `<span class="${cls}">${g >= 0 ? '+' : ''}${fmtG(g)}g</span>`;
+          if (days >= 0.5) { const pd = Math.round(g / days); perDay = `<span class="${cls}">${pd >= 0 ? '+' : ''}${pd}g/日</span>`; }
+        }
+        return `<button type="button" class="wrow num" data-edit="${esc(w.id)}" aria-label="${esc(baby(id).name)}の体重 ${d.getMonth() + 1}月${d.getDate()}日 ${fmtG(w.grams)}g を編集">
+          <span>${d.getMonth() + 1}/${d.getDate()} ${fmtT(w.at)}${w.note ? ` <small>${esc(w.note)}</small>` : ''}</span><b>${fmtG(w.grams)}g</b><span>${diff}</span><span>${perDay}</span></button>`;
+      }).join('');
+      return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3>
+        <div class="wrow head" aria-hidden="true"><span>日時</span><span>体重</span><span>前回比</span><span>1日あたり</span></div>${rows}
+        ${ws.length > S.wShown ? `<button type="button" class="btn ghost more" data-act="wmore">さらに表示（残り${ws.length - S.wShown}件）</button>` : ''}</div>`;
+    }).join('');
+  }
+
+  function renderChart() {
+    const series = BABY_IDS.map(id => ({ id, pts: weightsOf(id).map(l => ({ t: l.at, g: Number(l.grams) })).filter(p => p.g > 0).sort((a, b) => a.t - b.t) }));
+    $('#legend').innerHTML = BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'})"></i>${esc(baby(id).name)}</span>`).join('');
+    const all = series.flatMap(s => s.pts);
+    if (!all.length) { $('#chart').innerHTML = '<p class="empty-note">体重を記録するとここにグラフが表示されます。</p>'; return; }
+    const W = 640, H = 260, pl = 58, pr = 92, pt = 16, pb = 34;
+    let t0 = Math.min(...all.map(p => p.t)), t1 = Math.max(...all.map(p => p.t));
+    if (t1 - t0 < 3 * DAY) { const mid = (t0 + t1) / 2; t0 = mid - 1.5 * DAY; t1 = mid + 1.5 * DAY; }
+    else { const pad = (t1 - t0) * 0.04; t0 -= pad; t1 += pad; }
+    const gs = all.map(p => p.g);
+    let g0 = Math.floor((Math.min(...gs) - 100) / 100) * 100, g1 = Math.ceil((Math.max(...gs) + 100) / 100) * 100;
+    const span = g1 - g0, step = span <= 600 ? 100 : span <= 1200 ? 200 : span <= 3000 ? 500 : 1000;
+    g0 = Math.floor(g0 / step) * step; g1 = Math.ceil(g1 / step) * step;
+    const x = t => pl + (t - t0) / (t1 - t0) * (W - pl - pr);
+    const y = g => pt + (1 - (g - g0) / (g1 - g0)) * (H - pt - pb);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="体重の推移グラフ">`;
+    for (let g = g0; g <= g1; g += step) {
+      svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width="1"/>`;
+      svg += `<text x="${pl - 8}" y="${y(g) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" class="num">${fmtG(g)}g</text>`;
+    }
+    const days = Math.max(1, Math.round((t1 - t0) / DAY));
+    const every = Math.max(1, Math.ceil(days / 6));
+    let d = startOfDay(t0) + DAY, i = 0;
+    for (; d <= t1; d += DAY, i++) {
+      if (i % every) continue;
+      const dd = new Date(d);
+      svg += `<line x1="${x(d)}" x2="${x(d)}" y1="${H - pb}" y2="${H - pb + 4}" stroke="var(--muted)"/>`;
+      svg += `<text x="${x(d)}" y="${H - pb + 18}" text-anchor="middle" font-size="11" fill="var(--muted)">${dd.getMonth() + 1}/${dd.getDate()}</text>`;
+    }
+    svg += `<line x1="${pl}" x2="${W - pr}" y1="${H - pb}" y2="${H - pb}" stroke="var(--muted)" stroke-width="1"/>`;
+    const ends = [];
+    for (const s of series) {
+      if (!s.pts.length) continue;
+      const col = `var(--${s.id === 'ane' ? 'ane' : 'imo'})`;
+      if (s.pts.length > 1) svg += `<polyline fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${s.pts.map(p => `${x(p.t).toFixed(1)},${y(p.g).toFixed(1)}`).join(' ')}"/>`;
+      s.pts.forEach((p, k) => {
+        const last = k === s.pts.length - 1;
+        svg += `<circle cx="${x(p.t)}" cy="${y(p.g)}" r="${last ? 5 : 3.5}" fill="${last ? col : 'var(--surface)'}" stroke="${col}" stroke-width="2"><title>${fmtG(p.g)}g</title></circle>`;
+      });
+      const lp = s.pts[s.pts.length - 1];
+      ends.push({ id: s.id, col, x: x(lp.t), y: y(lp.g), g: lp.g });
+    }
+    if (ends.length === 2 && Math.abs(ends[0].y - ends[1].y) < 30) {
+      const [a, b] = ends[0].y <= ends[1].y ? [ends[0], ends[1]] : [ends[1], ends[0]];
+      const mid = (a.y + b.y) / 2; a.ly = mid - 15; b.ly = mid + 15;
+    }
+    for (const e of ends) {
+      const ly = e.ly ?? e.y;
+      svg += `<text x="${e.x + 10}" y="${ly - 2}" font-size="12" font-weight="700" fill="${e.col}">${esc(baby(e.id).name)}</text>`;
+      svg += `<text x="${e.x + 10}" y="${ly + 13}" font-size="12" fill="var(--ink)" class="num">${fmtG(e.g)}g</text>`;
+    }
+    svg += '</svg>';
+    $('#chart').innerHTML = svg;
+  }
+
+  // ---------- alarm bar ----------
+  let wakeLock = null;
+  function renderAlarmBar() {
+    const el = $('#alarmbar');
+    const leadTxt = S.alarm.lead ? `予定の${S.alarm.lead}分前` : '予定時刻';
+    if (S.alarm.active) {
+      el.className = 'alarmbar on';
+      el.innerHTML = `<div class="msg"><span class="state-dot"></span><b>アラーム オン</b>（${leadTxt}に鳴ります）<br><small>この画面を開いたままにしてください。画面のスリープ防止：${wakeLock ? 'オン' : 'この端末では使えません'}</small></div>
+        <div class="btns"><button type="button" class="btn" data-act="test">音を試す</button><button type="button" class="btn ghost" data-act="alarm-off">オフにする</button></div>`;
+    } else {
+      el.className = 'alarmbar';
+      el.innerHTML = `<div class="msg"><span class="state-dot"></span><b>アラームはオフです</b><br><small>${S.alarm.pref ? '画面をタップするとアラームが再開します。' : 'ボタンを押すと、次の授乳時刻に音とバイブでお知らせします。'}</small></div>
+        <div class="btns"><button type="button" class="btn solid" data-act="alarm-on">アラームをオンにする</button></div>`;
+    }
+  }
+
+  // ---------- sound ----------
+  let actx = null;
+  function ensureAudio() {
+    try {
+      if (!actx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) actx = new AC(); }
+      if (actx && actx.state === 'suspended') actx.resume().catch(() => {});
+    } catch {}
+    return actx;
+  }
+  function chime() {
+    const c = ensureAudio(); if (!c) return;
+    const t = c.currentTime;
+    [[0, 880], [0.2, 1175], [0.4, 1568], [0.9, 880], [1.1, 1175], [1.3, 1568]].forEach(([dt, f]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t + dt);
+      g.gain.exponentialRampToValueAtTime(0.5, t + dt + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.45);
+      o.connect(g); g.connect(c.destination);
+      o.start(t + dt); o.stop(t + dt + 0.5);
+    });
+  }
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator && document.visibilityState === 'visible') {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => { wakeLock = null; renderAlarmBar(); });
+      }
+    } catch { wakeLock = null; }
+    renderAlarmBar();
+  }
+  function alarmOn(withTest) {
+    ensureAudio();
+    if (withTest) chime();
+    S.alarm.active = true; S.alarm.pref = true; lsSet('futago-alarm-pref', true);
+    // Treat already-overdue feeds at the moment of turning on as acknowledged only if user tests; otherwise ring.
+    requestWakeLock();
+    try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {}); } catch {}
+    renderAlarmBar(); tick();
+  }
+  function alarmOff() {
+    S.alarm.active = false; S.alarm.pref = false; lsSet('futago-alarm-pref', false);
+    try { wakeLock && wakeLock.release(); } catch {}
+    wakeLock = null; S.ringing = []; renderRing(); renderAlarmBar();
+  }
+  document.addEventListener('pointerdown', () => {
+    if (S.alarm.pref && !S.alarm.active) alarmOn(false);
+  }, { capture: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') { if (S.alarm.active && !wakeLock) requestWakeLock(); tick(); }
+  });
+
+  // ---------- ringing ----------
+  let ringTimer = null;
+  function checkAlarms(now) {
+    const want = [];
+    if (S.alarm.active) {
+      for (const id of BABY_IDS) {
+        const n = nextAt(id); if (!n) continue;
+        if (now >= n - S.alarm.lead * MIN && S.alarm.ack[id] !== n && now >= (S.alarm.snooze[id] || 0)) want.push(id);
+      }
+    }
+    const fresh = want.filter(id => !S.ringing.includes(id));
+    const changed = fresh.length || want.length !== S.ringing.length;
+    S.ringing = want;
+    if (fresh.length) notify(fresh);
+    if (changed) renderRing();
+  }
+  function notify(ids) {
+    const names = ids.map(id => baby(id).name).join('と');
+    try { navigator.vibrate && navigator.vibrate([400, 200, 400, 200, 400]); } catch {}
+    try { if ('Notification' in window && Notification.permission === 'granted') new Notification('ミルクの時間です', { body: `${names}の授乳時刻になりました`, tag: 'futago-' + ids.join('-') }); } catch {}
+  }
+  function renderRing() {
+    const root = $('#ring-root');
+    if (!S.ringing.length) {
+      root.innerHTML = ''; if (ringTimer) { clearInterval(ringTimer); ringTimer = null; }
+      document.title = 'ふたごミルク帳'; return;
+    }
+    document.title = '【ミルクの時間】ふたごミルク帳';
+    if (!ringTimer) { chime(); ringTimer = setInterval(() => { chime(); try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch {} }, 3000); }
+    const now = Date.now();
+    root.innerHTML = `<div class="ring" role="alertdialog" aria-label="授乳アラーム"><div class="ring-inner">${S.ringing.map(id => {
+      const b = baby(id), n = nextAt(id), m = lastOf(id, 'milk');
+      const when = now >= n ? `予定 ${fmtT(n)}（${durText(now - n)}経過）` : `予定 ${fmtT(n)}（あと${durText(n - now)}）`;
+      return `<div class="ring-item"><h2>${esc(b.name)}のミルクの時間です</h2>
+        <p class="num">${when}<br>前回 ${fmtT(m.at)} ${esc(milkText(m))}</p>
+        <div class="row">
+          <button type="button" class="primary" data-ring="record" data-baby="${id}">授乳を記録する</button>
+          <button type="button" data-ring="snooze" data-baby="${id}">5分後にもう一度</button>
+          <button type="button" data-ring="stop" data-baby="${id}">止める</button>
+        </div></div>`;
+    }).join('')}</div></div>`;
+  }
+  function ack(id) { S.alarm.ack[id] = nextAt(id); lsSet('futago-alarm-ack', S.alarm.ack); }
+
+  // ---------- tick ----------
+  function tick() {
+    const now = Date.now();
+    $('#clock').textContent = fmtT(now);
+    for (const id of BABY_IDS) {
+      const cd = document.querySelector(`[data-cd="${id}"]`); if (!cd) continue;
+      const bar = document.querySelector(`[data-bar="${id}"]`), sub = document.querySelector(`[data-cdsub="${id}"]`);
+      const m = lastOf(id, 'milk'), b = baby(id);
+      if (!m) {
+        cd.className = 'cd empty'; cd.textContent = S.mode === 'loading' ? '読み込み中…' : '最初の授乳を記録すると、ここに次の時間が出ます';
+        bar.className = 'bar'; bar.firstElementChild.style.width = '0'; sub.textContent = ''; continue;
+      }
+      const n = m.at + b.intervalH * HOUR, frac = Math.min(1, (now - m.at) / (b.intervalH * HOUR));
+      const dayTag = startOfDay(n) > startOfDay(now) ? '<small>翌日</small>' : '';
+      if (now < n) { cd.className = 'cd'; cd.innerHTML = `${dayTag}<b>${fmtT(n)}</b><span class="cd-rel">あと ${durText(n - now)}</span>`; bar.className = 'bar'; }
+      else { cd.className = 'cd due'; cd.innerHTML = `<b>${fmtT(n)}</b><span class="cd-rel">予定から ${durText(now - n)} すぎています</span>`; bar.className = 'bar due'; }
+      bar.firstElementChild.style.width = (Math.max(0, frac) * 100).toFixed(1) + '%';
+      sub.textContent = `前回 ${fmtT(m.at)} ${milkText(m)}（${durText(now - m.at)}前） ＋ ${b.intervalH}時間`;
+    }
+    checkAlarms(now);
+  }
+  setInterval(tick, 1000);
+
+  // ---------- form ----------
+  function openForm(type, babyId, log) {
+    const b = baby(babyId);
+    if (log) {
+      S.form = { ...log, editing: log.id };
+    } else {
+      S.form = { type, baby: babyId, at: Date.now(), note: '' };
+      if (type === 'milk') {
+        const last = lastOf(babyId, 'milk');
+        S.form.kind = last && last.kind ? last.kind : 'formula';
+        S.form.ml = last && last.kind !== 'breast' && last.ml ? last.ml : b.maxMl;
+        S.form.min = last && last.min ? last.min : 10;
+      }
+      if (type === 'poo') { S.form.color = 'yellow'; S.form.amount = 'normal'; S.form.withPee = true; }
+      if (type === 'weight') { const w = weightsOf(babyId)[0]; S.form.grams = w ? w.grams : ''; }
+    }
+    S.form.confirmDelete = false;
+    renderForm();
+  }
+  function readForm() {
+    const F = S.form; if (!F) return;
+    const v = id => { const el = document.getElementById(id); return el ? el.value : undefined; };
+    if (v('f-at') !== undefined) { const t = fromLocalInput(v('f-at')); if (t) F.at = t; }
+    if (v('f-ml') !== undefined) F.ml = v('f-ml') === '' ? '' : Number(v('f-ml'));
+    if (v('f-min') !== undefined) F.min = v('f-min') === '' ? '' : Number(v('f-min'));
+    if (v('f-g') !== undefined) F.grams = v('f-g') === '' ? '' : Number(v('f-g'));
+    if (v('f-note') !== undefined) F.note = v('f-note');
+    const wp = document.getElementById('f-withpee'); if (wp) F.withPee = wp.checked;
+  }
+  function chipsHTML(attr, options, current) {
+    return `<div class="chips" role="group">${Object.entries(options).map(([k, label]) => `<button type="button" data-${attr}="${k}" aria-pressed="${String(current) === String(k)}">${esc(label)}</button>`).join('')}</div>`;
+  }
+  function renderForm() {
+    const root = $('#sheet-root'), F = S.form;
+    if (!F) { root.innerHTML = ''; return; }
+    if (F.type === 'settings') return renderSettings();
+    const b = baby(F.baby);
+    let body = '';
+    if (F.type === 'milk') {
+      const presets = new Set();
+      for (let ml = b.minMl - 10; ml <= b.maxMl + 10; ml += 10) if (ml > 0) presets.add(ml);
+      body += `<div class="field"><span class="lbl">種類</span>${chipsHTML('kind', KIND, F.kind)}</div>`;
+      if (F.kind === 'breast') {
+        body += `<div class="field"><label for="f-min">授乳した時間（分）</label>
+          <div class="stepper"><button type="button" data-step="min:-5">−5</button><input type="number" inputmode="numeric" id="f-min" min="1" max="90" value="${esc(F.min)}"><button type="button" data-step="min:5">+5</button></div></div>`;
+      } else {
+        body += `<div class="field"><label for="f-ml">量（mL）</label>
+          <div class="stepper"><button type="button" data-step="ml:-10">−10</button><input type="number" inputmode="numeric" id="f-ml" min="1" max="300" value="${esc(F.ml)}"><button type="button" data-step="ml:10">+10</button></div>
+          <div class="chips">${[...presets].map(ml => `<button type="button" data-ml="${ml}" aria-pressed="${Number(F.ml) === ml}">${ml}mL</button>`).join('')}</div>
+          <p class="hint">${esc(b.name)}の目安：${b.minMl === b.maxMl ? b.minMl : `${b.minMl}〜${b.maxMl}`}mL・${b.intervalH}時間ごと</p></div>`;
+      }
+    } else if (F.type === 'poo') {
+      body += `<div class="field"><span class="lbl">色</span>${chipsHTML('color', POO_COLOR, F.color)}
+        ${F.color === 'pale' ? '<p class="caution">白っぽい・クリーム色の便は、母子手帳の便色カードと見比べてください。近い色が続くときは早めに小児科へ相談を。</p>' : ''}</div>
+        <div class="field"><span class="lbl">量</span>${chipsHTML('amount', POO_AMT, F.amount)}</div>`;
+      if (!F.editing) body += `<label class="check"><input type="checkbox" id="f-withpee" ${F.withPee ? 'checked' : ''}> おしっこも一緒に記録する</label>`;
+    } else if (F.type === 'weight') {
+      const w = weightsOf(F.baby).find(l => l.id !== F.editing);
+      body += `<div class="field"><label for="f-g">体重（g）</label>
+        <div class="stepper"><button type="button" data-step="grams:-10">−10</button><input type="number" inputmode="numeric" id="f-g" min="500" max="15000" value="${esc(F.grams)}"><button type="button" data-step="grams:10">+10</button></div>
+        ${w ? `<p class="hint">前回：${fmtG(w.grams)}g（${new Date(w.at).getMonth() + 1}/${new Date(w.at).getDate()}）</p>` : ''}</div>`;
+    }
+    const title = (F.editing ? '編集：' : '') + TYPE_LABEL[F.type];
+    root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+      <div class="sheet-head"><h2>${title}</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
+      <div class="field"><span class="lbl">だれ</span><div class="chips who" role="group">${BABY_IDS.map(id => `<button type="button" data-who="${id}" data-baby="${id}" aria-pressed="${F.baby === id}">${esc(baby(id).name)}</button>`).join('')}</div></div>
+      ${body}
+      <div class="field"><label for="f-at">時刻</label><input type="datetime-local" id="f-at" value="${toLocalInput(F.at)}">
+        <div class="chips"><button type="button" data-ago="0">今</button><button type="button" data-ago="5">5分前</button><button type="button" data-ago="15">15分前</button><button type="button" data-ago="30">30分前</button><button type="button" data-ago="60">1時間前</button></div></div>
+      ${F.type === 'milk' ? `<p class="next-preview num" id="f-next" aria-live="polite">${nextPreview()}</p>` : ''}
+      <div class="field"><label for="f-note">メモ（任意）</label><input type="text" id="f-note" maxlength="200" value="${esc(F.note)}" placeholder="吐き戻し、飲みムラなど"></div>
+      <div class="sheet-actions">
+        ${F.editing ? (F.confirmDelete ? '<button type="button" class="btn danger" data-act="delete-yes">本当に削除する</button><button type="button" class="btn ghost" data-act="delete-no">やめる</button>' : '<button type="button" class="btn danger" data-act="delete">削除</button>') : ''}
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" data-act="close">キャンセル</button>
+        <button type="submit" class="btn solid" id="f-save">保存</button>
+      </div>
+    </form></div>`;
+  }
+
+  function nextPreview() {
+    const F = S.form, b = baby(F.baby), n = F.at + b.intervalH * HOUR;
+    const tag = startOfDay(n) > startOfDay(F.at) ? '翌日 ' : '';
+    return `次の授乳は ${tag}<b>${fmtT(n)}</b>（${b.intervalH}時間後）。アラームがオンならこの時刻に鳴ります。`;
+  }
+  document.addEventListener('input', e => {
+    if (e.target.id !== 'f-at' || !S.form || S.form.type !== 'milk') return;
+    const t = fromLocalInput(e.target.value); if (!t) return;
+    S.form.at = t; const el = $('#f-next'); if (el) el.innerHTML = nextPreview();
+  });
+
+  async function submitForm() {
+    readForm();
+    const F = S.form; if (!F) return;
+    const now = Date.now();
+    if (!F.at || F.at > now + 5 * MIN) return toast('時刻を確認してください（未来の時刻は記録できません）。');
+    const data = { baby: F.baby, type: F.type, at: F.at, note: (F.note || '').trim(), updatedAt: now };
+    if (F.type === 'milk') {
+      data.kind = F.kind;
+      if (F.kind === 'breast') { if (!(F.min >= 1 && F.min <= 90)) return toast('授乳時間は1〜90分で入力してください。'); data.min = F.min; }
+      else { if (!(F.ml >= 1 && F.ml <= 300)) return toast('量は1〜300mLで入力してください。'); data.ml = F.ml; }
+    } else if (F.type === 'poo') {
+      data.color = F.color; data.amount = F.amount;
+    } else if (F.type === 'weight') {
+      if (!(F.grams >= 500 && F.grams <= 15000)) return toast('体重は500〜15,000gで入力してください。');
+      data.grams = F.grams;
+    }
+    const prevLast = lastOf(F.baby, 'milk');
+    const isLatestMilk = F.type === 'milk' && (!prevLast || prevLast.id === F.editing || F.at >= prevLast.at);
+    const btn = $('#f-save'); if (btn) { btn.disabled = true; btn.textContent = '保存中…'; }
+    try {
+      await saveLog(F.editing || null, data);
+      if (F.type === 'poo' && !F.editing && F.withPee) await saveLog(null, { baby: F.baby, type: 'pee', at: F.at, note: '', updatedAt: now });
+      if (F.type === 'milk') S.ringing = S.ringing.filter(id => id !== F.baby);
+      S.form = null; renderForm();
+      const nb = baby(data.baby);
+      toast(isLatestMilk
+        ? `${nb.name}の授乳を記録しました。次は ${fmtT(data.at + nb.intervalH * HOUR)} です`
+        : `${nb.name}の${TYPE_LABEL[data.type]}を記録しました`);
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.textContent = '保存'; }
+      toast(errMsg(e));
+    }
+  }
+
+  // ---------- settings ----------
+  const INTERVAL_CHOICES = [2, 2.5, 3, 3.5, 4, 4.5, 5];
+  function openSettings(only) {
+    S.form = { type: 'settings', only: only || null };
+    renderSettings();
+  }
+  function renderSettings() {
+    const only = S.form.only, ids = only ? [only] : BABY_IDS;
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+      <div class="sheet-head"><h2>${only ? `${esc(baby(only).name)}の授乳間隔と量` : '設定'}</h2><button type="button" class="icon-btn" data-act="close">閉じる</button></div>
+      ${ids.map(id => { const b = baby(id); return `<div class="settings-baby">
+        <h3>${id === 'ane' ? '姉' : '妹'}</h3>
+        <div class="field wide"><label for="s-${id}-name">呼び名</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
+        <div class="field wide"><label for="s-${id}-int">授乳の間隔（何時間ごと）</label>
+          <div class="chips" role="group">${INTERVAL_CHOICES.map(h => `<button type="button" data-int="${id}:${h}" aria-pressed="${b.intervalH === h}">${h}時間</button>`).join('')}</div>
+          <input type="number" inputmode="decimal" step="0.25" min="1" max="8" id="s-${id}-int" value="${b.intervalH}">
+          <p class="hint">次の授乳時刻とアラームは、最後の授乳からこの間隔で計算します。15分単位（例：2.75）でも入力できます。</p></div>
+        <div class="field"><label for="s-${id}-min">量の目安 下限（mL）</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-min" value="${b.minMl}"></div>
+        <div class="field"><label for="s-${id}-max">上限（mL）</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-max" value="${b.maxMl}"></div>
+      </div>`; }).join('')}
+      ${only ? '' : `<div class="field"><label for="s-lead">アラームを鳴らすタイミング（この端末）</label>
+        <select id="s-lead">${[0, 5, 10, 15, 30].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? `予定の${m}分前` : '予定時刻ちょうど'}</option>`).join('')}</select></div>`}
+      <p class="hint">間隔や量の目安は、医師・助産師の指示に合わせて変更してください。</p>
+      <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">キャンセル</button><button type="submit" class="btn solid" id="f-save">保存</button></div>
+    </form></div>`;
+  }
+  async function submitSettings() {
+    if ($('#s-lead')) { const lead = Number($('#s-lead').value) || 0; S.alarm.lead = lead; lsSet('futago-alarm-lead', lead); }
+    try {
+      for (const id of (S.form.only ? [S.form.only] : BABY_IDS)) {
+        const name = $(`#s-${id}-name`).value.trim() || DEFAULTS[id].name;
+        const intervalH = Number($(`#s-${id}-int`).value);
+        let minMl = Number($(`#s-${id}-min`).value), maxMl = Number($(`#s-${id}-max`).value);
+        if (!(intervalH >= 1 && intervalH <= 8)) return toast('授乳の間隔は1〜8時間で入力してください。');
+        if (!(minMl >= 5 && maxMl >= 5 && minMl <= 300 && maxMl <= 300)) return toast('量の目安は5〜300mLで入力してください。');
+        if (minMl > maxMl) [minMl, maxMl] = [maxMl, minMl];
+        const next = { name, intervalH, minMl, maxMl };
+        const cur = baby(id);
+        if (cur.name !== name || cur.intervalH !== intervalH || cur.minMl !== minMl || cur.maxMl !== maxMl) await saveBaby(id, next);
+      }
+      S.form = null; renderForm(); render(); toast('設定を保存しました');
+    } catch (e) { toast(errMsg(e)); }
+  }
+
+  // ---------- toast ----------
+  let toastTimer = null;
+  function toast(msg) {
+    const root = $('#toast-root');
+    root.innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { root.innerHTML = ''; }, 3800);
+  }
+
+  // ---------- events ----------
+  document.addEventListener('click', e => {
+    const t = e.target.closest('button, [data-act="close-bg"]');
+    if (!t) return;
+    const d = t.dataset;
+    if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
+    if (d.add) return openForm(d.add, d.baby);
+    if (d.bset) return openSettings(d.bset);
+    if (d.int) {
+      const [id, h] = d.int.split(':'), input = document.getElementById(`s-${id}-int`);
+      if (input) input.value = h;
+      t.parentElement.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === t)));
+      return;
+    }
+    if (d.edit) { const l = S.logs.find(x => x.id === d.edit); if (l) openForm(l.type, l.baby, l); return; }
+    if (d.filter) {
+      S.filter = d.filter;
+      document.querySelectorAll('#filter button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === S.filter)));
+      return renderTimeline();
+    }
+    if (d.ring) {
+      const id = d.baby;
+      if (d.ring === 'stop') ack(id);
+      else if (d.ring === 'snooze') S.alarm.snooze[id] = Date.now() + 5 * MIN;
+      else if (d.ring === 'record') { S.alarm.snooze[id] = Date.now() + 3 * MIN; S.ringing = S.ringing.filter(x => x !== id); renderRing(); openForm('milk', id); return; }
+      S.ringing = S.ringing.filter(x => x !== id); renderRing(); return;
+    }
+    switch (d.act) {
+      case 'signin': return signIn();
+      case 'signout': return signOut();
+      case 'alarm-on': return alarmOn(true);
+      case 'alarm-off': return alarmOff();
+      case 'test': ensureAudio(); chime(); return;
+      case 'more': S.daysShown += 7; return renderTimeline();
+      case 'wmore': S.wShown += 20; return renderWeights();
+      case 'close': S.form = null; return renderForm();
+      case 'delete': readForm(); S.form.confirmDelete = true; return renderForm();
+      case 'delete-no': readForm(); S.form.confirmDelete = false; return renderForm();
+      case 'delete-yes': {
+        const id = S.form.editing;
+        deleteLog(id).then(() => { S.form = null; renderForm(); toast('記録を削除しました'); }).catch(err => toast(errMsg(err)));
+        return;
+      }
+    }
+    if (!S.form || S.form.type === 'settings') return;
+    if (d.who) { readForm(); S.form.baby = d.who; return renderForm(); }
+    if (d.kind) { readForm(); S.form.kind = d.kind; return renderForm(); }
+    if (d.color) { readForm(); S.form.color = d.color; return renderForm(); }
+    if (d.amount) { readForm(); S.form.amount = d.amount; return renderForm(); }
+    if (d.ml) { readForm(); S.form.ml = Number(d.ml); return renderForm(); }
+    if (d.ago !== undefined) { readForm(); S.form.at = Date.now() - Number(d.ago) * MIN; return renderForm(); }
+    if (d.step) {
+      readForm(); const [k, n] = d.step.split(':');
+      S.form[k] = Math.max(0, (Number(S.form[k]) || 0) + Number(n)); return renderForm();
+    }
+  });
+  document.addEventListener('submit', e => {
+    if (e.target.id !== 'sheet') return;
+    e.preventDefault();
+    if (S.form && S.form.type === 'settings') submitSettings(); else submitForm();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
+  $('#open-settings').addEventListener('click', () => openSettings());
+
+  render();
+  init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+rules_version = '2';
+
+// ふたごミルク帳のアクセスルール。
+// Firebase コンソール → Firestore Database →「ルール」タブに全文を貼り付けて「公開」してください。
+// 下の2つのメールアドレスを、あなたと奥さんの Google アカウントに書き換えます。
+// （メールアドレスは公開リポジトリには入れず、コンソール上だけで書き換えるのがおすすめです）
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isFamily() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'YOUR_EMAIL@gmail.com',
+          'PARTNER_EMAIL@gmail.com'
+        ];
+    }
+
+    // 授乳・おしっこ・うんち・体重の記録
+    match /logs/{logId} {
+      allow read, delete: if isFamily();
+      allow create, update: if isFamily()
+        && request.resource.data.baby in ['ane', 'imouto']
+        && request.resource.data.type in ['milk', 'pee', 'poo', 'weight']
+        && request.resource.data.at is number;
+    }
+
+    // 呼び名・授乳間隔・量の目安
+    match /babies/{babyId} {
+      allow read: if isFamily();
+      allow write: if isFamily() && babyId in ['ane', 'imouto'];
+    }
+
+    // それ以外はすべて拒否
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
