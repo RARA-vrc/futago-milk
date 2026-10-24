@@ -288,6 +288,22 @@ button { cursor: pointer; }
 .plan-day { font-family: var(--f-display); font-weight: 700; font-size: .9rem; color: var(--muted); padding: 12px 0 4px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
 .plan-now { display: flex; align-items: center; gap: 8px; color: var(--danger); font-weight: 700; font-size: .8rem; margin: 6px 0; }
 .plan-now::after { content: ""; flex: 1; height: 2px; background: var(--danger); border-radius: 2px; }
+/* backfill sheet: one row per feed — on/off, who, clock time (+ which day), mL, remove */
+.batch-entry .btn { width: 100%; min-height: 52px; }
+.batch-entry { margin-bottom: 4px; }
+.brow { display: grid; grid-template-columns: 24px 3.2rem 1fr 4.4rem 36px; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.brow.head { padding: 0 0 4px; font-size: .72rem; color: var(--muted); font-weight: 700; }
+.brow.off > :not(.bon):not(.bdel) { opacity: .45; }
+.brow input[type="checkbox"] { width: 20px; height: 20px; }
+.brow input[type="time"], .brow input[type="number"] { border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; min-height: 44px; padding: 0 8px; width: 100%; min-width: 0; font-family: var(--f-display); font-size: 1rem; }
+.brow .bt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.brow .bt small { font-size: .7rem; color: var(--muted); }
+.brow .chip { border: none; min-height: 32px; width: 100%; }
+.brow .bdel { border: 1px solid var(--line); background: transparent; border-radius: 10px; min-height: 36px; color: var(--muted); }
+.brow .bnear { grid-column: 2 / -1; color: var(--warn); font-size: .75rem; font-weight: 700; }
+.badd { display: flex; gap: 8px; flex-wrap: wrap; }
+.badd button { flex: 1 1 140px; }
+.tag-fac { display: inline-block; font-size: .7rem; font-weight: 700; border: 1px solid var(--line); border-radius: 99px; padding: 0 7px; color: var(--muted); margin-left: 6px; vertical-align: 1px; }
 .settings-block { border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .settings-block h3 { margin: 0; font-family: var(--f-display); font-size: 1rem; }
 
@@ -339,6 +355,9 @@ button { cursor: pointer; }
   </nav>
 
   <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況" data-zh-aria="寶寶狀況"></section>
+  <div class="view batch-entry" data-view="now">
+    <button type="button" class="btn" data-act="batch" data-zh="事後補記餵奶（夜間・月子中心餵的）">あとからまとめて記録（夜間・施設で飲んだ分）</button>
+  </div>
 
   <section class="panel view" data-view="plan" aria-labelledby="plan-title">
     <div class="panel-head">
@@ -358,6 +377,7 @@ button { cursor: pointer; }
         <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
       </div>
     </div>
+    <div class="batch-entry"><button type="button" class="btn ghost" data-act="batch" data-zh="事後補記餵奶">あとからまとめて記録</button></div>
     <div id="timeline"></div>
   </section>
 
@@ -593,6 +613,7 @@ button { cursor: pointer; }
     if (l.kind === 'breast') return `${KIND.breast} ${l.min || '?'}${L('分', '分鐘')}`;
     return `${KIND[l.kind] || KIND.formula} ${l.ml ?? '?'}mL`;
   }
+  const facilityTag = l => l.place === 'facility' ? `<span class="tag-fac">${L('施設', '月子中心')}</span>` : '';
   function dayStats(id, from, to) {
     const st = { milkN: 0, ml: 0, breastN: 0, pee: 0, poo: 0 };
     for (const l of S.logs) {
@@ -604,7 +625,7 @@ button { cursor: pointer; }
     return st;
   }
   function describe(l) {
-    if (l.type === 'milk') return esc(milkText(l));
+    if (l.type === 'milk') return esc(milkText(l)) + facilityTag(l);
     if (l.type === 'pee') return TYPE_LABEL.pee;
     if (l.type === 'poo') {
       const parts = [];
@@ -720,7 +741,7 @@ button { cursor: pointer; }
     const cell = (id, i) => {
       if (!i) return `<div class="pc ${id}"></div>`;
       const b = baby(id), range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
-      if (i.kind === 'done') return `<div class="pc ${id} done">${L('済', '已餵')} ${esc(milkText(i.log))}</div>`;
+      if (i.kind === 'done') return `<div class="pc ${id} done">${L('済', '已餵')} ${esc(milkText(i.log))}${facilityTag(i.log)}</div>`;
       if (i.kind === 'start') return `<div class="pc ${id} start"><b>${L('ここで飲む', '此時餵奶')}</b> ${range}</div>`;
       if (i.kind === 'next') {
         const due = now >= i.at;
@@ -1060,6 +1081,7 @@ button { cursor: pointer; }
     if (v('f-g') !== undefined) F.grams = v('f-g') === '' ? '' : Number(v('f-g'));
     if (v('f-note') !== undefined) F.note = v('f-note');
     const wp = document.getElementById('f-withpee'); if (wp) F.withPee = wp.checked;
+    const fac = document.getElementById('f-facility'); if (fac) F.place = fac.checked ? 'facility' : '';
   }
   function chipsHTML(attr, options, current) {
     return `<div class="chips" role="group">${Object.entries(options).map(([k, label]) => `<button type="button" data-${attr}="${k}" aria-pressed="${String(current) === String(k)}">${esc(label)}</button>`).join('')}</div>`;
@@ -1069,6 +1091,7 @@ button { cursor: pointer; }
     if (!F) { root.innerHTML = ''; return; }
     if (F.type === 'settings') return renderSettings();
     if (F.type === 'shortcut') return renderShortcutHelp();
+    if (F.type === 'batch') return renderBatch();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -1085,6 +1108,7 @@ button { cursor: pointer; }
           <div class="chips">${[...presets].map(ml => `<button type="button" data-ml="${ml}" aria-pressed="${Number(F.ml) === ml}">${ml}mL</button>`).join('')}</div>
           <p class="hint">${L(`${esc(b.name)}の目安：${rangeTxt}・${b.intervalH}時間ごと`, `${esc(b.name)}的參考量：${rangeTxt}・每${b.intervalH}小時`)}</p></div>`;
       }
+      body += `<label class="check"><input type="checkbox" id="f-facility" ${F.place === 'facility' ? 'checked' : ''}> ${L('産後ケア施設で飲ませてもらった', '在月子中心餵的')}</label>`;
     } else if (F.type === 'poo') {
       body += `<div class="field"><span class="lbl">${L('色', '顏色')}</span>${chipsHTML('color', POO_COLOR, F.color)}
         ${F.color === 'pale' ? `<p class="caution">${L('白っぽい・クリーム色の便は、母子手帳の便色カードと見比べてください。近い色が続くときは早めに小児科へ相談を。', '偏白或奶油色的便便，請與兒童健康手冊中的嬰兒大便辨識卡比對。若持續出現相近顏色，請盡早諮詢小兒科。')}</p>` : ''}</div>
@@ -1137,6 +1161,7 @@ button { cursor: pointer; }
     const data = { baby: F.baby, type: F.type, at: F.at, note: (F.note || '').trim(), updatedAt: now };
     if (F.type === 'milk') {
       data.kind = F.kind;
+      if (F.place === 'facility') data.place = 'facility';
       if (F.kind === 'breast') { if (!(F.min >= 1 && F.min <= 90)) return toast(L('授乳時間は1〜90分で入力してください。', '餵奶時間請輸入1〜90分鐘。')); data.min = F.min; }
       else { if (!(F.ml >= 1 && F.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。')); data.ml = F.ml; }
     } else if (F.type === 'poo') {
@@ -1228,6 +1253,102 @@ button { cursor: pointer; }
     } catch (e) { toast(errMsg(e)); }
   }
 
+  // ---------- backfill: record several past feeds at once (night feeds given at the care facility) ----------
+  // Rows start as the feeds that were due since each twin's last record, at the target amount.
+  // A row within 20 minutes of a feed already recorded starts unchecked so nothing is doubled.
+  const NEAR_GAP = 20 * MIN, BATCH_MAX_PER_BABY = 8;
+  let batchSeq = 0;
+  function nearestPast(value) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(value || ''); if (!m) return null;
+    const now = Date.now(), d = new Date(now); d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+    let t = d.getTime(); if (t > now + 5 * MIN) t -= DAY;
+    return t;
+  }
+  function batchRow(id, at) {
+    const near = S.logs.some(l => l.baby === id && l.type === 'milk' && Math.abs(l.at - at) < NEAR_GAP);
+    return { key: 'r' + (++batchSeq), baby: id, at, ml: baby(id).maxMl, on: !near, near };
+  }
+  function batchRowsDefault() {
+    const now = Date.now(), rows = [];
+    for (const id of BABY_IDS) {
+      const last = lastOf(id, 'milk'), step = baby(id).intervalH * HOUR;
+      if (!last) continue;
+      for (let t = last.at + step, k = 0; t <= now && k < BATCH_MAX_PER_BABY; t += step, k++) rows.push(batchRow(id, t));
+    }
+    if (!rows.length) BABY_IDS.forEach(id => rows.push(batchRow(id, Math.floor(Date.now() / (5 * MIN)) * 5 * MIN)));
+    return rows;
+  }
+  function openBatch() {
+    S.form = { type: 'batch', kind: 'formula', facility: lsGet('futago-facility', true), rows: batchRowsDefault() };
+    renderBatch();
+  }
+  function readBatch() {
+    const F = S.form; if (!F || F.type !== 'batch') return;
+    const fac = $('#b-facility'); if (fac) F.facility = fac.checked;
+    for (const r of F.rows) {
+      const on = document.getElementById(`b-on-${r.key}`), t = document.getElementById(`b-t-${r.key}`), ml = document.getElementById(`b-ml-${r.key}`);
+      if (on) r.on = on.checked;
+      if (t) { const at = nearestPast(t.value); if (at) r.at = at; }
+      if (ml) r.ml = ml.value === '' ? '' : Number(ml.value);
+      r.near = S.logs.some(l => l.baby === r.baby && l.type === 'milk' && Math.abs(l.at - r.at) < NEAR_GAP);
+    }
+  }
+  function renderBatch() {
+    const F = S.form, today = startOfDay(Date.now());
+    F.rows.sort((a, b) => a.at - b.at);
+    const dayTxt = at => startOfDay(at) === today ? L('今日', '今天') : startOfDay(at) === today - DAY ? L('きのう', '昨天') : `${new Date(at).getMonth() + 1}/${new Date(at).getDate()}`;
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+      <div class="sheet-head"><h2>${L('あとからまとめて記録', '事後補記餵奶')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <p class="hint">${L('最後の記録から今までの予定時刻を入れてあります。実際に飲んだ時刻と量に直し、飲まなかった行はチェックを外してください。', '已填入從最後一筆紀錄到現在的預定時間。請改成實際餵奶的時間與奶量，沒有餵的請取消勾選。')}</p>
+      <div class="field"><span class="lbl">${L('種類', '種類')}</span>${chipsHTML('bkind', { formula: KIND.formula, expressed: KIND.expressed }, F.kind)}</div>
+      <label class="check"><input type="checkbox" id="b-facility" ${F.facility ? 'checked' : ''}> ${L('産後ケア施設で飲ませてもらった（記録に「施設」と付きます）', '在月子中心餵的（紀錄會標示「月子中心」）')}</label>
+      <div>
+        <div class="brow head" aria-hidden="true"><span></span><span>${L('だれ', '誰')}</span><span>${L('時刻', '時間')}</span><span>mL</span><span></span></div>
+        ${F.rows.map(r => `<div class="brow${r.on ? '' : ' off'}">
+          <input type="checkbox" class="bon" id="b-on-${r.key}" ${r.on ? 'checked' : ''} aria-label="${L('この行を記録する', '記錄這一筆')}">
+          <button type="button" class="chip ${r.baby}" data-bbaby="${r.key}" aria-label="${L('子を切り替え', '切換寶寶')}">${esc(baby(r.baby).name)}</button>
+          <div class="bt"><input type="time" id="b-t-${r.key}" data-bt="${r.key}" value="${hhmm(r.at)}"><small>${dayTxt(r.at)}</small></div>
+          <input type="number" inputmode="numeric" min="1" max="300" id="b-ml-${r.key}" value="${esc(r.ml)}" aria-label="mL">
+          <button type="button" class="bdel" data-bdel="${r.key}" aria-label="${L('この行を消す', '刪除這一列')}">×</button>
+          ${r.near ? `<span class="bnear">${L('すでに記録がある時刻と近いです。二重に記録しないようご注意ください', '和已記錄的時間很接近，請注意不要重複記錄')}</span>` : ''}
+        </div>`).join('')}
+      </div>
+      <div class="badd">${BABY_IDS.map(id => `<button type="button" class="btn ghost" data-badd="${id}">${L(`＋ ${esc(baby(id).name)}の行を追加`, `＋ 新增${esc(baby(id).name)}的一列`)}</button>`).join('')}</div>
+      <div class="sheet-actions"><span class="spacer"></span>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L(`${F.rows.filter(r => r.on).length}件を記録`, `記錄${F.rows.filter(r => r.on).length}筆`)}</button>
+      </div>
+    </form></div>`;
+  }
+  // Changing a time re-sorts the rows and refreshes the day label and the "already recorded" note.
+  document.addEventListener('change', e => {
+    if (!S.form || S.form.type !== 'batch') return;
+    if (e.target.dataset.bt || e.target.classList.contains('bon')) { readBatch(); renderBatch(); }
+  });
+  async function submitBatch() {
+    readBatch();
+    const F = S.form, now = Date.now(), rows = F.rows.filter(r => r.on);
+    if (!rows.length) return toast(L('記録する行がありません。', '沒有要記錄的項目。'));
+    for (const r of rows) {
+      if (!(r.ml >= 1 && r.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。'));
+      if (!r.at || r.at > now + 5 * MIN) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
+    }
+    lsSet('futago-facility', F.facility);
+    const ids = [];
+    try {
+      for (const r of rows) {
+        const data = { baby: r.baby, type: 'milk', at: r.at, kind: F.kind, ml: r.ml, note: '', updatedAt: now };
+        if (F.facility) data.place = 'facility';
+        ids.push(await saveLog(null, data));
+      }
+    } catch (e) { return toast(errMsg(e)); }
+    S.form = null; renderForm();
+    toast(L(`${ids.length}件の授乳を記録しました`, `已記錄${ids.length}筆餵奶`), {
+      label: L('取り消す', '復原'),
+      fn: () => { ids.forEach(id => deleteLog(id)); toast(L('まとめて記録した分を取り消しました', '已取消這次補記的紀錄')); },
+    });
+  }
+
   // ---------- iPhone timer (via the Shortcuts app) ----------
   // A web page cannot drive the Clock app, so it runs a user-made shortcut named
   // SHORTCUT_NAME and hands it the minutes until the next feed; the shortcut's single
@@ -1299,6 +1420,13 @@ button { cursor: pointer; }
     const d = t.dataset;
     if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
     if (d.lang) return setLang(d.lang);
+    if (S.form && S.form.type === 'batch') {
+      const rows = S.form.rows;
+      if (d.bkind) { readBatch(); S.form.kind = d.bkind; return renderBatch(); }
+      if (d.bbaby) { readBatch(); const r = rows.find(x => x.key === d.bbaby); if (r) r.baby = BABY_IDS[(BABY_IDS.indexOf(r.baby) + 1) % BABY_IDS.length]; readBatch(); return renderBatch(); }
+      if (d.bdel) { readBatch(); S.form.rows = rows.filter(x => x.key !== d.bdel); return renderBatch(); }
+      if (d.badd) { readBatch(); S.form.rows.push(batchRow(d.badd, Math.floor(Date.now() / (5 * MIN)) * 5 * MIN)); return renderBatch(); }
+    }
     if (d.add) return openForm(d.add, d.baby);
     if (d.bset) return openSettings(d.bset);
     if (d.tab) {
@@ -1355,6 +1483,7 @@ button { cursor: pointer; }
         return;
       }
       case 'sim-reset': S.planStart = {}; renderPlanSim(true); return renderPlan();
+      case 'batch': return openBatch();
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
       case 'close': S.form = null; return renderForm();
@@ -1381,7 +1510,9 @@ button { cursor: pointer; }
   document.addEventListener('submit', e => {
     if (e.target.id !== 'sheet') return;
     e.preventDefault();
-    if (S.form && S.form.type === 'settings') submitSettings(); else submitForm();
+    if (S.form && S.form.type === 'settings') submitSettings();
+    else if (S.form && S.form.type === 'batch') submitBatch();
+    else submitForm();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
   $('#open-settings').addEventListener('click', () => openSettings());
