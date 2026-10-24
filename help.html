@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ふたごミルク帳の使い方</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Same palette and faces as the app. Layout: a single reading column with a sticky language switch. */
+:root {
+  --bg: #F2F4F7; --surface: #FFFFFF; --surface-2: #F7F8FA; --ink: #1B2230; --muted: #5D687A; --line: #DDE2EA;
+  --ane: #C94A6E; --ane-soft: #FBE7ED; --imo: #23808A; --imo-soft: #DDF0F1; --warn: #9A6A12; --warn-soft: #FBF0D9;
+  --f-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "BIZ UDPGothic", sans-serif;
+  --f-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E131B; --surface: #161D28; --surface-2: #1B2431; --ink: #E4E9F0; --muted: #94A0B2; --line: #283244;
+    --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F; --warn: #E8BC62; --warn-soft: #33290F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E131B; --surface: #161D28; --surface-2: #1B2431; --ink: #E4E9F0; --muted: #94A0B2; --line: #283244;
+  --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F; --warn: #E8BC62; --warn-soft: #33290F;
+  color-scheme: dark;
+}
+:root[lang^="zh"] {
+  --f-display: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --f-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+* { box-sizing: border-box; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.75; }
+.page { max-width: 720px; margin: 0 auto; padding-block: 12px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.bar a { color: var(--ink); text-decoration: none; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: .9rem; font-weight: 700; }
+.seg { display: inline-flex; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 3px; }
+.seg button { border: none; background: transparent; border-radius: 9px; min-height: 36px; padding: 0 12px; font: inherit; font-size: .88rem; color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+h1 { font-family: var(--f-display); font-size: 1.7rem; line-height: 1.3; margin: 24px 0 4px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 16px; }
+nav.toc { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; margin: 16px 0 8px; }
+nav.toc ol { margin: 0; padding-left: 1.3em; columns: 2 220px; column-gap: 24px; }
+nav.toc a { color: var(--ink); }
+h2 { font-family: var(--f-display); font-size: 1.25rem; margin: 32px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); scroll-margin-top: 64px; }
+h3 { font-family: var(--f-display); font-size: 1.02rem; margin: 18px 0 4px; }
+p, li { max-width: 65ch; }
+ul, ol { padding-left: 1.3em; }
+li + li { margin-top: 4px; }
+b { font-weight: 700; }
+.ui { display: inline-block; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 0 7px; font-size: .9em; font-weight: 700; line-height: 1.6; white-space: nowrap; }
+.note { background: var(--warn-soft); border-radius: 12px; padding: 10px 14px; margin: 12px 0; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; margin: 12px 0; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-size: .8rem; white-space: nowrap; }
+.tw { overflow-x: auto; }
+code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; }
+.foot { color: var(--muted); font-size: .82rem; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="bar">
+    <a href="./" id="back">← アプリに戻る</a>
+    <div class="seg" role="group" aria-label="言語 / 語言">
+      <button type="button" data-lang="ja" aria-pressed="true">日本語</button>
+      <button type="button" data-lang="zh" aria-pressed="false">繁體中文</button>
+    </div>
+  </div>
+
+  <!-- ===================== 日本語 ===================== -->
+  <article data-lang-block="ja">
+    <h1>ふたごミルク帳の使い方</h1>
+    <p class="lead">双子の授乳・おしっこ・うんち・体重を記録し、次の授乳時刻を知らせるアプリです。記録は登録したふたりの Google アカウントで共有されます。</p>
+
+    <nav class="toc" aria-label="目次"><ol>
+      <li><a href="#ja-screens">画面の構成</a></li>
+      <li><a href="#ja-milk">授乳を記録する</a></li>
+      <li><a href="#ja-other">おしっこ・うんち・体重</a></li>
+      <li><a href="#ja-batch">あとからまとめて記録</a></li>
+      <li><a href="#ja-fix">記録の修正・削除</a></li>
+      <li><a href="#ja-next">次の授乳とアラーム</a></li>
+      <li><a href="#ja-timer">iPhone タイマー</a></li>
+      <li><a href="#ja-plan">時刻表</a></li>
+      <li><a href="#ja-trend">推移（グラフ）</a></li>
+      <li><a href="#ja-settings">設定</a></li>
+      <li><a href="#ja-data">データと共有</a></li>
+      <li><a href="#ja-trouble">困ったとき</a></li>
+    </ol></nav>
+
+    <h2 id="ja-screens">画面の構成</h2>
+    <p>画面下（パソコンでは上）の4つのタブで切り替えます。</p>
+    <div class="tw"><table>
+      <tr><th>タブ</th><th>できること</th></tr>
+      <tr><td><span class="ui">いま</span></td><td>姉・妹それぞれの次の授乳時刻、前回の授乳、今日の合計。ここから記録します。</td></tr>
+      <tr><td><span class="ui">時刻表</span></td><td>ふたりの授乳時刻を左右に並べた一覧。仮の時刻での計算もできます。</td></tr>
+      <tr><td><span class="ui">記録</span></td><td>すべての記録を日ごとに一覧。タップで修正・削除。</td></tr>
+      <tr><td><span class="ui">推移</span></td><td>ミルク量・おしっこ・うんちの日ごと／月ごとのグラフと、体重の推移。</td></tr>
+    </table></div>
+    <p>右上の <span class="ui">アラーム</span> はアラームのオン・オフ、<span class="ui">設定</span> は各種設定です。</p>
+
+    <h2 id="ja-milk">授乳を記録する</h2>
+    <ol>
+      <li><span class="ui">いま</span> タブで、姉か妹のカードの <span class="ui">授乳を記録</span> を押します。</li>
+      <li><b>種類</b>を選びます：ミルク／搾母乳／母乳（直接）。</li>
+      <li><b>量</b>は 10mL 刻みのリストから選びます。リストは<b>その子の前回の量</b>から始まります。<span class="ui">−10</span> <span class="ui">+10</span> でも調整できます。母乳（直接）は量の代わりに授乳した時間（分）を入れます。</li>
+      <li><b>時刻</b>は <span class="ui">−1時間</span> <span class="ui">+1時間</span> と <span class="ui">:00</span> <span class="ui">:15</span> <span class="ui">:30</span> <span class="ui">:45</span> で選びます（15分単位）。<span class="ui">今</span> で今に一番近い15分になります。まだ来ていない時刻は選べません。</li>
+      <li><span class="ui">保存</span> を押すと、次の授乳時刻が自動で計算されます。</li>
+    </ol>
+    <p>保存すると画面下に <span class="ui">取り消す</span> が約8秒表示されます。間違えたときはすぐ押せば元に戻ります。</p>
+
+    <h2 id="ja-other">おしっこ・うんち・体重</h2>
+    <ul>
+      <li><b>おしっこ</b>：時刻を選んで保存します。</li>
+      <li><b>うんち</b>：色（黄色／緑／茶色／白っぽい）と量を選びます。「おしっこも一緒に記録する」にチェックすると、おしっこも同時に記録されます。</li>
+      <li><b>体重</b>：g で入力します。前回の体重が表示されます。<span class="ui">推移</span> タブからも記録できます。</li>
+    </ul>
+    <p class="note">「白っぽい」を選ぶと注意が表示されます。白っぽい・クリーム色の便が続くときは、母子手帳の便色カードと見比べ、早めに小児科へ相談してください。</p>
+
+    <h2 id="ja-batch">あとからまとめて記録</h2>
+    <p>夜間にほかの人が飲ませてくれた分などを、あとでまとめて記録できます。<span class="ui">いま</span> タブの一番下、または <span class="ui">記録</span> タブの <span class="ui">あとからまとめて記録</span> から開きます。</p>
+    <ul>
+      <li>最後の記録から今までの<b>予定時刻</b>が、最初から行として入っています。</li>
+      <li>各行の時刻をタップすると時刻ボタンが開きます。量は前回の量から選べます。</li>
+      <li>名前の部分をタップすると姉／妹を入れ替えられます。行の追加は <span class="ui">＋ 姉の行を追加</span> など、削除は <span class="ui">×</span>。</li>
+      <li>飲まなかった行はチェックを外します。すでに記録がある時刻と20分以内の行には注意が出ます（最初から入る行は自動でチェックが外れます）。</li>
+      <li><span class="ui">○件を記録</span> でまとめて保存。直後の <span class="ui">取り消す</span> でまとめて取り消せます。</li>
+    </ul>
+
+    <h2 id="ja-fix">記録の修正・削除</h2>
+    <ul>
+      <li>カードの前回の授乳の横にある <span class="ui">修正</span> で、最後の授乳をすぐ直せます。</li>
+      <li><span class="ui">記録</span> タブで行をタップすると、どの記録でも修正・削除できます。</li>
+      <li>削除は <span class="ui">削除</span> → <span class="ui">本当に削除する</span> の2段階です。</li>
+    </ul>
+
+    <h2 id="ja-next">次の授乳とアラーム</h2>
+    <ul>
+      <li><b>次の授乳時刻</b> ＝ 最後の授乳 ＋ その子の授乳間隔。カードに時刻と「あと○分」が出ます。過ぎると赤く表示されます。</li>
+      <li><b>授乳間隔と量の目安</b>はカードの <span class="ui">変更</span> から変えられます（ふたりで共通の設定です）。</li>
+      <li><b>アラーム</b>：右上の <span class="ui">アラーム オフ</span> を押すとオンになり、お知らせの時刻に音・バイブ・赤い画面で知らせます。止め方は「授乳を記録する」「5分後にもう一度」「止める」から選べます。</li>
+      <li><b>お知らせのタイミング</b>：<span class="ui">設定</span> で「予定時刻ちょうど」〜「60分前」から選べます（この端末だけの設定）。</li>
+    </ul>
+    <p class="note">アプリ内のアラームは<b>この画面を開いている間だけ</b>鳴ります。夜間は次の iPhone タイマーを併用してください。</p>
+
+    <h2 id="ja-timer">iPhone タイマー</h2>
+    <p>iPhone では、カードの <span class="ui">iPhone タイマー</span> を押すと、iPhone の時計アプリのタイマーが「お知らせのタイミング」に合わせた時間で動き出します。画面を閉じても鳴ります。</p>
+    <h3>最初に1回だけ：ショートカットを作る（iPhone ごと）</h3>
+    <ol>
+      <li>「ショートカット」アプリで右上の <b>＋</b> を押して新規作成。</li>
+      <li>名前を <code>ミルクタイマー</code> にします（一字一句このとおり）。</li>
+      <li>「タイマー」で検索して <b>タイマーを開始</b> を追加。</li>
+      <li>「30 分」の数字をタップし、変数 <b>ショートカットの入力</b> を選ぶ（単位は「分」のまま）。</li>
+      <li>上の段の「受け取る入力」に <b>テキスト</b> が含まれていることを確認し、<b>完了</b>。</li>
+    </ol>
+    <ul>
+      <li>初回は「開きますか？」「許可しますか？」が出るので許可します。</li>
+      <li><span class="ui">設定</span> で「授乳を記録したら、iPhone のタイマーも自動でセットする」をオンにすると、授乳の記録と同時にタイマーが動きます。</li>
+      <li>ボタンには「30分前」のように今の設定が表示されます。お知らせの時刻をすでに過ぎているときは、予定時刻までの分数でセットされます。</li>
+    </ul>
+
+    <h2 id="ja-plan">時刻表</h2>
+    <ul>
+      <li>これまで12時間の授乳（<b>済</b>）と、これから24時間の予定を、姉・妹の2列で並べます。開くと「いま」の線の位置に移動します。</li>
+      <li>次の授乳は枠付きで「あと○分」、ふたりの授乳が30分以内に重なる時刻には <b>ふたり続けて</b> と出ます。</li>
+      <li><b>飲む時刻を指定して計算</b>：子の名前の下をタップして時刻を選ぶと、その時刻に飲んだ場合の予定を一覧できます。記録にはなりません。<span class="ui">記録どおりに戻す</span> で元に戻ります。</li>
+    </ul>
+
+    <h2 id="ja-trend">推移（グラフ）</h2>
+    <ul>
+      <li>一番上に、今日の授乳量・おしっこ・うんちの回数と、直近7日間の1日平均を並べます。</li>
+      <li><span class="ui">日ごと</span>：直近14日の1日あたり。<span class="ui">月ごと</span>：直近6か月の月合計。今日・今月の棒は集計中なので薄く表示されます。</li>
+      <li>母乳（直接）は量がないため、ミルク量には含めません。</li>
+      <li>下に体重のグラフと表（前回比・1日あたりの増え方）があります。行をタップで修正できます。</li>
+    </ul>
+
+    <h2 id="ja-settings">設定</h2>
+    <div class="tw"><table>
+      <tr><th>項目</th><th>内容</th><th>保存先</th></tr>
+      <tr><td>言語</td><td>日本語／繁體中文</td><td>この端末</td></tr>
+      <tr><td>アラーム</td><td>オン・オフ、音を試す</td><td>この端末</td></tr>
+      <tr><td>お知らせのタイミング</td><td>予定時刻ちょうど〜60分前</td><td>この端末</td></tr>
+      <tr><td>iPhone タイマーの自動セット</td><td>授乳を記録したら自動でタイマー</td><td>この端末</td></tr>
+      <tr><td>呼び名・授乳間隔・量の目安</td><td>子ごとの設定</td><td>ふたりで共通</td></tr>
+    </table></div>
+    <p>「この端末」の設定は、ご夫婦それぞれのスマホで設定してください。</p>
+
+    <h2 id="ja-data">データと共有</h2>
+    <ul>
+      <li>記録はクラウド（Firebase）に保存され、登録したふたりの Google アカウントだけが読み書きできます。</li>
+      <li>ほかの人が Google でログインしても「このアカウントでは見られません」と表示され、記録は一切読めません。</li>
+      <li>電波が弱いときも記録でき、つながったときに自動で同期されます。</li>
+    </ul>
+
+    <h2 id="ja-trouble">困ったとき</h2>
+    <ul>
+      <li><b>画面が古いまま</b>：ページを再読み込み。ホーム画面のアプリは、いったん閉じて開き直します。</li>
+      <li><b>「このアカウントでは見られません」</b>：登録した Google アカウントでログインし直してください（画面の一番下の「ログアウト」から）。</li>
+      <li><b>アラームが鳴らない</b>：右上が「アラーム オン」か、画面を開いたままか、iPhone の消音スイッチがオフかを確認。</li>
+      <li><b>iPhone タイマーが動かない</b>：ショートカットの名前が <code>ミルクタイマー</code> か、「受け取る入力」にテキストが入っているかを確認。</li>
+    </ul>
+    <p class="foot">ふたごミルク帳 ・ 授乳間隔や量は、医師・助産師の指示に合わせて設定してください。</p>
+  </article>
+
+  <!-- ===================== 繁體中文（台灣） ===================== -->
+  <article data-lang-block="zh" hidden>
+    <h1>雙胞胎餵奶紀錄 使用說明</h1>
+    <p class="lead">記錄雙胞胎的餵奶、尿尿、便便和體重，並提醒下次餵奶時間的 App。紀錄會由兩個已登記的 Google 帳號共享。</p>
+
+    <nav class="toc" aria-label="目錄"><ol>
+      <li><a href="#zh-screens">畫面說明</a></li>
+      <li><a href="#zh-milk">記錄餵奶</a></li>
+      <li><a href="#zh-other">尿尿・便便・體重</a></li>
+      <li><a href="#zh-batch">事後一次補記</a></li>
+      <li><a href="#zh-fix">修改・刪除紀錄</a></li>
+      <li><a href="#zh-next">下次餵奶與提醒</a></li>
+      <li><a href="#zh-timer">iPhone 計時器</a></li>
+      <li><a href="#zh-plan">時刻表</a></li>
+      <li><a href="#zh-trend">趨勢（圖表）</a></li>
+      <li><a href="#zh-settings">設定</a></li>
+      <li><a href="#zh-data">資料與共享</a></li>
+      <li><a href="#zh-trouble">疑難排解</a></li>
+    </ol></nav>
+
+    <h2 id="zh-screens">畫面說明</h2>
+    <p>用畫面下方（電腦版在上方）的4個分頁切換。</p>
+    <div class="tw"><table>
+      <tr><th>分頁</th><th>功能</th></tr>
+      <tr><td><span class="ui">現在</span></td><td>姊姊、妹妹各自的下次餵奶時間、上次餵奶、今天的合計。從這裡記錄。</td></tr>
+      <tr><td><span class="ui">時刻表</span></td><td>左右並排顯示兩人的餵奶時間，也可以用假設的時間來計算。</td></tr>
+      <tr><td><span class="ui">紀錄</span></td><td>依日期列出所有紀錄，點一下可以修改或刪除。</td></tr>
+      <tr><td><span class="ui">趨勢</span></td><td>奶量、尿尿、便便的每日／每月圖表，以及體重變化。</td></tr>
+    </table></div>
+    <p>右上角的 <span class="ui">提醒</span> 用來開關提醒，<span class="ui">設定</span> 是各種設定。</p>
+
+    <h2 id="zh-milk">記錄餵奶</h2>
+    <ol>
+      <li>在 <span class="ui">現在</span> 分頁，點姊姊或妹妹卡片上的 <span class="ui">記錄餵奶</span>。</li>
+      <li>選擇<b>種類</b>：配方奶／擠出母乳／親餵。</li>
+      <li><b>奶量</b>從以 10mL 為單位的清單選擇，清單會從<b>該寶寶上次的奶量</b>開始。也可以用 <span class="ui">−10</span> <span class="ui">+10</span> 調整。親餵則輸入餵奶時間（分鐘）。</li>
+      <li><b>時間</b>用 <span class="ui">−1小時</span> <span class="ui">+1小時</span> 和 <span class="ui">:00</span> <span class="ui">:15</span> <span class="ui">:30</span> <span class="ui">:45</span> 選擇（以15分鐘為單位）。點 <span class="ui">現在</span> 會設成最接近現在的15分鐘。尚未到的時間無法選擇。</li>
+      <li>點 <span class="ui">儲存</span> 後，會自動算出下次餵奶時間。</li>
+    </ol>
+    <p>儲存後畫面下方會出現 <span class="ui">復原</span> 約8秒。輸入錯誤時馬上點它就能還原。</p>
+
+    <h2 id="zh-other">尿尿・便便・體重</h2>
+    <ul>
+      <li><b>尿尿</b>：選擇時間後儲存。</li>
+      <li><b>便便</b>：選擇顏色（黃色／綠色／褐色／偏白）和量。勾選「同時記錄尿尿」就會一起記錄尿尿。</li>
+      <li><b>體重</b>：以 g 輸入，會顯示上次的體重。也可以從 <span class="ui">趨勢</span> 分頁記錄。</li>
+    </ul>
+    <p class="note">選擇「偏白」時會顯示提醒。若持續出現偏白或奶油色的便便，請與兒童健康手冊中的嬰兒大便辨識卡比對，並盡早諮詢小兒科。</p>
+
+    <h2 id="zh-batch">事後一次補記</h2>
+    <p>夜間由別人餵的奶等，可以之後一次補記。從 <span class="ui">現在</span> 分頁最下方，或 <span class="ui">紀錄</span> 分頁的 <span class="ui">事後一次補記</span> 開啟。</p>
+    <ul>
+      <li>會先填入從最後一筆紀錄到現在的<b>預定時間</b>。</li>
+      <li>點每一列的時間會打開時間按鈕；奶量可以從上次的奶量開始選。</li>
+      <li>點名字可以切換姊姊／妹妹。用 <span class="ui">＋ 新增姊姊的一列</span> 等新增，用 <span class="ui">×</span> 刪除。</li>
+      <li>沒有餵的列請取消勾選。和已記錄時間相差20分鐘以內的列會顯示提醒（自動填入的列會先取消勾選）。</li>
+      <li>點 <span class="ui">記錄○筆</span> 一次儲存，之後出現的 <span class="ui">復原</span> 可以全部取消。</li>
+    </ul>
+
+    <h2 id="zh-fix">修改・刪除紀錄</h2>
+    <ul>
+      <li>卡片上「上次餵奶」旁的 <span class="ui">修改</span> 可以馬上修改最後一次餵奶。</li>
+      <li>在 <span class="ui">紀錄</span> 分頁點任一列，就能修改或刪除該筆紀錄。</li>
+      <li>刪除需要 <span class="ui">刪除</span> → <span class="ui">確定刪除</span> 兩個步驟。</li>
+    </ul>
+
+    <h2 id="zh-next">下次餵奶與提醒</h2>
+    <ul>
+      <li><b>下次餵奶時間</b> ＝ 最後一次餵奶 ＋ 該寶寶的餵奶間隔。卡片上會顯示時間和「還有○分鐘」，超過時會變成紅色。</li>
+      <li><b>餵奶間隔與參考量</b>可以從卡片上的 <span class="ui">更改</span> 修改（兩人共用的設定）。</li>
+      <li><b>提醒</b>：點右上角的 <span class="ui">提醒 關</span> 就會開啟，到時間會以聲音、震動和紅色畫面通知。可以選擇「記錄餵奶」「5分鐘後再提醒」「停止」。</li>
+      <li><b>提醒時間</b>：在 <span class="ui">設定</span> 中可以從「預定時間準時」到「預定前60分鐘」選擇（只套用在此裝置）。</li>
+    </ul>
+    <p class="note">App 內的提醒<b>只會在此畫面開著時</b>響起。夜間請同時使用下面的 iPhone 計時器。</p>
+
+    <h2 id="zh-timer">iPhone 計時器</h2>
+    <p>在 iPhone 上點卡片的 <span class="ui">iPhone 計時器</span>，iPhone 時鐘 App 的計時器就會依「提醒時間」開始倒數。關掉畫面也會響。</p>
+    <h3>第一次使用：建立捷徑（每支 iPhone 都要做）</h3>
+    <ol>
+      <li>在「捷徑」App 點右上角的 <b>＋</b> 新增捷徑。</li>
+      <li>名稱設為 <code>ミルクタイマー</code>（請完全照這樣輸入，可以從 App 內的說明點「複製」）。</li>
+      <li>搜尋「計時器」，加入 <b>開始計時器</b>。</li>
+      <li>點「30 分鐘」的數字，選擇變數 <b>捷徑輸入</b>（單位保持「分鐘」）。</li>
+      <li>確認上方「接收」的輸入類型包含 <b>文字</b>，點 <b>完成</b>。</li>
+    </ol>
+    <ul>
+      <li>第一次執行時會詢問「要打開嗎？」「要允許嗎？」，請選擇允許。</li>
+      <li>在 <span class="ui">設定</span> 開啟「記錄餵奶時，自動設定 iPhone 計時器」，記錄餵奶時就會同時啟動計時器。</li>
+      <li>按鈕上會顯示目前的設定，例如「前30分」。若已超過提醒時間，會改設定到預定時間為止的分鐘數。</li>
+    </ul>
+
+    <h2 id="zh-plan">時刻表</h2>
+    <ul>
+      <li>以姊姊、妹妹兩欄並排顯示過去12小時的餵奶（<b>已餵</b>）和接下來24小時的預定。開啟時會自動移到「現在」的位置。</li>
+      <li>下次餵奶會有外框並顯示「還有○分鐘」；兩人餵奶時間在30分鐘內重疊時會標示 <b>兩人接連</b>。</li>
+      <li><b>指定餵奶時間來計算</b>：點寶寶名字下方選擇時間，就能看到在那個時間餵奶時之後的時間表。不會存成紀錄。點 <span class="ui">回到實際紀錄</span> 即可還原。</li>
+    </ul>
+
+    <h2 id="zh-trend">趨勢（圖表）</h2>
+    <ul>
+      <li>最上方並列今天的奶量、尿尿、便便次數，以及最近7天的每日平均。</li>
+      <li><span class="ui">每日</span>：最近14天的每天數值。<span class="ui">每月</span>：最近6個月的每月合計。今天、本月還在統計中，所以顏色較淡。</li>
+      <li>親餵沒有奶量，因此不計入奶量。</li>
+      <li>下方有體重圖表和表格（比上次、每天增加量），點一列可以修改。</li>
+    </ul>
+
+    <h2 id="zh-settings">設定</h2>
+    <div class="tw"><table>
+      <tr><th>項目</th><th>內容</th><th>儲存位置</th></tr>
+      <tr><td>語言</td><td>日本語／繁體中文</td><td>此裝置</td></tr>
+      <tr><td>提醒</td><td>開啟・關閉、試聽聲音</td><td>此裝置</td></tr>
+      <tr><td>提醒時間</td><td>預定時間準時〜預定前60分鐘</td><td>此裝置</td></tr>
+      <tr><td>自動設定 iPhone 計時器</td><td>記錄餵奶時自動啟動計時器</td><td>此裝置</td></tr>
+      <tr><td>稱呼・餵奶間隔・參考量</td><td>每個寶寶的設定</td><td>兩人共用</td></tr>
+    </table></div>
+    <p>「此裝置」的設定，請在夫妻各自的手機上設定。</p>
+
+    <h2 id="zh-data">資料與共享</h2>
+    <ul>
+      <li>紀錄儲存在雲端（Firebase），只有兩個已登記的 Google 帳號可以讀寫。</li>
+      <li>其他人即使用 Google 登入，也只會看到「此帳號無法查看」，完全無法讀取紀錄。</li>
+      <li>訊號不好時也能記錄，連線後會自動同步。</li>
+    </ul>
+
+    <h2 id="zh-trouble">疑難排解</h2>
+    <ul>
+      <li><b>畫面還是舊的</b>：重新整理頁面。加到主畫面的 App 請先關閉再重新開啟。</li>
+      <li><b>出現「此帳號無法查看」</b>：請用已登記的 Google 帳號重新登入（從畫面最下方的「登出」）。</li>
+      <li><b>提醒沒有響</b>：確認右上角是「提醒 開」、畫面保持開著、iPhone 的靜音開關沒有開啟。</li>
+      <li><b>iPhone 計時器沒有啟動</b>：確認捷徑名稱是 <code>ミルクタイマー</code>，以及「接收」的輸入類型包含文字。</li>
+    </ul>
+    <p class="foot">雙胞胎餵奶紀錄 ・ 餵奶間隔與奶量請依醫師或助產師的指示設定。</p>
+  </article>
+</div>
+
+<script>
+(() => {
+  // Shares the app's per-device language choice (same origin, same localStorage key).
+  const get = () => { try { return JSON.parse(localStorage.getItem('futago-lang')); } catch { return null; } };
+  const set = v => { try { localStorage.setItem('futago-lang', JSON.stringify(v)); } catch {} };
+  let lang = ['ja', 'zh'].includes(get()) ? get() : (/^zh/i.test(navigator.language || '') ? 'zh' : 'ja');
+  if (location.hash === '#zh' || location.hash === '#ja') lang = location.hash.slice(1);
+  function apply() {
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant-TW' : 'ja';
+    document.title = lang === 'zh' ? '雙胞胎餵奶紀錄 使用說明' : 'ふたごミルク帳の使い方';
+    document.querySelectorAll('[data-lang-block]').forEach(el => { el.hidden = el.dataset.langBlock !== lang; });
+    document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    document.getElementById('back').textContent = lang === 'zh' ? '← 回到 App' : '← アプリに戻る';
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-lang]'); if (!b) return;
+    lang = b.dataset.lang; set(lang); apply();
+  });
+  apply();
+})();
+</script>
+</body>
+</html>
