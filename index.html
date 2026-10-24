@@ -215,6 +215,9 @@ button { cursor: pointer; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .stepper { display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
 .stepper input { text-align: center; font-family: var(--f-display); font-size: 1.5rem !important; font-weight: 700; }
+.mlsel { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; min-height: 46px; padding: 0 10px; width: 100%; min-width: 0; font-family: var(--f-display); font-weight: 700; font-size: 1rem; color: var(--ink); }
+.stepper .mlsel { font-size: 1.4rem; text-align: center; text-align-last: center; }
+.brow .mlsel { padding: 0 4px 0 8px; font-size: 1.05rem; }
 .stepper button { min-height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 700; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; min-height: 36px; padding: 0 14px; font-size: .88rem; }
@@ -283,7 +286,41 @@ button { cursor: pointer; }
 .sim-field span { font-weight: 700; font-size: .85rem; }
 .sim-field.ane span { color: var(--ane); }
 .sim-field.imouto span { color: var(--imo); }
-.sim-field input { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; min-height: 46px; padding: 0 10px; width: 100%; min-width: 0; font-size: 1.1rem; font-family: var(--f-display); }
+/* trends: today vs 7-day average tiles, then one bar chart per measure */
+.tiles { display: grid; grid-template-columns: 2.6rem 1.45fr 1fr 1fr; gap: 6px 8px; align-items: center; margin-bottom: 14px; }
+.tiles .th { font-size: .74rem; color: var(--muted); font-weight: 700; }
+.tiles .who { font-family: var(--f-display); font-weight: 700; }
+.tiles .who.ane { color: var(--ane); }
+.tiles .who.imouto { color: var(--imo); }
+.tile { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 6px 8px; min-width: 0; line-height: 1.25; }
+.tile b { font-family: var(--f-display); font-size: 1.15rem; }
+.tile small { display: block; color: var(--muted); font-size: .7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile .up { color: var(--imo); } .tile .down { color: var(--warn); }
+.tchart { margin-top: 12px; }
+.tchart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tchart-head h3 { margin: 0; font-family: var(--f-display); font-size: 1rem; }
+.tchart-head small { color: var(--muted); font-size: .75rem; }
+.tchart svg { display: block; width: 100%; height: auto; }
+.trend-note { font-size: .75rem; color: var(--muted); margin: 8px 0 0; }
+
+/* time picker */
+.tp { display: flex; flex-direction: column; gap: 8px; }
+.tp-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+.tp-val { text-align: center; font-family: var(--f-display); white-space: nowrap; }
+.tp-val small, .tbtn small { font-size: .78rem; color: var(--muted); margin-right: 6px; font-weight: 700; }
+.tp-val b { font-size: 1.9rem; }
+.tp-step, .tp-mins button { min-height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); font-weight: 700; font-size: .95rem; }
+.tp-mins { display: flex; gap: 6px; }
+.tp-mins button { flex: 1 1 0; min-width: 0; font-family: var(--f-display); font-size: 1.05rem; }
+.tp-mins button[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.tp-mins .tp-now { flex: 1.2 1 0; font-family: var(--f-body); font-size: .9rem; }
+.tp button:disabled { opacity: .3; cursor: default; }
+/* a time shown as a button that opens the picker under it */
+.tbtn { width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 0 10px; text-align: left; font-family: var(--f-display); white-space: nowrap; overflow: hidden; }
+.tbtn b { font-size: 1.15rem; }
+.tbtn[aria-expanded="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.sim-tp { padding-top: 4px; }
+.sim-tp .row { margin-top: 8px; }
 .plan-sim .hint { margin: 0; }
 .plan-day { font-family: var(--f-display); font-weight: 700; font-size: .9rem; color: var(--muted); padding: 12px 0 4px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
 .plan-now { display: flex; align-items: center; gap: 8px; color: var(--danger); font-weight: 700; font-size: .8rem; margin: 6px 0; }
@@ -295,11 +332,10 @@ button { cursor: pointer; }
 .brow.head { padding: 0 0 4px; font-size: .72rem; color: var(--muted); font-weight: 700; }
 .brow.off > :not(.bon):not(.bdel) { opacity: .45; }
 .brow input[type="checkbox"] { width: 20px; height: 20px; }
-.brow input[type="time"], .brow input[type="number"] { border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; min-height: 44px; padding: 0 8px; width: 100%; min-width: 0; font-family: var(--f-display); font-size: 1rem; }
-.brow .bt { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }
-/* iOS Safari gives time inputs an intrinsic width that ignores the grid column; reset it so it stays in its cell. */
-.brow input[type="time"], .sim-field input[type="time"] { -webkit-appearance: none; appearance: none; display: block; max-width: 100%; text-align: left; }
-.brow input[type="time"]::-webkit-date-and-time-value, .sim-field input[type="time"]::-webkit-date-and-time-value { text-align: left; }
+.brow input[type="number"] { border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; min-height: 44px; padding: 0 8px; width: 100%; min-width: 0; font-family: var(--f-display); font-size: 1rem; }
+.brow .tbtn { background: var(--surface-2); }
+.brow-tp { grid-column: 1 / -1; padding: 2px 0 4px; }
+.brow .bt { min-width: 0; }
 .brow .bt small { font-size: .7rem; color: var(--muted); }
 .brow .chip { border: none; min-height: 32px; width: 100%; }
 .brow .bdel { border: 1px solid var(--line); background: transparent; border-radius: 10px; min-height: 36px; color: var(--muted); }
@@ -353,7 +389,7 @@ button { cursor: pointer; }
     <button type="button" data-tab="now" data-zh="現在">いま</button>
     <button type="button" data-tab="plan" data-zh="時刻表">時刻表</button>
     <button type="button" data-tab="log" data-zh="紀錄">記録</button>
-    <button type="button" data-tab="weight" data-zh="體重">体重</button>
+    <button type="button" data-tab="weight" data-zh="趨勢">推移</button>
   </nav>
 
   <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況" data-zh-aria="寶寶狀況"></section>
@@ -381,6 +417,17 @@ button { cursor: pointer; }
     </div>
     <div class="batch-entry"><button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記">あとからまとめて記録</button></div>
     <div id="timeline"></div>
+  </section>
+
+  <section class="panel view" data-view="weight" aria-labelledby="trend-title">
+    <div class="panel-head">
+      <h2 id="trend-title" data-zh="趨勢">推移</h2>
+      <div class="seg" id="trend-mode" role="group" aria-label="集計の単位" data-zh-aria="統計單位">
+        <button type="button" data-trend="day" data-zh="每日">日ごと</button>
+        <button type="button" data-trend="month" data-zh="每月">月ごと</button>
+      </div>
+    </div>
+    <div id="trend"></div>
   </section>
 
   <section class="panel view" data-view="weight" aria-labelledby="w-title">
@@ -422,8 +469,6 @@ button { cursor: pointer; }
   const fmtT = ms => { const d = new Date(ms); return `${d.getHours()}:${p2(d.getMinutes())}`; };
   const fmtG = g => Number(g).toLocaleString('ja-JP');
   const startOfDay = ms => { const d = new Date(ms); d.setHours(0, 0, 0, 0); return d.getTime(); };
-  const toLocalInput = ms => { const d = new Date(ms); return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`; };
-  const fromLocalInput = s => { const t = new Date(s).getTime(); return isNaN(t) ? null : t; };
   function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
@@ -475,13 +520,51 @@ button { cursor: pointer; }
     return h ? L(`${h}時間${m}分`, `${h}小時${m}分`) : L(`${m}分`, `${m}分鐘`);
   }
 
+  // ---------- time picker: ±1 hour and :00 / :15 / :30 / :45, no scrolling ----------
+  // Feed times are kept in 15-minute steps. A recorded feed may sit at most FUTURE_OK ahead of now,
+  // so "今" can round 9:08 up to 9:15.
+  const QUARTER = 15 * MIN, FUTURE_OK = 10 * MIN;
+  const roundQ = t => Math.round(t / QUARTER) * QUARTER;
+  const nowQ = () => roundQ(Date.now());
+  function tpDay(at) {
+    const k = startOfDay(at), today = startOfDay(Date.now()), d = new Date(at);
+    if (k === today) return L('今日', '今天');
+    if (k === today - DAY) return L('きのう', '昨天');
+    if (k === today + DAY) return L('明日', '明天');
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  }
+  const tpLabel = at => `<small>${tpDay(at)}</small><b>${fmtT(at)}</b>`;
+  function tpApply(at, op) {
+    if (op === 'now') return nowQ();
+    if (op === 'h-1') return at - HOUR;
+    if (op === 'h+1') return at + HOUR;
+    const d = new Date(at); d.setMinutes(Number(op.slice(1)), 0, 0); return d.getTime();
+  }
+  // scope tells the click handler what the picker edits: "f" (record form), "b:<row>" (backfill), "s:<twin>" (timetable).
+  // past=true greys out choices that would land in the future.
+  function tpHTML(scope, at, past) {
+    const lim = Date.now() + FUTURE_OK, dis = t => past && t > lim ? 'disabled' : '';
+    const mins = new Date(at).getMinutes();
+    return `<div class="tp">
+      <div class="tp-row">
+        <button type="button" class="tp-step" data-tp="${scope}:h-1">−1${L('時間', '小時')}</button>
+        <div class="tp-val num">${tpLabel(at)}</div>
+        <button type="button" class="tp-step" data-tp="${scope}:h+1" ${dis(at + HOUR)}>+1${L('時間', '小時')}</button>
+      </div>
+      <div class="tp-mins" role="group" aria-label="${L('分', '分')}">${[0, 15, 30, 45].map(m =>
+        `<button type="button" data-tp="${scope}:m${m}" aria-pressed="${mins === m}" ${dis(tpApply(at, 'm' + m))}>:${p2(m)}</button>`).join('')}
+        ${past ? `<button type="button" class="tp-now" data-tp="${scope}:now">${L('今', '現在')}</button>` : ''}</div>
+    </div>`;
+  }
+
   // ---------- state ----------
   const S = {
     mode: 'loading', db: null,
     babies: {}, logs: [],
     dbRecent: [], dbWeights: [],
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
-    filter: 'all', daysShown: 3, wShown: 8, planStart: {}, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    filter: 'all', daysShown: 3, wShown: 8, planStart: {}, simOpen: null,
+    trendMode: lsGet('futago-trend', 'day') === 'month' ? 'month' : 'day', history: null, historyLoading: false, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -615,6 +698,19 @@ button { cursor: pointer; }
     if (l.kind === 'breast') return `${KIND.breast} ${l.min || '?'}${L('分', '分鐘')}`;
     return `${KIND[l.kind] || KIND.formula} ${l.ml ?? '?'}mL`;
   }
+  // Amounts are picked from a 10 mL scroll list that opens at the twin's previous bottle amount.
+  const ML_MIN = 10, ML_MAX = 300, ML_STEP = 10;
+  function lastMl(id) {
+    const l = S.logs.find(x => x.baby === id && x.type === 'milk' && x.kind !== 'breast' && x.ml);
+    const v = l ? Number(l.ml) : baby(id).maxMl;
+    return Math.min(ML_MAX, Math.max(ML_MIN, Math.round(v / ML_STEP) * ML_STEP));
+  }
+  function mlOptions(selected, compact) {
+    const vals = new Set();
+    for (let m = ML_MIN; m <= ML_MAX; m += ML_STEP) vals.add(m);
+    if (selected) vals.add(Number(selected));   // keep an older odd amount like 45 selectable when editing
+    return [...vals].sort((a, b) => a - b).map(m => `<option value="${m}" ${Number(selected) === m ? 'selected' : ''}>${m}${compact ? '' : ' mL'}</option>`).join('');
+  }
   function dayStats(id, from, to) {
     const st = { milkN: 0, ml: 0, breastN: 0, pee: 0, poo: 0 };
     for (const l of S.logs) {
@@ -640,7 +736,7 @@ button { cursor: pointer; }
 
   // ---------- render ----------
   function render() {
-    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
+    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderTrend(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
   }
   function renderNames() {
     document.querySelectorAll('#filter [data-name]').forEach(b => { b.textContent = baby(b.dataset.name).name; });
@@ -763,34 +859,25 @@ button { cursor: pointer; }
     el.innerHTML = html;
   }
 
-  // "What if" inputs above the timetable: a clock time per twin, read as the occurrence nearest to now
-  // (so 23:30 typed just after midnight means last night, 3:00 typed at 1:00 means tonight). Nothing is saved.
-  const hhmm = ms => { const d = new Date(ms); return `${p2(d.getHours())}:${p2(d.getMinutes())}`; };
-  function nearestOccurrence(value) {
-    const m = /^(\d{1,2}):(\d{2})$/.exec(value || ''); if (!m) return null;
-    const now = Date.now(), base = new Date(now); base.setHours(Number(m[1]), Number(m[2]), 0, 0);
-    return [base.getTime() - DAY, base.getTime(), base.getTime() + DAY].reduce((a, c) => Math.abs(c - now) < Math.abs(a - now) ? c : a);
-  }
+  // "What if" times above the timetable: each twin's time is a button that opens the ±1h / quarter-hour
+  // picker. Nothing here is saved.
   let simKey = '';
   function renderPlanSim(force) {
-    const key = [LANG, ...BABY_IDS.map(id => baby(id).name + '|' + (S.planStart[id] || ''))].join('/');
-    if (!force && key === simKey) return;   // keep the inputs (and an open time picker) untouched on data refreshes
+    const key = [LANG, S.simOpen || '', ...BABY_IDS.map(id => baby(id).name + '|' + (S.planStart[id] || ''))].join('/');
+    if (!force && key === simKey) return;   // leave it alone on data refreshes
     simKey = key;
-    const on = BABY_IDS.some(id => S.planStart[id]), el = $('#plan-sim');
+    const on = BABY_IDS.some(id => S.planStart[id]), el = $('#plan-sim'), open = S.simOpen;
     el.className = 'plan-sim' + (on ? ' on' : '');
     el.innerHTML = `<div class="sim-head"><b>${L('飲む時刻を指定して計算', '指定餵奶時間來計算')}</b>
         ${on ? `<button type="button" class="fix-last" data-act="sim-reset">${L('記録どおりに戻す', '回到實際紀錄')}</button>` : ''}</div>
-      <div class="sim-row">${BABY_IDS.map(id => `<label class="sim-field ${id}"><span>${esc(baby(id).name)}</span>
-        <input type="time" id="sim-${id}" data-sim="${id}" value="${S.planStart[id] ? hhmm(S.planStart[id]) : ''}"></label>`).join('')}</div>
+      <div class="sim-row">${BABY_IDS.map(id => `<div class="sim-field ${id}"><span>${esc(baby(id).name)}</span>
+        <button type="button" class="tbtn" data-sopen="${id}" aria-expanded="${open === id}">${S.planStart[id] ? tpLabel(S.planStart[id]) : `<small>${L('タップして時刻を選ぶ', '點選設定時間')}</small>`}</button></div>`).join('')}</div>
+      ${open ? `<div class="sim-tp">${tpHTML('s:' + open, S.planStart[open], false)}
+        <div class="row"><button type="button" class="btn ghost" data-act="sim-clear">${L(`${esc(baby(open).name)}の指定を消す`, `清除${esc(baby(open).name)}的設定`)}</button><span class="spacer" style="flex:1"></span><button type="button" class="btn solid" data-act="sim-done">${L('OK', '完成')}</button></div></div>` : ''}
       <p class="hint">${on
         ? L('指定した時刻に飲んだ場合の予定です。記録はされません。', '這是在指定時間餵奶時的預定，不會存成紀錄。')
-        : L('時刻を入れると、その時刻に飲んだ場合の次からの時間を一覧できます（記録はされません）。', '輸入時間後，可以看到在那個時間餵奶時之後的時間表（不會存成紀錄）。')}</p>`;
+        : L('時刻を選ぶと、その時刻に飲んだ場合の次からの時間を一覧できます（記録はされません）。', '選擇時間後，可以看到在那個時間餵奶時之後的時間表（不會存成紀錄）。')}</p>`;
   }
-  document.addEventListener('change', e => {
-    const id = e.target.dataset && e.target.dataset.sim; if (!id) return;
-    S.planStart[id] = nearestOccurrence(e.target.value);
-    renderPlanSim(true); renderPlan();
-  });
 
   function renderTimeline() {
     const el = $('#timeline');
@@ -819,6 +906,110 @@ button { cursor: pointer; }
           <span class="fix" aria-hidden="true">${L('修正', '修改')}</span>
         </button></li>`).join('')}</ul></div>`;
     }).join('') + (keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`)}</button></div>` : '');
+  }
+
+  // ---------- trends: milk mL, pee and poo counts per day (last 14 days) or per month (last 6 months) ----------
+  // The live subscription holds roughly the last few weeks, so the monthly view reads the last 6 months
+  // from the database once per page load.
+  const TREND_DAYS = 14, TREND_MONTHS = 6;
+  const monthStart = (ms, back = 0) => { const d = new Date(ms); return new Date(d.getFullYear(), d.getMonth() - back, 1).getTime(); };
+  async function loadHistory() {
+    if (S.history || S.historyLoading || S.mode !== 'db') return;
+    S.historyLoading = true;
+    try {
+      const snap = await S.db.collection('logs').where('at', '>=', monthStart(Date.now(), TREND_MONTHS - 1)).get();
+      S.history = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+    } catch { toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。')); }
+    S.historyLoading = false;
+    renderTrend();
+  }
+  function bucketTotals(logs, keyOf) {
+    const out = new Map();
+    for (const l of logs) {
+      if (!BABY_IDS.includes(l.baby)) continue;
+      const k = keyOf(l.at);
+      if (!out.has(k)) out.set(k, Object.fromEntries(BABY_IDS.map(id => [id, { ml: 0, pee: 0, poo: 0 }])));
+      const t = out.get(k)[l.baby];
+      if (l.type === 'milk' && l.kind !== 'breast') t.ml += Number(l.ml) || 0;
+      else if (l.type === 'pee') t.pee++;
+      else if (l.type === 'poo') t.poo++;
+    }
+    return out;
+  }
+  const niceStep = max => [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].find(s => max / s <= 4) || 10000;
+  // Grouped bars, one colour per twin. The last period is still being counted, so it is drawn faded.
+  function barChart(labels, series, unit, partialLast) {
+    const W = 360, H = 170, pl = 34, pr = 6, pt = 14, pb = 22;
+    const max = Math.max(1, ...series.flatMap(s => s.values)), step = niceStep(max), top = Math.ceil(max / step) * step;
+    const n = labels.length, gw = (W - pl - pr) / n, bw = Math.min(14, (gw - 3) / series.length);
+    const y = v => pt + (1 - v / top) * (H - pt - pb);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
+    for (let v = 0; v <= top; v += step) {
+      svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v ? 0.6 : 1}"/>`;
+      svg += `<text x="${pl - 4}" y="${y(v) + 3}" text-anchor="end" font-size="9" fill="var(--muted)">${v >= 10000 ? `${v / 1000}k` : fmtG(v)}</text>`;
+    }
+    const every = Math.ceil(n / 7);
+    labels.forEach((lab, i) => {
+      const gx = pl + i * gw, x0 = gx + (gw - bw * series.length) / 2;
+      series.forEach((s, k) => {
+        const v = s.values[i], h = y(0) - y(v);
+        svg += `<rect x="${(x0 + k * bw).toFixed(1)}" y="${y(v).toFixed(1)}" width="${(bw - 1).toFixed(1)}" height="${Math.max(0, h).toFixed(1)}" rx="1.5" fill="${s.color}" opacity="${partialLast && i === n - 1 ? 0.4 : 1}"><title>${esc(s.name)} ${lab} ${fmtG(v)}${unit}</title></rect>`;
+      });
+      // count labels back from the newest period so the latest is always named and none collide
+      if ((n - 1 - i) % every === 0) svg += `<text x="${(gx + gw / 2).toFixed(1)}" y="${H - 7}" text-anchor="middle" font-size="9" fill="var(--muted)">${lab}</text>`;
+    });
+    return svg + '</svg>';
+  }
+  function renderTrend() {
+    const el = $('#trend'); if (!el) return;
+    document.querySelectorAll('#trend-mode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.trend === S.trendMode)));
+    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    const now = Date.now(), today = startOfDay(now);
+
+    // At a glance: today so far vs the average of the last 7 full days.
+    const byDay = bucketTotals(S.logs, startOfDay);
+    const firstAt = S.logs.length ? S.logs[S.logs.length - 1].at : now;
+    const avgDays = Math.max(1, Math.min(7, Math.round((today - startOfDay(firstAt)) / DAY)));
+    const avgOf = (id, f) => { let s = 0; for (let i = 1; i <= avgDays; i++) { const b = byDay.get(today - i * DAY); if (b) s += b[id][f]; } return s / avgDays; };
+    const tile = (id, f, unit) => {
+      const t = (byDay.get(today) || {})[id], v = t ? t[f] : 0, a = avgOf(id, f);
+      return `<div class="tile"><b class="num">${fmtG(v)}</b>${unit}<small class="num">${L('平均', '平均')} ${fmtG(Math.round(a))}${unit}</small></div>`;
+    };
+    let html = `<div class="tiles">
+      <span class="th">${L('今日', '今天')}</span><span class="th">${TYPE_LABEL.milk}</span><span class="th">${TYPE_LABEL.pee}</span><span class="th">${TYPE_LABEL.poo}</span>
+      ${BABY_IDS.map(id => `<span class="who ${id}">${esc(baby(id).name)}</span>${tile(id, 'ml', 'mL')}${tile(id, 'pee', L('回', '次'))}${tile(id, 'poo', L('回', '次'))}`).join('')}
+    </div>
+    <p class="trend-note" style="margin:-8px 0 10px">${L('大きい数字は今日の合計、小さい数字は直近7日間の1日平均です。', '大的數字是今天的合計，小的數字是最近7天的每日平均。')}</p>`;
+
+    let labels, keys, source, keyOf;
+    if (S.trendMode === 'month') {
+      if (S.mode === 'db' && !S.history) { loadHistory(); el.innerHTML = html + `<p class="empty-note">${L('過去の記録を集計しています…', '正在統計過去的紀錄…')}</p>`; return; }
+      // Older months come from the one-time read; recent days from the live data, so new records show up.
+      const merged = new Map(); (S.history || []).forEach(l => merged.set(l.id, l)); S.logs.forEach(l => merged.set(l.id, l));
+      source = [...merged.values()]; keyOf = ms => monthStart(ms);
+      keys = Array.from({ length: TREND_MONTHS }, (_, i) => monthStart(now, TREND_MONTHS - 1 - i));
+      labels = keys.map(k => L(`${new Date(k).getMonth() + 1}月`, `${new Date(k).getMonth() + 1}月`));
+    } else {
+      source = S.logs; keyOf = startOfDay;
+      keys = Array.from({ length: TREND_DAYS }, (_, i) => today - (TREND_DAYS - 1 - i) * DAY);
+      labels = keys.map(k => `${new Date(k).getMonth() + 1}/${new Date(k).getDate()}`);
+    }
+    const buckets = bucketTotals(source, keyOf);
+    // Months before the first record are left off so the bars that exist get the room (keep at least 2).
+    if (S.trendMode === 'month') {
+      while (keys.length > 2 && !buckets.has(keys[0])) { keys.shift(); labels.shift(); }
+    }
+    const chart = (f, title, unit) => {
+      const series = BABY_IDS.map(id => ({ name: baby(id).name, color: `var(--${id === 'ane' ? 'ane' : 'imo'})`, values: keys.map(k => (buckets.get(k) || {})[id] ? buckets.get(k)[id][f] : 0) }));
+      const per = S.trendMode === 'month' ? L('月合計', '每月合計') : L('1日あたり', '每天');
+      return `<div class="tchart"><div class="tchart-head"><h3>${title}</h3><small>${per}（${unit}）</small></div>${barChart(labels, series, unit, true)}</div>`;
+    };
+    html += `<div class="legend">${BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'});height:10px;width:10px;border-radius:3px"></i>${esc(baby(id).name)}</span>`).join('')}</div>`;
+    html += chart('ml', L('ミルク量', '奶量'), 'mL') + chart('pee', TYPE_LABEL.pee, L('回', '次')) + chart('poo', TYPE_LABEL.poo, L('回', '次'));
+    html += `<p class="trend-note">${S.trendMode === 'month'
+      ? L('薄い棒は今月（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是本月（統計中）。親餵不計入奶量。')
+      : L('薄い棒は今日（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是今天（統計中）。親餵不計入奶量。')}</p>`;
+    el.innerHTML = html;
   }
 
   function renderWeights() {
@@ -1060,11 +1251,11 @@ button { cursor: pointer; }
     if (log) {
       S.form = { ...log, editing: log.id };
     } else {
-      S.form = { type, baby: babyId, at: Date.now(), note: '' };
+      S.form = { type, baby: babyId, at: nowQ(), note: '' };
       if (type === 'milk') {
         const last = lastOf(babyId, 'milk');
         S.form.kind = last && last.kind ? last.kind : 'formula';
-        S.form.ml = last && last.kind !== 'breast' && last.ml ? last.ml : b.maxMl;
+        S.form.ml = lastMl(babyId);
         S.form.min = last && last.min ? last.min : 10;
       }
       if (type === 'poo') { S.form.color = 'yellow'; S.form.amount = 'normal'; S.form.withPee = true; }
@@ -1076,7 +1267,6 @@ button { cursor: pointer; }
   function readForm() {
     const F = S.form; if (!F) return;
     const v = id => { const el = document.getElementById(id); return el ? el.value : undefined; };
-    if (v('f-at') !== undefined) { const t = fromLocalInput(v('f-at')); if (t) F.at = t; }
     if (v('f-ml') !== undefined) F.ml = v('f-ml') === '' ? '' : Number(v('f-ml'));
     if (v('f-min') !== undefined) F.min = v('f-min') === '' ? '' : Number(v('f-min'));
     if (v('f-g') !== undefined) F.grams = v('f-g') === '' ? '' : Number(v('f-g'));
@@ -1094,8 +1284,6 @@ button { cursor: pointer; }
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
-      const presets = new Set();
-      for (let ml = b.minMl - 10; ml <= b.maxMl + 10; ml += 10) if (ml > 0) presets.add(ml);
       body += `<div class="field"><span class="lbl">${L('種類', '種類')}</span>${chipsHTML('kind', KIND, F.kind)}</div>`;
       if (F.kind === 'breast') {
         body += `<div class="field"><label for="f-min">${L('授乳した時間（分）', '餵奶時間（分鐘）')}</label>
@@ -1103,9 +1291,8 @@ button { cursor: pointer; }
       } else {
         const rangeTxt = `${b.minMl === b.maxMl ? b.minMl : `${b.minMl}〜${b.maxMl}`}mL`;
         body += `<div class="field"><label for="f-ml">${L('量（mL）', '奶量（mL）')}</label>
-          <div class="stepper"><button type="button" data-step="ml:-10">−10</button><input type="number" inputmode="numeric" id="f-ml" min="1" max="300" value="${esc(F.ml)}"><button type="button" data-step="ml:10">+10</button></div>
-          <div class="chips">${[...presets].map(ml => `<button type="button" data-ml="${ml}" aria-pressed="${Number(F.ml) === ml}">${ml}mL</button>`).join('')}</div>
-          <p class="hint">${L(`${esc(b.name)}の目安：${rangeTxt}・${b.intervalH}時間ごと`, `${esc(b.name)}的參考量：${rangeTxt}・每${b.intervalH}小時`)}</p></div>`;
+          <div class="stepper"><button type="button" data-step="ml:-10">−10</button><select class="mlsel" id="f-ml">${mlOptions(F.ml)}</select><button type="button" data-step="ml:10">+10</button></div>
+          <p class="hint">${L(`前回 ${lastMl(F.baby)}mL ・ ${esc(b.name)}の目安 ${rangeTxt}・${b.intervalH}時間ごと`, `上次 ${lastMl(F.baby)}mL ・ ${esc(b.name)}的參考量 ${rangeTxt}・每${b.intervalH}小時`)}</p></div>`;
       }
     } else if (F.type === 'poo') {
       body += `<div class="field"><span class="lbl">${L('色', '顏色')}</span>${chipsHTML('color', POO_COLOR, F.color)}
@@ -1119,13 +1306,11 @@ button { cursor: pointer; }
         ${w ? `<p class="hint">${L('前回', '上次')}：${fmtG(w.grams)}g（${new Date(w.at).getMonth() + 1}/${new Date(w.at).getDate()}）</p>` : ''}</div>`;
     }
     const title = (F.editing ? L('修正：', '修改：') : '') + TYPE_LABEL[F.type];
-    const agoMin = L('分前', '分鐘前');
     root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
       <div class="sheet-head"><h2>${title}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
       <div class="field"><span class="lbl">${L('だれ', '誰')}</span><div class="chips who" role="group">${BABY_IDS.map(id => `<button type="button" data-who="${id}" data-baby="${id}" aria-pressed="${F.baby === id}">${esc(baby(id).name)}</button>`).join('')}</div></div>
       ${body}
-      <div class="field"><label for="f-at">${L('時刻', '時間')}</label><input type="datetime-local" id="f-at" value="${toLocalInput(F.at)}">
-        <div class="chips"><button type="button" data-ago="0">${L('今', '現在')}</button><button type="button" data-ago="5">5${agoMin}</button><button type="button" data-ago="15">15${agoMin}</button><button type="button" data-ago="30">30${agoMin}</button><button type="button" data-ago="60">${L('1時間前', '1小時前')}</button></div></div>
+      <div class="field"><span class="lbl">${L('時刻', '時間')}</span>${tpHTML('f', F.at, true)}</div>
       ${F.type === 'milk' ? `<p class="next-preview num" id="f-next" aria-live="polite">${nextPreview()}</p>` : ''}
       <div class="field"><label for="f-note">${L('メモ（任意）', '備註（選填）')}</label><input type="text" id="f-note" maxlength="200" value="${esc(F.note)}" placeholder="${L('吐き戻し、飲みムラなど', '吐奶、沒喝完等')}"></div>
       <div class="sheet-actions">
@@ -1145,17 +1330,12 @@ button { cursor: pointer; }
     return L(`次の授乳は ${tag}<b>${fmtT(n)}</b>（${b.intervalH}時間後）。アラームがオンならこの時刻に鳴ります。`,
       `下次餵奶是 ${tag}<b>${fmtT(n)}</b>（${b.intervalH}小時後）。提醒開啟時會在這個時間響起。`);
   }
-  document.addEventListener('input', e => {
-    if (e.target.id !== 'f-at' || !S.form || S.form.type !== 'milk') return;
-    const t = fromLocalInput(e.target.value); if (!t) return;
-    S.form.at = t; const el = $('#f-next'); if (el) el.innerHTML = nextPreview();
-  });
 
   async function submitForm() {
     readForm();
     const F = S.form; if (!F) return;
     const now = Date.now();
-    if (!F.at || F.at > now + 5 * MIN) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
+    if (!F.at || F.at > now + FUTURE_OK) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
     const data = { baby: F.baby, type: F.type, at: F.at, note: (F.note || '').trim(), updatedAt: now };
     if (F.type === 'milk') {
       data.kind = F.kind;
@@ -1255,44 +1435,37 @@ button { cursor: pointer; }
   // A row within 20 minutes of a feed already recorded starts unchecked so nothing is doubled.
   const NEAR_GAP = 20 * MIN, BATCH_MAX_PER_BABY = 8;
   let batchSeq = 0;
-  function nearestPast(value) {
-    const m = /^(\d{1,2}):(\d{2})$/.exec(value || ''); if (!m) return null;
-    const now = Date.now(), d = new Date(now); d.setHours(Number(m[1]), Number(m[2]), 0, 0);
-    let t = d.getTime(); if (t > now + 5 * MIN) t -= DAY;
-    return t;
-  }
+  const isNearRecorded = (id, at) => S.logs.some(l => l.baby === id && l.type === 'milk' && Math.abs(l.at - at) < NEAR_GAP);
   function batchRow(id, at) {
-    const near = S.logs.some(l => l.baby === id && l.type === 'milk' && Math.abs(l.at - at) < NEAR_GAP);
-    return { key: 'r' + (++batchSeq), baby: id, at, ml: baby(id).maxMl, on: !near, near };
+    const near = isNearRecorded(id, at);
+    return { key: 'r' + (++batchSeq), baby: id, at, ml: lastMl(id), on: !near, near };
   }
   function batchRowsDefault() {
     const now = Date.now(), rows = [];
     for (const id of BABY_IDS) {
       const last = lastOf(id, 'milk'), step = baby(id).intervalH * HOUR;
       if (!last) continue;
-      for (let t = last.at + step, k = 0; t <= now && k < BATCH_MAX_PER_BABY; t += step, k++) rows.push(batchRow(id, t));
+      for (let t = last.at + step, k = 0; t <= now && k < BATCH_MAX_PER_BABY; t += step, k++) rows.push(batchRow(id, roundQ(t)));
     }
-    if (!rows.length) BABY_IDS.forEach(id => rows.push(batchRow(id, Math.floor(Date.now() / (5 * MIN)) * 5 * MIN)));
+    if (!rows.length) BABY_IDS.forEach(id => rows.push(batchRow(id, nowQ())));
     return rows;
   }
   function openBatch() {
-    S.form = { type: 'batch', kind: 'formula', rows: batchRowsDefault() };
+    S.form = { type: 'batch', kind: 'formula', rows: batchRowsDefault(), open: null };
     renderBatch();
   }
   function readBatch() {
     const F = S.form; if (!F || F.type !== 'batch') return;
     for (const r of F.rows) {
-      const on = document.getElementById(`b-on-${r.key}`), t = document.getElementById(`b-t-${r.key}`), ml = document.getElementById(`b-ml-${r.key}`);
+      const on = document.getElementById(`b-on-${r.key}`), ml = document.getElementById(`b-ml-${r.key}`);
       if (on) r.on = on.checked;
-      if (t) { const at = nearestPast(t.value); if (at) r.at = at; }
-      if (ml) r.ml = ml.value === '' ? '' : Number(ml.value);
-      r.near = S.logs.some(l => l.baby === r.baby && l.type === 'milk' && Math.abs(l.at - r.at) < NEAR_GAP);
+      if (ml) r.ml = Number(ml.value);
+      r.near = isNearRecorded(r.baby, r.at);
     }
   }
   function renderBatch() {
-    const F = S.form, today = startOfDay(Date.now());
+    const F = S.form;
     F.rows.sort((a, b) => a.at - b.at);
-    const dayTxt = at => startOfDay(at) === today ? L('今日', '今天') : startOfDay(at) === today - DAY ? L('きのう', '昨天') : `${new Date(at).getMonth() + 1}/${new Date(at).getDate()}`;
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
       <div class="sheet-head"><h2>${L('あとからまとめて記録', '事後補記餵奶')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
       <p class="hint">${L('最後の記録から今までの予定時刻を入れてあります。実際に飲んだ時刻と量に直し、飲まなかった行はチェックを外してください。', '已填入從最後一筆紀錄到現在的預定時間。請改成實際餵奶的時間與奶量，沒有餵的請取消勾選。')}</p>
@@ -1302,9 +1475,10 @@ button { cursor: pointer; }
         ${F.rows.map(r => `<div class="brow${r.on ? '' : ' off'}">
           <input type="checkbox" class="bon" id="b-on-${r.key}" ${r.on ? 'checked' : ''} aria-label="${L('この行を記録する', '記錄這一筆')}">
           <button type="button" class="chip ${r.baby}" data-bbaby="${r.key}" aria-label="${L('子を切り替え', '切換寶寶')}">${esc(baby(r.baby).name)}</button>
-          <div class="bt"><input type="time" id="b-t-${r.key}" data-bt="${r.key}" value="${hhmm(r.at)}"><small>${dayTxt(r.at)}</small></div>
-          <input type="number" inputmode="numeric" min="1" max="300" id="b-ml-${r.key}" value="${esc(r.ml)}" aria-label="mL">
+          <div class="bt"><button type="button" class="tbtn" data-bopen="${r.key}" aria-expanded="${F.open === r.key}">${tpLabel(r.at)}</button></div>
+          <select class="mlsel" id="b-ml-${r.key}" aria-label="mL">${mlOptions(r.ml, true)}</select>
           <button type="button" class="bdel" data-bdel="${r.key}" aria-label="${L('この行を消す', '刪除這一列')}">×</button>
+          ${F.open === r.key ? `<div class="brow-tp">${tpHTML('b:' + r.key, r.at, true)}</div>` : ''}
           ${r.near ? `<span class="bnear">${L('すでに記録がある時刻と近いです。二重に記録しないようご注意ください', '和已記錄的時間很接近，請注意不要重複記錄')}</span>` : ''}
         </div>`).join('')}
       </div>
@@ -1315,10 +1489,10 @@ button { cursor: pointer; }
       </div>
     </form></div>`;
   }
-  // Changing a time re-sorts the rows and refreshes the day label and the "already recorded" note.
+  // Ticking a row on/off updates its dimming and the save button's count.
   document.addEventListener('change', e => {
     if (!S.form || S.form.type !== 'batch') return;
-    if (e.target.dataset.bt || e.target.classList.contains('bon')) { readBatch(); renderBatch(); }
+    if (e.target.classList.contains('bon')) { readBatch(); renderBatch(); }
   });
   async function submitBatch() {
     readBatch();
@@ -1326,7 +1500,7 @@ button { cursor: pointer; }
     if (!rows.length) return toast(L('記録する行がありません。', '沒有要記錄的項目。'));
     for (const r of rows) {
       if (!(r.ml >= 1 && r.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。'));
-      if (!r.at || r.at > now + 5 * MIN) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
+      if (!r.at || r.at > now + FUTURE_OK) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
     }
     const ids = [];
     try {
@@ -1412,12 +1586,35 @@ button { cursor: pointer; }
     const d = t.dataset;
     if (d.act === 'close-bg') { if (e.target === t) { S.form = null; renderForm(); } return; }
     if (d.lang) return setLang(d.lang);
+    if (d.tp) {
+      const parts = d.tp.split(':'), op = parts.pop(), [scope, key] = parts;
+      if (scope === 'f' && S.form) { readForm(); S.form.at = tpApply(S.form.at, op); return renderForm(); }
+      if (scope === 'b' && S.form && S.form.type === 'batch') {
+        readBatch(); const r = S.form.rows.find(x => x.key === key);
+        if (r) { r.at = tpApply(r.at, op); r.near = isNearRecorded(r.baby, r.at); }
+        return renderBatch();
+      }
+      if (scope === 's') { S.planStart[key] = tpApply(S.planStart[key], op); renderPlanSim(true); return renderPlan(); }
+      return;
+    }
+    if (d.bopen) { readBatch(); S.form.open = S.form.open === d.bopen ? null : d.bopen; return renderBatch(); }
+    if (d.sopen) {
+      const id = d.sopen;
+      // Opening an unset twin starts from its next scheduled feed (or now), on the quarter hour.
+      if (!S.planStart[id]) S.planStart[id] = roundQ(nextAt(id) || Date.now());
+      S.simOpen = S.simOpen === id ? null : id;
+      renderPlanSim(true); return renderPlan();
+    }
     if (S.form && S.form.type === 'batch') {
       const rows = S.form.rows;
       if (d.bkind) { readBatch(); S.form.kind = d.bkind; return renderBatch(); }
-      if (d.bbaby) { readBatch(); const r = rows.find(x => x.key === d.bbaby); if (r) r.baby = BABY_IDS[(BABY_IDS.indexOf(r.baby) + 1) % BABY_IDS.length]; readBatch(); return renderBatch(); }
+      if (d.bbaby) {
+        readBatch(); const r = rows.find(x => x.key === d.bbaby);
+        if (r) { r.baby = BABY_IDS[(BABY_IDS.indexOf(r.baby) + 1) % BABY_IDS.length]; r.ml = lastMl(r.baby); r.near = isNearRecorded(r.baby, r.at); }
+        return renderBatch();
+      }
       if (d.bdel) { readBatch(); S.form.rows = rows.filter(x => x.key !== d.bdel); return renderBatch(); }
-      if (d.badd) { readBatch(); S.form.rows.push(batchRow(d.badd, Math.floor(Date.now() / (5 * MIN)) * 5 * MIN)); return renderBatch(); }
+      if (d.badd) { readBatch(); const r = batchRow(d.badd, nowQ()); S.form.rows.push(r); S.form.open = r.key; return renderBatch(); }
     }
     if (d.add) return openForm(d.add, d.baby);
     if (d.bset) return openSettings(d.bset);
@@ -1428,6 +1625,7 @@ button { cursor: pointer; }
       return;
     }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
+    if (d.trend) { S.trendMode = d.trend; lsSet('futago-trend', d.trend); return renderTrend(); }
     if (d.int) {
       const [id, h] = d.int.split(':'), input = document.getElementById(`s-${id}-int`);
       if (input) input.value = h;
@@ -1474,7 +1672,9 @@ button { cursor: pointer; }
         if (id) setIphoneTimer(id);
         return;
       }
-      case 'sim-reset': S.planStart = {}; renderPlanSim(true); return renderPlan();
+      case 'sim-reset': S.planStart = {}; S.simOpen = null; renderPlanSim(true); return renderPlan();
+      case 'sim-done': S.simOpen = null; return renderPlanSim(true);
+      case 'sim-clear': delete S.planStart[S.simOpen]; S.simOpen = null; renderPlanSim(true); return renderPlan();
       case 'batch': return openBatch();
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
@@ -1488,15 +1688,20 @@ button { cursor: pointer; }
       }
     }
     if (!S.form || S.form.type === 'settings') return;
-    if (d.who) { readForm(); S.form.baby = d.who; return renderForm(); }
+    if (d.who) {
+      readForm(); S.form.baby = d.who;
+      if (S.form.type === 'milk' && !S.form.editing) S.form.ml = lastMl(d.who);   // follow the chosen twin's usual amount
+      return renderForm();
+    }
     if (d.kind) { readForm(); S.form.kind = d.kind; return renderForm(); }
     if (d.color) { readForm(); S.form.color = d.color; return renderForm(); }
     if (d.amount) { readForm(); S.form.amount = d.amount; return renderForm(); }
     if (d.ml) { readForm(); S.form.ml = Number(d.ml); return renderForm(); }
-    if (d.ago !== undefined) { readForm(); S.form.at = Date.now() - Number(d.ago) * MIN; return renderForm(); }
     if (d.step) {
       readForm(); const [k, n] = d.step.split(':');
-      S.form[k] = Math.max(0, (Number(S.form[k]) || 0) + Number(n)); return renderForm();
+      S.form[k] = Math.max(0, (Number(S.form[k]) || 0) + Number(n));
+      if (k === 'ml') S.form.ml = Math.min(ML_MAX, Math.max(ML_MIN, S.form.ml));
+      return renderForm();
     }
   });
   document.addEventListener('submit', e => {
