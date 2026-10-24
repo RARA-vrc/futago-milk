@@ -272,6 +272,19 @@ button { cursor: pointer; }
 .pc.done { border: 1px dashed var(--line); color: var(--muted); }
 .pc small { color: var(--muted); font-size: .76rem; }
 .row-past .pt { color: var(--muted); }
+.pc.start { background: transparent; box-shadow: inset 0 0 0 2px var(--c); border-radius: 10px; }
+.pc.start b { color: var(--c); }
+.plan-sim { margin: 10px 0 6px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); display: flex; flex-direction: column; gap: 8px; }
+.plan-sim .sim-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.plan-sim .sim-head b { font-family: var(--f-display); }
+.plan-sim.on { border-color: var(--warn); background: var(--warn-soft); }
+.sim-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sim-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sim-field span { font-weight: 700; font-size: .85rem; }
+.sim-field.ane span { color: var(--ane); }
+.sim-field.imouto span { color: var(--imo); }
+.sim-field input { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; min-height: 46px; padding: 0 10px; width: 100%; min-width: 0; font-size: 1.1rem; font-family: var(--f-display); }
+.plan-sim .hint { margin: 0; }
 .plan-day { font-family: var(--f-display); font-weight: 700; font-size: .9rem; color: var(--muted); padding: 12px 0 4px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
 .plan-now { display: flex; align-items: center; gap: 8px; color: var(--danger); font-weight: 700; font-size: .8rem; margin: 6px 0; }
 .plan-now::after { content: ""; flex: 1; height: 2px; background: var(--danger); border-radius: 2px; }
@@ -332,6 +345,7 @@ button { cursor: pointer; }
       <h2 id="plan-title" data-zh="餵奶時刻表">授乳の時刻表</h2>
     </div>
     <p class="hint" data-zh="顯示過去12小時的餵奶與接下來24小時的預定。預定時間是依最後一次餵奶加上各自的間隔計算。">これまで12時間の授乳と、これから24時間の予定です。予定は最後の授乳から、それぞれの間隔で計算しています。</p>
+    <div class="plan-sim" id="plan-sim"></div>
     <div id="plan"></div>
   </section>
 
@@ -445,7 +459,7 @@ button { cursor: pointer; }
     babies: {}, logs: [],
     dbRecent: [], dbWeights: [],
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
-    filter: 'all', daysShown: 3, wShown: 8, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    filter: 'all', daysShown: 3, wShown: 8, planStart: {}, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -604,7 +618,7 @@ button { cursor: pointer; }
 
   // ---------- render ----------
   function render() {
-    renderGate(); renderNames(); renderCards(); renderPlan(); renderTimeline(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
+    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
   }
   function renderNames() {
     document.querySelectorAll('#filter [data-name]').forEach(b => { b.textContent = baby(b.dataset.name).name; });
@@ -672,11 +686,21 @@ button { cursor: pointer; }
     if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
     const now = Date.now(), items = [], missing = [];
     for (const id of BABY_IDS) {
-      const b = baby(id), last = lastOf(id, 'milk');
-      S.logs.forEach(l => { if (l.baby === id && l.type === 'milk' && l.at >= now - PLAN_PAST) items.push({ at: l.at, baby: id, kind: 'done', log: l }); });
-      if (!last) { missing.push(id); continue; }
+      const b = baby(id), last = lastOf(id, 'milk'), start = S.planStart[id];
+      // Actual feeds; with a "what if" start time, only the ones before it still count.
+      S.logs.forEach(l => { if (l.baby === id && l.type === 'milk' && l.at >= now - PLAN_PAST && (!start || l.at < start)) items.push({ at: l.at, baby: id, kind: 'done', log: l }); });
+      if (!start && !last) { missing.push(id); continue; }
       const step = b.intervalH * HOUR;
-      for (let t = last.at + step, k = 0; t <= now + PLAN_AHEAD; t += step, k++) items.push({ at: t, baby: id, kind: k === 0 ? 'next' : 'plan' });
+      if (start) {
+        items.push({ at: start, baby: id, kind: 'start' });
+        let nextMarked = false;
+        for (let t = start + step; t <= Math.max(now, start) + PLAN_AHEAD; t += step) {
+          const isNext = !nextMarked && t >= now; if (isNext) nextMarked = true;
+          items.push({ at: t, baby: id, kind: isNext ? 'next' : 'plan' });
+        }
+      } else {
+        for (let t = last.at + step, k = 0; t <= now + PLAN_AHEAD; t += step, k++) items.push({ at: t, baby: id, kind: k === 0 ? 'next' : 'plan' });
+      }
     }
     if (!items.length) {
       el.innerHTML = `<p class="empty-note">${L('「いま」タブで授乳を記録すると、ここに次からの予定がふたり並んで表示されます。', '在「現在」分頁記錄餵奶後，這裡會並排顯示兩人接下來的預定時間。')}</p>`;
@@ -697,6 +721,7 @@ button { cursor: pointer; }
       if (!i) return `<div class="pc ${id}"></div>`;
       const b = baby(id), range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
       if (i.kind === 'done') return `<div class="pc ${id} done">${L('済', '已餵')} ${esc(milkText(i.log))}</div>`;
+      if (i.kind === 'start') return `<div class="pc ${id} start"><b>${L('ここで飲む', '此時餵奶')}</b> ${range}</div>`;
       if (i.kind === 'next') {
         const due = now >= i.at;
         return `<div class="pc ${id} next${due ? ' due' : ''}"><b>${L('次', '下次')}</b> ${range}<small>${due ? L(`${durText(now - i.at)} すぎ`, `已超過 ${durText(now - i.at)}`) : L(`あと ${durText(i.at - now)}`, `還有 ${durText(i.at - now)}`)}</small></div>`;
@@ -715,6 +740,35 @@ button { cursor: pointer; }
     if (missing.length) html += `<p class="hint">${L(`${missing.map(id => esc(baby(id).name)).join('と')}はまだ授乳の記録がないため、予定を出せません。`, `${missing.map(id => esc(baby(id).name)).join('和')}還沒有餵奶紀錄，無法顯示預定時間。`)}</p>`;
     el.innerHTML = html;
   }
+
+  // "What if" inputs above the timetable: a clock time per twin, read as the occurrence nearest to now
+  // (so 23:30 typed just after midnight means last night, 3:00 typed at 1:00 means tonight). Nothing is saved.
+  const hhmm = ms => { const d = new Date(ms); return `${p2(d.getHours())}:${p2(d.getMinutes())}`; };
+  function nearestOccurrence(value) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(value || ''); if (!m) return null;
+    const now = Date.now(), base = new Date(now); base.setHours(Number(m[1]), Number(m[2]), 0, 0);
+    return [base.getTime() - DAY, base.getTime(), base.getTime() + DAY].reduce((a, c) => Math.abs(c - now) < Math.abs(a - now) ? c : a);
+  }
+  let simKey = '';
+  function renderPlanSim(force) {
+    const key = [LANG, ...BABY_IDS.map(id => baby(id).name + '|' + (S.planStart[id] || ''))].join('/');
+    if (!force && key === simKey) return;   // keep the inputs (and an open time picker) untouched on data refreshes
+    simKey = key;
+    const on = BABY_IDS.some(id => S.planStart[id]), el = $('#plan-sim');
+    el.className = 'plan-sim' + (on ? ' on' : '');
+    el.innerHTML = `<div class="sim-head"><b>${L('飲む時刻を指定して計算', '指定餵奶時間來計算')}</b>
+        ${on ? `<button type="button" class="fix-last" data-act="sim-reset">${L('記録どおりに戻す', '回到實際紀錄')}</button>` : ''}</div>
+      <div class="sim-row">${BABY_IDS.map(id => `<label class="sim-field ${id}"><span>${esc(baby(id).name)}</span>
+        <input type="time" id="sim-${id}" data-sim="${id}" value="${S.planStart[id] ? hhmm(S.planStart[id]) : ''}"></label>`).join('')}</div>
+      <p class="hint">${on
+        ? L('指定した時刻に飲んだ場合の予定です。記録はされません。', '這是在指定時間餵奶時的預定，不會存成紀錄。')
+        : L('時刻を入れると、その時刻に飲んだ場合の次からの時間を一覧できます（記録はされません）。', '輸入時間後，可以看到在那個時間餵奶時之後的時間表（不會存成紀錄）。')}</p>`;
+  }
+  document.addEventListener('change', e => {
+    const id = e.target.dataset && e.target.dataset.sim; if (!id) return;
+    S.planStart[id] = nearestOccurrence(e.target.value);
+    renderPlanSim(true); renderPlan();
+  });
 
   function renderTimeline() {
     const el = $('#timeline');
@@ -1300,6 +1354,7 @@ button { cursor: pointer; }
         if (id) setIphoneTimer(id);
         return;
       }
+      case 'sim-reset': S.planStart = {}; renderPlanSim(true); return renderPlan();
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
       case 'close': S.form = null; return renderForm();
