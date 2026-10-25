@@ -368,10 +368,8 @@ input, select, textarea { font-size: max(16px, 1em); }
 .memo-cat.l { left: 4px; top: -66px; transform: rotate(-7deg); }
 .memo-cat.r { right: 4px; top: -70px; transform: rotate(6deg); }
 .memo-who { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
-.memo-who button { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1.5px dashed var(--line); background: transparent; border-radius: 14px; padding: 6px 2px 4px; font-family: var(--hand); font-size: .9rem; color: var(--muted); min-width: 0; }
-.memo-who button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.memo-who .avatar { margin: 0; width: 32px; height: 32px; border: 2px solid var(--c); }
-.memo-who button[aria-pressed="true"] { border-style: solid; border-color: var(--c); color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); font-weight: 600; }
+.memo-who button { min-height: 38px; border: 1.5px solid color-mix(in srgb, var(--c) 35%, transparent); background: transparent; border-radius: 99px; padding: 0 4px; font-family: var(--hand); font-size: .95rem; color: var(--c); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.memo-who button[aria-pressed="true"] { border-color: var(--c); background: var(--c); color: var(--surface); font-weight: 600; }
 #memo-text { display: block; width: 100%; min-height: 150px; resize: vertical; border: none; outline: none; color: var(--ink); font-family: var(--hand); font-size: 17px; line-height: 30px; padding: 0 4px 0 36px;
   background: linear-gradient(to right, transparent 26px, color-mix(in srgb, var(--mc) 40%, transparent) 26px 27px, transparent 27px),
     repeating-linear-gradient(to bottom, transparent 0 29px, var(--paper-line) 29px 30px);
@@ -392,7 +390,51 @@ input, select, textarea { font-size: max(16px, 1em); }
 .memo-note time { margin-left: auto; font-size: .78rem; color: var(--muted); font-family: var(--f-body); }
 .memo-note p { margin: 8px 0 0; font-family: var(--hand); font-size: 1.04rem; line-height: 28px; white-space: pre-wrap; overflow-wrap: anywhere;
   background: repeating-linear-gradient(to bottom, transparent 0 27px, var(--paper-line) 27px 28px); }
-.memo-edit { display: block; margin: 2px 0 0 auto; border: none; background: transparent; color: var(--muted); font-size: .76rem; text-decoration: underline; min-height: 34px; padding: 0 2px; }
+.memo-edit { flex: none; border: none; background: transparent; color: var(--muted); font-size: .76rem; text-decoration: underline; min-height: 34px; padding: 0 2px; }
+.memo-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 6px; }
+.memo-foot .spacer { flex: 1; }
+.rx, .rx-add { display: inline-flex; align-items: center; gap: 3px; min-height: 30px; padding: 0 9px; border-radius: 99px; border: 1px solid var(--paper-line); background: color-mix(in srgb, var(--surface) 70%, transparent); font-size: .95rem; line-height: 1; }
+.rx b { font-size: .75rem; color: var(--muted); }
+.rx.mine { border-color: var(--mc); background: color-mix(in srgb, var(--mc) 14%, transparent); }
+.rx.mine b { color: var(--mc); }
+.rx-add { color: var(--muted); font-size: 1rem; }
+.rx-add small { font-size: .7rem; }
+.rx-pal { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 2px; margin-top: 6px; padding: 4px; border-radius: 14px; background: var(--surface); box-shadow: 0 4px 14px rgba(0,0,0,.14); }
+.rx-pal button { border: none; background: transparent; font-size: 1.35rem; min-height: 40px; border-radius: 10px; padding: 0; }
+.rx-pal button[aria-pressed="true"] { background: color-mix(in srgb, var(--mc) 18%, transparent); }
+.tr-toggle { display: block; border: none; background: transparent; color: var(--muted); font-size: .72rem; padding: 2px 0; min-height: 26px; }
+.memo-date { border: none; background: transparent; font-family: var(--f-display); font-weight: 700; font-size: .95rem; min-height: 40px; padding: 0 6px; border-radius: 10px; color: var(--ink); }
+.memo-date:hover { background: var(--surface-2); }
+/* calendar sheet */
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal-w { text-align: center; font-size: .72rem; font-weight: 700; color: var(--muted); }
+.cal-w.w0, .cal-d.w0 > span:not(.cal-dots):not(.bd) { color: var(--danger); }
+.cal-w.w6, .cal-d.w6 > span:not(.cal-dots):not(.bd) { color: var(--papa); }
+.cal-d { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; min-width: 0; min-height: 46px; padding: 6px 0 4px; border: 1.5px solid transparent; border-radius: 10px; background: var(--surface-2); font-family: var(--f-display); font-weight: 700; font-size: .92rem; line-height: 1; }
+.cal-d[disabled] { background: transparent; opacity: .35; cursor: default; }
+.cal-d.today { border-color: var(--line); box-shadow: inset 0 0 0 1px var(--ink); }
+.cal-d.sel { background: var(--ink); }
+.cal-d.sel > span:not(.cal-dots):not(.bd) { color: var(--surface) !important; }
+.cal-dots { display: flex; gap: 2px; height: 6px; }
+.cal-dots i, .cal-legend i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--mc); }
+.cal-d .bd { position: absolute; top: -6px; right: -3px; font-size: .75rem; }
+.cal-legend { display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.cal-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.cal-dig { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cal-dig h3 { margin: 0; font-family: var(--f-display); font-size: 1.05rem; display: flex; align-items: baseline; gap: 8px; }
+.cal-dig h3 small { font-size: .78rem; color: var(--muted); font-weight: 400; }
+.cal-stats, .cal-memos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: .88rem; }
+.cal-stats li { display: flex; gap: 8px; }
+.cal-stats li.ane b { color: var(--ane); } .cal-stats li.imouto b { color: var(--imo); }
+.cal-memos li { display: flex; gap: 8px; padding: 6px 10px; border-radius: 10px; background: var(--paper); border-left: 4px solid var(--mc); font-family: var(--hand); }
+.cal-memos li b { color: var(--mc); flex: none; }
+.cal-memos li span { white-space: pre-wrap; overflow-wrap: anywhere; }
+.cal-go { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cal-go .btn { padding: 0 8px; font-size: .88rem; }
+.log-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.log-tools .btn { padding: 0 8px; font-size: .9rem; }
+.log-daybar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 12px; margin: 8px 0 4px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-weight: 700; font-family: var(--f-display); }
+.log-daybar .btn { min-height: 38px; font-size: .85rem; }
 .memo-empty { text-align: center; color: var(--muted); font-family: var(--hand); font-size: 1rem; margin: 4px 0; }
 .memo-days, .cost-presets { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
 .memo-days .lbl, .cost-presets .lbl { font-size: .8rem; color: var(--muted); font-weight: 700; }
@@ -400,6 +442,7 @@ input, select, textarea { font-size: max(16px, 1em); }
 .field input[type="date"] { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; min-height: 46px; padding: 0 12px; width: 100%; min-width: 0; }
 .chips.small button { min-height: 32px; padding: 0 10px; font-size: .8rem; }
 .cat-chips button i, .cost-presets button i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.sheet.fixed { height: 88vh; height: 88dvh; }
 .stepper.qty { grid-template-columns: 44px 1fr 44px; gap: 6px; }
 .stepper.qty input { font-size: 1.2rem !important; }
 .cost-head { display: flex; flex-direction: column; gap: 12px; }
@@ -616,7 +659,10 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
       </div>
     </div>
-    <div class="batch-entry"><button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記">あとからまとめて記録</button></div>
+    <div class="batch-entry log-tools">
+      <button type="button" class="btn ghost" data-act="cal" data-zh="📅 用月曆回顧">📅 カレンダーでさかのぼる</button>
+      <button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記">あとからまとめて記録</button>
+    </div>
     <div id="timeline"></div>
   </section>
 
@@ -802,6 +848,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     noteMode: lsGet('futago-note-mode', 'memo') === 'cost' ? 'cost' : 'memo',
     memoDay: null, memoWho: lsGet('futago-memo-who', 'mama'), memoDraft: '', memoEdit: null, memoConfirmDel: false,
     costMonth: null, costView: 'bought',
+    // Calendar back-numbers: logDay = the one day the 記録 tab shows (null = latest days); dayCache = older days read once.
+    logDay: null, dayCache: {},
+    rxOpen: null, showOrig: {},
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -869,6 +918,8 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const noteErr = name => e => { if (e && e.code === 'permission-denied') console.warn(`${name}: permission denied (check firestore.rules)`); else onErr(e); };
     unsubs.push(fs.collection('memos').orderBy('at', 'desc').limit(500).onSnapshot(s => {
       S.memos = s.docs.map(d => ({ ...d.data(), id: d.id })); renderNote();
+      if (S.form && S.form.type === 'cal') renderCal();
+      queueTranslations();
     }, noteErr('memos')));
     unsubs.push(fs.collection('expenses').orderBy('at', 'desc').limit(1000).onSnapshot(s => {
       S.expenses = s.docs.map(d => ({ ...d.data(), id: d.id })); renderNote();
@@ -902,6 +953,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (S.mode === 'db') {
       const col = S.db.collection('logs'), ref = id ? col.doc(id) : col.doc();
       bg(ref.set(data));
+      forgetDay(ref.id, data.at);
       return ref.id;
     } else {
       const key = id || newId();
@@ -910,7 +962,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     }
   }
   async function deleteLog(id) {
-    if (S.mode === 'db') bg(S.db.collection('logs').doc(id).delete());
+    if (S.mode === 'db') { bg(S.db.collection('logs').doc(id).delete()); forgetDay(id); }
     else { delete S.local.logs[id]; lsSet(LS_DATA, S.local); fromLocal(); render(); }
   }
   // Memos and expenses: same write-behind behaviour as saveLog, one collection (or local map) each.
@@ -992,9 +1044,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (selected) vals.add(Number(selected));   // keep an older odd amount like 45 selectable when editing
     return [...vals].sort((a, b) => a - b).map(m => `<option value="${m}" ${Number(selected) === m ? 'selected' : ''}>${m}${compact ? '' : ' mL'}</option>`).join('');
   }
-  function dayStats(id, from, to) {
+  function dayStats(id, from, to, list = S.logs) {
     const st = { milkN: 0, ml: 0, breastN: 0, pee: 0, poo: 0 };
-    for (const l of S.logs) {
+    for (const l of list) {
       if (l.baby !== id || l.at < from || l.at >= to) continue;
       if (l.type === 'milk') { st.milkN++; if (l.kind === 'breast') st.breastN++; else st.ml += Number(l.ml) || 0; }
       else if (l.type === 'pee') st.pee++;
@@ -1169,22 +1221,54 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         : L('時刻を選ぶと、その時刻に飲んだ場合の次からの時間を一覧できます（記録はされません）。', '選擇時間後，可以看到在那個時間餵奶時之後的時間表（不會存成紀錄）。')}</p>`;
   }
 
+  // Records of one calendar day. The live window covers the recent weeks; an older day is read once from
+  // the database and kept until something in it is edited. null = still loading.
+  function liveFrom() { return S.mode === 'db' && S.dbRecent.length >= 1000 ? Math.min(...S.dbRecent.map(l => l.at)) : null; }
+  function dayLogs(k) {
+    const lf = liveFrom();
+    if (lf === null || k > startOfDay(lf)) return S.logs.filter(l => l.at >= k && l.at < k + DAY);
+    const c = S.dayCache[k];
+    if (Array.isArray(c)) return c;
+    if (c !== 'loading') {
+      S.dayCache[k] = 'loading';
+      S.db.collection('logs').where('at', '>=', k).where('at', '<', k + DAY).get().then(s => {
+        S.dayCache[k] = s.docs.map(d => ({ ...d.data(), id: d.id })).filter(l => BABY_IDS.includes(l.baby) && TYPE_LABEL[l.type]).sort((a, b) => b.at - a.at);
+        renderTimeline(); if (S.form && S.form.type === 'cal') renderCal();
+      }).catch(() => { delete S.dayCache[k]; toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。')); });
+    }
+    return null;
+  }
+  const findLog = id => S.logs.find(x => x.id === id) || Object.values(S.dayCache).filter(Array.isArray).flat().find(x => x.id === id);
+  function forgetDay(id, at) {
+    for (const k of Object.keys(S.dayCache)) {
+      const c = S.dayCache[k];
+      if (Array.isArray(c) && (c.some(l => l.id === id) || (at >= Number(k) && at < Number(k) + DAY))) delete S.dayCache[k];
+    }
+  }
+
   function renderTimeline() {
     const el = $('#timeline');
     if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
-    const list = S.logs.filter(l => S.filter === 'all' || l.baby === S.filter);
+    // A day picked in the calendar shows on its own, with a way back to the latest days.
+    let src = S.logs, bar = '';
+    if (S.logDay != null) {
+      bar = `<div class="log-daybar"><span>📅 ${L(`${dayLabel(S.logDay)}の記録`, `${dayLabel(S.logDay)}的紀錄`)}</span><button type="button" class="btn ghost" data-act="log-latest">${L('最新に戻る', '回到最新')}</button></div>`;
+      src = dayLogs(S.logDay);
+      if (!src) { el.innerHTML = bar + `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    }
+    const list = src.filter(l => S.filter === 'all' || l.baby === S.filter);
     if (!list.length) {
-      el.innerHTML = `<p class="empty-note">${L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。')}</p>`;
+      el.innerHTML = bar + `<p class="empty-note">${S.logDay != null ? L('この日の記録はありません。', '這天沒有紀錄。') : L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。')}</p>`;
       return;
     }
     const groups = new Map();
     for (const l of list) { const k = startOfDay(l.at); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(l); }
     const keys = [...groups.keys()];
-    const shown = keys.slice(0, S.daysShown);
+    const shown = S.logDay != null ? keys : keys.slice(0, S.daysShown);
     const ids = S.filter === 'all' ? BABY_IDS : [S.filter];
-    el.innerHTML = shown.map(k => {
+    el.innerHTML = bar + shown.map(k => {
       const sums = ids.map(id => {
-        const st = dayStats(id, k, k + DAY);
+        const st = dayStats(id, k, k + DAY, src);
         return `<span><em class="${id}">${esc(baby(id).name)}</em> ${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`)} ${st.ml}mL · ${L('尿', '尿')}${st.pee} · ${L('便', '便')}${st.poo}</span>`;
       }).join('　');
       return `<div class="day"><div class="day-head"><h3>${dayLabel(k)}</h3><div class="sum num">${sums}</div></div>
@@ -1195,7 +1279,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
           <span class="d">${describe(l)}${l.note ? `<small>${esc(l.note)}</small>` : ''}</span>
           <span class="fix" aria-hidden="true">${L('修正', '修改')}</span>
         </button></li>`).join('')}</ul></div>`;
-    }).join('') + (keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`)}</button></div>` : '');
+    }).join('') + (S.logDay == null && keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`)}</button></div>` : '');
   }
 
   // ---------- trends: milk mL, pee and poo counts per day (last 14 days) or per month (last 6 months) ----------
@@ -1960,7 +2044,8 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   const MEMO_WHO = ['ane', 'imouto', 'mama', 'papa'];
   const memoWho = w => MEMO_WHO.includes(w) ? w : 'mama';
   const whoName = w => w === 'mama' ? L('ママ', '媽媽') : w === 'papa' ? L('パパ', '爸爸') : baby(w).name;
-  const whoIcon = w => BABY_IDS.includes(w) ? avatarHTML(w, 'sm') : `<span class="avatar sm ph" aria-hidden="true">${w === 'mama' ? L('マ', '媽') : L('パ', '爸')}</span>`;
+  // Only a real photo is shown next to a name; a letter badge would just repeat the name.
+  const whoIcon = w => BABY_IDS.includes(w) && baby(w).photo ? avatarHTML(w, 'sm') : '';
 
   // Data snapshots only redraw the notes below the composer, so typing is never interrupted.
   let noteKey = '';
@@ -1984,7 +2069,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <p>${L('その日のできごとを、だれでも自由に書いて残せます。', '當天發生的事，誰都可以自由寫下來保存。')}</p></header>
       <div class="memo-daynav">
         <button type="button" class="icon-btn" data-mday="-1" aria-label="${L('前の日', '前一天')}">‹</button>
-        <b>${dayLabel(keyDay(S.memoDay))}</b>
+        <button type="button" class="memo-date" data-act="cal" data-calk="${keyDay(S.memoDay)}" aria-label="${L('カレンダーを開く', '打開月曆')}">📅 ${dayLabel(keyDay(S.memoDay))}</button>
         <button type="button" class="icon-btn" data-mday="1" aria-label="${L('次の日', '後一天')}" ${isToday ? 'disabled' : ''}>›</button>
         ${isToday ? '' : `<button type="button" class="icon-btn" data-mday="today">${L('今日', '今天')}</button>`}
       </div>
@@ -1992,7 +2077,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <img class="memo-cat l" src="cat-hachiware.webp" alt="" aria-hidden="true" width="100" height="86">
         <img class="memo-cat r" src="cat-tabby.webp" alt="" aria-hidden="true" width="100" height="92">
         <span class="tape" aria-hidden="true"></span>
-        <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${whoIcon(w)}<span>${esc(whoName(w))}</span></button>`).join('')}</div>
+        <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${esc(whoName(w))}</button>`).join('')}</div>
         <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記')}" placeholder="${L('はじめて笑った、よく飲んだ、ママおつかれさま…など', '第一次笑了、喝得很好、媽媽辛苦了…等等')}">${esc(S.memoDraft)}</textarea>
         <div class="memo-actions">
           ${editing ? (S.memoConfirmDel
@@ -2006,24 +2091,158 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   }
   function memoBodyHTML() {
     const list = S.memos.filter(m => m.day === S.memoDay).sort((a, b) => a.at - b.at);
-    let h = list.length
+    return list.length
       ? `<div class="memo-list">${list.map((m, i) => `<article class="memo-note w-${memoWho(m.who)} t${i % 3}${m.id === S.memoEdit ? ' editing' : ''}">
           <span class="tape" aria-hidden="true"></span>
           <header>${whoIcon(memoWho(m.who))}<b>${esc(whoName(memoWho(m.who)))}</b>${dayKey(m.at) === m.day ? `<time>${fmtT(m.at)}</time>` : ''}</header>
-          <p>${esc(m.text)}</p>
-          <button type="button" class="memo-edit" data-memo="${esc(m.id)}">${L('書き直す・削除', '修改・刪除')}</button>
+          ${memoTextHTML(m)}
+          <footer class="memo-foot">${rxHTML(m)}<span class="spacer"></span><button type="button" class="memo-edit" data-memo="${esc(m.id)}">${L('書き直す・削除', '修改・刪除')}</button></footer>
+          ${S.rxOpen === m.id ? `<div class="rx-pal" role="group" aria-label="${L('リアクション', '回應')}">${RX.map(e => `<button type="button" data-rx="${esc(m.id)}|${e}" aria-pressed="${rxMine(m, e)}">${e}</button>`).join('')}</div>` : ''}
         </article>`).join('')}</div>`
       : `<p class="memo-empty">${L('この日のメモはまだありません。', '這天還沒有筆記。')}</p>`;
-    const days = [...new Set(S.memos.map(m => m.day))].sort().reverse().slice(0, 40);
-    if (days.length) h += `<div class="memo-days"><span class="lbl">${L('メモのある日', '有筆記的日子')}</span>
-      <div class="chips">${days.map(k => { const d = new Date(keyDay(k)); return `<button type="button" data-mjump="${k}" aria-pressed="${k === S.memoDay}">${d.getMonth() + 1}/${d.getDate()}<small>${S.memos.filter(m => m.day === k).length}</small></button>`; }).join('')}</div></div>`;
-    return h;
+  }
+
+  // Emoji-only reactions. Each person's reaction is stored under their account id, so the two phones never overwrite each other.
+  const RX = ['❤️', '🥹', '😂', '👏', '🎉', '🍼', '💤', '🙏'];
+  const myRxId = () => S.mode === 'db' && S.user ? S.user.uid : 'local';
+  const rxMine = (m, e) => !!(m.rx && m.rx[e] && m.rx[e][myRxId()]);
+  function rxHTML(m) {
+    const used = Object.entries(m.rx || {}).filter(([, who]) => who && Object.keys(who).length)
+      .sort(([a], [b]) => (RX.indexOf(a) + 99) % 99 - (RX.indexOf(b) + 99) % 99);
+    return used.map(([e, who]) => `<button type="button" class="rx${who[myRxId()] ? ' mine' : ''}" data-rx="${esc(m.id)}|${e}" title="${esc(Object.values(who).filter(v => typeof v === 'string').join('・'))}">${e}<b class="num">${Object.keys(who).length}</b></button>`).join('')
+      + `<button type="button" class="rx-add" data-rxopen="${esc(m.id)}" aria-expanded="${S.rxOpen === m.id}" aria-label="${L('リアクションする', '加上回應')}">☺︎<small>＋</small></button>`;
+  }
+  function toggleRx(id, e) {
+    const m = S.memos.find(x => x.id === id); if (!m) return;
+    const uid = myRxId(), on = rxMine(m, e);
+    S.rxOpen = null;
+    if (S.mode === 'db') {
+      const name = S.user && (S.user.displayName || S.user.email || '').split(/[\s@]/)[0];
+      bg(S.db.collection('memos').doc(id).update(new firebase.firestore.FieldPath('rx', e, uid), on ? firebase.firestore.FieldValue.delete() : (name || true)));
+    } else {
+      const rec = S.local.memos[id]; rec.rx = rec.rx || {}; rec.rx[e] = rec.rx[e] || {};
+      if (on) delete rec.rx[e][uid]; else rec.rx[e][uid] = true;
+      if (!Object.keys(rec.rx[e]).length) delete rec.rx[e];
+      lsSet(LS_DATA, S.local); fromLocal();
+    }
+    renderNote();
+  }
+
+  // ---------- memo translation: Japanese ⇄ Taiwan Mandarin with Gemini (Firebase AI Logic) ----------
+  // A memo keeps its original text. Whichever phone sees it first adds the other language
+  // ({ lang, tr: { ja, zh }, trFor: the text that was translated }); until then, or without AI, the original shows.
+  const memoText = m => (m.lang && m.lang !== LANG && m.trFor === m.text && m.tr && m.tr[LANG]) || m.text;
+  function memoTextHTML(m) {
+    const has = memoText(m) !== m.text, orig = has && S.showOrig[m.id];
+    return `<p>${esc(has && !orig ? memoText(m) : m.text)}</p>${has ? `<button type="button" class="tr-toggle" data-orig="${esc(m.id)}">${orig ? L('🌐 訳を見る', '🌐 看翻譯') : L('🌐 自動翻訳 ・ 原文を見る', '🌐 自動翻譯 ・ 看原文')}</button>` : ''}`;
+  }
+  const AI_MODEL = 'gemini-3.5-flash-lite', FB_MODULAR = '12.15.0';
+  const TR_PROMPT = `You translate short family diary notes about newborn twin girls between Japanese and Traditional Chinese as written in Taiwan (台灣華語).
+Detect the language of the note and return only JSON: {"lang":"ja" or "zh","ja":"<the note in Japanese>","zh":"<the note in Taiwan Mandarin, Traditional characters>"}.
+The original language's field must be the note unchanged. Keep emoji, line breaks and numbers. Family words: 姉→姊姊, 妹→妹妹, ママ→媽媽, パパ→爸爸. Keep the warm, casual tone.`;
+  let aiModel = null, aiLoad = null, aiOff = false;
+  // The AI SDK is only loaded once a memo needs translating, as a separate app instance (modular SDK beside the compat one).
+  function aiReady() {
+    if (aiModel || aiOff || S.mode !== 'db') return Promise.resolve(aiModel);
+    return aiLoad || (aiLoad = (async () => {
+      try {
+        const base = `https://www.gstatic.com/firebasejs/${FB_MODULAR}/`;
+        const [appMod, aiMod, acMod] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-ai.js'), window.APPCHECK_SITE_KEY ? import(base + 'firebase-app-check.js') : null]);
+        const app = appMod.initializeApp(window.FIREBASE_CONFIG, 'ai');
+        if (acMod) acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaV3Provider(window.APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
+        aiModel = aiMod.getGenerativeModel(aiMod.getAI(app, { backend: new aiMod.GoogleAIBackend() }), { model: AI_MODEL, generationConfig: { responseMimeType: 'application/json' } });
+      } catch (e) { console.warn('memo translation unavailable', e); aiOff = true; }
+      return aiModel;
+    })());
+  }
+  const trQueue = new Set(), trFailed = new Set();
+  let trBusy = false;
+  function queueTranslations() {
+    if (S.mode !== 'db' || aiOff) return;
+    S.memos.forEach(m => { if (m.text && m.trFor !== m.text && !trFailed.has(m.id + m.text)) trQueue.add(m.id); });
+    pumpTr();
+  }
+  async function pumpTr() {
+    if (trBusy || !trQueue.size) return;
+    trBusy = true;
+    try {
+      const model = await aiReady();
+      if (!model) { trQueue.clear(); return; }
+      while (trQueue.size) {
+        const id = trQueue.values().next().value; trQueue.delete(id);
+        const m = S.memos.find(x => x.id === id);
+        if (!m || m.trFor === m.text) continue;
+        const text = m.text;
+        try {
+          const r = await model.generateContent(`${TR_PROMPT}\n\nNote:\n${text}`);
+          const j = JSON.parse(r.response.text());
+          if (!['ja', 'zh'].includes(j.lang) || typeof j.ja !== 'string' || typeof j.zh !== 'string') throw new Error('bad translation');
+          await S.db.collection('memos').doc(id).update({ lang: j.lang, tr: { ja: j.ja.slice(0, 2000), zh: j.zh.slice(0, 2000) }, trFor: text });
+        } catch (e) {
+          console.warn('memo translation failed', e);
+          trFailed.add(id + text);   // not retried in this session
+          if (/429|quota|exhausted|app.?check|permission/i.test(String(e && (e.message || e.code)))) { trQueue.clear(); break; }
+        }
+      }
+    } finally { trBusy = false; }
+  }
+
+  // ---------- calendar: back-numbers of memos and records ----------
+  function calMin() {
+    const c = [Date.now()];
+    BABY_IDS.forEach(id => { if (baby(id).birthAt) c.push(baby(id).birthAt); });
+    if (S.logs.length) c.push(S.logs[S.logs.length - 1].at);
+    S.memos.forEach(m => c.push(keyDay(m.day)));
+    return startOfDay(Math.min(...c));
+  }
+  function openCal(k) { const sel = startOfDay(k || Date.now()); S.form = { type: 'cal', month: monthStart(sel), sel }; renderCal(); }
+  function renderCal() {
+    const F = S.form, today = startOfDay(Date.now()), min = calMin();
+    const first = new Date(F.month), y = first.getFullYear(), mo = first.getMonth(), n = new Date(y, mo + 1, 0).getDate();
+    const birth = BABY_IDS.map(id => baby(id).birthAt).filter(Boolean).map(startOfDay);
+    const memoDays = new Map();
+    S.memos.forEach(m => { if (!memoDays.has(m.day)) memoDays.set(m.day, new Set()); memoDays.get(m.day).add(memoWho(m.who)); });
+    const wk = LANG === 'zh' ? '日一二三四五六' : '日月火水木金土';
+    let cells = '';
+    for (let i = 0; i < first.getDay(); i++) cells += '<span></span>';
+    for (let d = 1; d <= n; d++) {
+      const k = new Date(y, mo, d).getTime(), who = memoDays.get(dayKey(k));
+      const cls = ['cal-d', k === F.sel ? 'sel' : '', k === today ? 'today' : '', [0, 6].includes(new Date(k).getDay()) ? `w${new Date(k).getDay()}` : ''].filter(Boolean).join(' ');
+      cells += `<button type="button" class="${cls}" data-cald="${k}" ${k > today || k < min ? 'disabled' : ''}>${birth.includes(k) ? '<span class="bd" aria-hidden="true">🎂</span>' : ''}<span>${d}</span>
+        <span class="cal-dots">${who ? MEMO_WHO.filter(w => who.has(w)).map(w => `<i class="w-${w}"></i>`).join('') : ''}</span></button>`;
+    }
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet cal" role="dialog" aria-label="${L('カレンダー', '月曆')}">
+      <div class="sheet-head"><h2>${L('カレンダー', '月曆')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <div class="memo-daynav">
+        <button type="button" class="icon-btn" data-calm="1" aria-label="${L('前の月', '上個月')}" ${F.month <= monthStart(min) ? 'disabled' : ''}>‹</button>
+        <b>${y}${L('年', '年')}${mo + 1}${L('月', '月')}</b>
+        <button type="button" class="icon-btn" data-calm="-1" aria-label="${L('次の月', '下個月')}" ${F.month >= monthStart(today) ? 'disabled' : ''}>›</button>
+      </div>
+      <div class="cal-grid">${[...wk].map((w, i) => `<span class="cal-w w${i}">${w}</span>`).join('')}${cells}</div>
+      <p class="hint cal-legend">${MEMO_WHO.map(w => `<span><i class="w-${w}"></i>${esc(whoName(w))}</span>`).join('')}<span>${L('＝メモあり', '＝有筆記')}</span></p>
+      ${calDigestHTML(F.sel)}
+    </div></div>`;
+  }
+  // The chosen day at a glance: each twin's totals, the memos, and buttons into the 記録 / ノート tabs.
+  function calDigestHTML(k) {
+    const logs = dayLogs(k), memos = S.memos.filter(m => m.day === dayKey(k)).sort((a, b) => a.at - b.at);
+    const b0 = BABY_IDS.map(id => baby(id).birthAt).find(Boolean);
+    const age = b0 && k >= startOfDay(b0) ? L(`生後${dayAge(b0, k)}日`, `出生第${dayAge(b0, k)}天`) : '';
+    const stats = logs === null ? `<p class="hint">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`
+      : `<ul class="cal-stats">${BABY_IDS.map(id => { const st = dayStats(id, k, k + DAY, logs); return `<li class="${id}"><b>${esc(baby(id).name)}</b><span class="num">${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`)} ${fmtG(st.ml)}mL ・ ${L('尿', '尿')}${st.pee} ・ ${L('便', '便')}${st.poo}</span></li>`; }).join('')}</ul>`;
+    return `<div class="cal-dig">
+      <h3>${dayLabel(k)}${age ? `<small>${age}</small>` : ''}</h3>
+      ${stats}
+      ${memos.length ? `<ul class="cal-memos">${memos.map(m => `<li class="w-${memoWho(m.who)}"><b>${esc(whoName(memoWho(m.who)))}</b><span>${esc(memoText(m))}</span></li>`).join('')}</ul>` : `<p class="hint">${L('この日のメモはありません。', '這天沒有筆記。')}</p>`}
+      <div class="cal-go"><button type="button" class="btn" data-act="cal-log">${L('この日の記録を見る', '查看這天的紀錄')}</button><button type="button" class="btn" data-act="cal-memo">${L('この日のメモを開く', '打開這天的筆記')}</button></div>
+    </div>`;
   }
   function memoSave() {
     const text = ($('#memo-text') || {}).value?.trim() || '';
     if (!text) return toast(L('メモを書いてください。', '請先寫筆記。'));
     const edit = S.memoEdit && S.memos.find(m => m.id === S.memoEdit), now = Date.now();
-    const data = { day: edit ? edit.day : S.memoDay, who: S.memoWho, text, at: edit ? edit.at : now, updatedAt: now };
+    // Reactions stay with an edited memo; its translation is redone for the new text.
+    const data = { day: edit ? edit.day : S.memoDay, who: S.memoWho, text, at: edit ? edit.at : now, updatedAt: now, ...(edit && edit.rx ? { rx: edit.rx } : {}) };
     const before = edit ? (({ id: _drop, ...rest }) => rest)(edit) : null;
     saveDoc('memos', edit ? edit.id : null, data).then(id => {
       S.memoDraft = ''; S.memoEdit = null; S.memoConfirmDel = false; renderNote(true);
@@ -2129,7 +2348,10 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const F = S.form, root = $('#sheet-root');
     const past = [...new Set(S.expenses.filter(e => catOf(e) === F.cat).map(e => e.name))];
     const sugg = [...new Set([...catItems(F.cat), ...past])].slice(0, 12);
-    root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+    // Picking a category changes how many chips wrap; the sheet keeps a fixed height and its scroll position,
+    // so the form only ever grows downward instead of jumping up and down.
+    const keep = $('#sheet') ? $('#sheet').scrollTop : 0;
+    root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet fixed" id="sheet" novalidate>
       <div class="sheet-head"><h2>${F.editing ? L('修正：費用', '修改：費用') : L('費用を追加', '新增費用')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
       <div class="field"><span class="lbl">${L('状態', '狀態')}</span>${chipsHTML('cstatus', { bought: L('買った', '已購買'), want: L('買う予定（リスト）', '待買（清單）') }, F.status)}</div>
       <div class="field"><span class="lbl">${L('カテゴリ', '類別')}</span><div class="chips cat-chips" role="group">${Object.keys(COST_CATS).map(k => `<button type="button" data-ccat="${k}" aria-pressed="${F.cat === k}"><i style="background:${COST_CATS[k].c}"></i>${catName(k)}</button>`).join('')}</div></div>
@@ -2151,6 +2373,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
       </div>
     </form></div>`;
+    $('#sheet').scrollTop = keep;
   }
   async function submitCost() {
     readCost();
@@ -2233,6 +2456,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (F.type === 'birth') return renderBirth();
     if (F.type === 'photo') return renderPhoto();
     if (F.type === 'cost') return renderCostForm();
+    if (F.type === 'cal') return renderCal();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -2618,7 +2842,21 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; }
       return renderNote(true);
     }
-    if (d.mjump) { S.memoDay = d.mjump; if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; } return renderNote(true); }
+    if (d.rxopen) { S.rxOpen = S.rxOpen === d.rxopen ? null : d.rxopen; return renderNote(); }
+    if (d.rx) { const i = d.rx.indexOf('|'); return toggleRx(d.rx.slice(0, i), d.rx.slice(i + 1)); }
+    if (d.orig) { S.showOrig[d.orig] = !S.showOrig[d.orig]; return renderNote(); }
+    // calendar
+    if (d.cald) { S.form.sel = Number(d.cald); return renderCal(); }
+    if (d.calm) { S.form.month = monthStart(S.form.month, Number(d.calm)); return renderCal(); }
+    if (d.act === 'cal') return openCal(d.calk ? Number(d.calk) : (S.tab === 'log' && S.logDay != null ? S.logDay : Date.now()));
+    if (d.act === 'cal-log' || d.act === 'cal-memo') {
+      const k = S.form.sel; S.form = null; renderForm();
+      if (d.act === 'cal-log') { S.logDay = k; S.tab = 'log'; renderTimeline(); }
+      else { S.memoDay = dayKey(k); S.memoEdit = null; S.memoDraft = ''; S.noteMode = 'memo'; S.tab = 'note'; renderNote(true); }
+      lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0);
+      return;
+    }
+    if (d.act === 'log-latest') { S.logDay = null; return renderTimeline(); }
     if (d.mwho) { S.memoWho = d.mwho; if (!S.memoEdit) lsSet('futago-memo-who', d.mwho); renderNote(true); const ta = $('#memo-text'); if (ta) ta.focus({ preventScroll: true }); return; }
     if (d.memo) {
       const m = S.memos.find(x => x.id === d.memo); if (!m) return;
@@ -2681,7 +2919,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       t.parentElement.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === t)));
       return;
     }
-    if (d.edit) { const l = S.logs.find(x => x.id === d.edit); if (l) openForm(l.type, l.baby, l); return; }
+    if (d.edit) { const l = findLog(d.edit); if (l) openForm(l.type, l.baby, l); return; }
     if (d.filter) {
       S.filter = d.filter;
       document.querySelectorAll('#filter button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === S.filter)));
