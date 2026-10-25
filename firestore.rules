@@ -22,7 +22,7 @@ service cloud.firestore {
       allow read, delete: if isFamily();
       allow create, update: if isFamily()
         && request.resource.data.baby in ['ane', 'imouto']
-        && request.resource.data.type in ['milk', 'pee', 'poo', 'weight']
+        && request.resource.data.type in ['milk', 'pee', 'poo', 'weight', 'measure', 'temp']
         && request.resource.data.at is number;
     }
 

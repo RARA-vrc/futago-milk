@@ -84,6 +84,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li><a href="#ja-screens">画面の構成</a></li>
       <li><a href="#ja-milk">授乳を記録する</a></li>
       <li><a href="#ja-other">おしっこ・うんち・体重</a></li>
+      <li><a href="#ja-temp">体温・体調メモ</a></li>
       <li><a href="#ja-batch">あとからまとめて記録</a></li>
       <li><a href="#ja-fix">記録の修正・削除</a></li>
       <li><a href="#ja-next">次の授乳とアラーム</a></li>
@@ -91,6 +92,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li><a href="#ja-plan">時刻表</a></li>
       <li><a href="#ja-trend">推移（グラフ）</a></li>
       <li><a href="#ja-growth">出生時の記録・成長曲線・発達の目安</a></li>
+      <li><a href="#ja-photo">アイコンの写真</a></li>
       <li><a href="#ja-settings">設定</a></li>
       <li><a href="#ja-data">データと共有</a></li>
       <li><a href="#ja-trouble">困ったとき</a></li>
@@ -103,7 +105,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <tr><td><span class="ui">いま</span></td><td>姉・妹それぞれの次の授乳時刻、前回の授乳、今日の合計。ここから記録します。</td></tr>
       <tr><td><span class="ui">時刻表</span></td><td>ふたりの授乳時刻を左右に並べた一覧。仮の時刻での計算もできます。</td></tr>
       <tr><td><span class="ui">記録</span></td><td>すべての記録を日ごとに一覧。タップで修正・削除。</td></tr>
-      <tr><td><span class="ui">推移</span></td><td>ミルク量・おしっこ・うんちの日ごと／月ごとのグラフと、体重の推移。</td></tr>
+      <tr><td><span class="ui">推移</span></td><td>ミルク量・おしっこ・うんちの日ごと／月ごとのグラフと、体重・身長・頭囲の推移。</td></tr>
     </table></div>
     <p>右上の <span class="ui">アラーム</span> はアラームのオン・オフ、<span class="ui">設定</span> は各種設定です。</p>
 
@@ -121,9 +123,19 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <ul>
       <li><b>おしっこ</b>：時刻を選んで保存します。</li>
       <li><b>うんち</b>：色（黄色／緑／茶色／白っぽい）と量を選びます。「おしっこも一緒に記録する」にチェックすると、おしっこも同時に記録されます。</li>
-      <li><b>体重</b>：g で入力します。前回の体重が表示されます。<span class="ui">推移</span> タブからも記録できます。</li>
+      <li><b>体重</b>：g で入力します。前回の体重が表示されます。<span class="ui">推移</span> タブからも記録できます。健診などで身長・頭囲も測ったときは、<span class="ui">身長・頭囲も記録する</span> を開くと一緒に記録できます（空欄なら記録されません）。</li>
     </ul>
     <p class="note">「白っぽい」を選ぶと注意が表示されます。白っぽい・クリーム色の便が続くときは、母子手帳の便色カードと見比べ、早めに小児科へ相談してください。</p>
+
+    <h2 id="ja-temp">体温・体調メモ</h2>
+    <ol>
+      <li>カードの <span class="ui">体温</span> を押します。</li>
+      <li><b>体温</b>は <span class="ui">−0.1</span> <span class="ui">+0.1</span> か、真ん中のリストで選びます（前回の体温から始まります。初回は36.8℃）。</li>
+      <li><b>体調</b>は当てはまるものをいくつでも選べます：鼻水・咳・吐いた・下痢・発疹・機嫌が悪い・飲みが悪い・息が苦しそう・薬を飲んだ・受診した。</li>
+      <li>時刻とメモ（任意）を入れて <span class="ui">保存</span>。<span class="ui">記録</span> タブに「37.0℃・鼻水」のように表示されます。</li>
+    </ol>
+    <p>37.5℃以上はオレンジ、38℃以上は赤で表示されます。</p>
+    <p class="note">生後3か月未満で38℃以上の熱があるときは、画面に注意が出ます。夜間でも早めに小児科へ相談してください（#8000 こども医療電話相談）。ぐったりしている、息が苦しそう、水分がとれないときは迷わず受診・救急へ。</p>
 
     <h2 id="ja-batch">あとからまとめて記録</h2>
     <p>夜間にほかの人が飲ませてくれた分などを、あとでまとめて記録できます。<span class="ui">いま</span> タブの一番下、または <span class="ui">記録</span> タブの <span class="ui">あとからまとめて記録</span> から開きます。</p>
@@ -187,7 +199,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <p><span class="ui">設定</span> → <span class="ui">出生時の記録</span>、またはカードの <span class="ui">＋ 出生日を登録</span> から入力します。</p>
     <ul>
       <li>ふたり共通：<b>生年月日</b>、<b>在胎週数</b>（週＋日。母子手帳の「出産の状態」の週数）。</li>
-      <li>ひとりずつ：<b>出生時刻</b>、<b>出生体重</b>、<b>出生身長</b>（任意）。</li>
+      <li>ひとりずつ：<b>出生時刻</b>、<b>出生体重</b>、<b>出生身長</b>・<b>出生頭囲</b>（任意）。</li>
     </ul>
     <h3>日齢・月齢・修正月齢</h3>
     <ul>
@@ -197,7 +209,8 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <h3>成長曲線</h3>
     <ul>
       <li><span class="ui">推移</span> タブの体重グラフが、横軸＝月齢、全国の女の子の体重の範囲（薄い帯3〜97%、濃い帯10〜90%、点線50%）と重ねた表示になります。出生体重も最初の点として入ります。</li>
-      <li>グラフの下に、最新の体重が全国のどのあたり（例：10〜25%）かを表示します。</li>
+      <li>グラフの上の <span class="ui">体重</span> <span class="ui">身長</span> <span class="ui">頭囲</span> で項目を切り替えられます。身長・頭囲を選ぶと、下のボタンが <span class="ui">○○の身長・頭囲を記録</span> に変わります。</li>
+      <li>グラフの下に、最新の値が全国のどのあたり（例：10〜25%）かを表示します。</li>
       <li>早産の場合は <span class="ui">生後月齢</span> と <span class="ui">修正月齢</span> を切り替えられます（初期は生後月齢。出生体重が曲線の始まりに乗ります）。</li>
       <li>下の体重の表にも、出生時の体重が「出生時」として一番下に入ります。タップすると出生時の記録を編集できます。</li>
     </ul>
@@ -206,7 +219,14 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li>首すわり・寝返り・ひとりすわり・はいはい・つかまり立ち・ひとり歩き・ことばについて、全国で半数〜9割の子ができるようになる時期を帯で示し、今の月齢（早産は修正月齢）を縦線で表示します。</li>
       <li>各項目の <span class="ui">姉 まだ</span> などを押すと「できた（日付）」として記録されます。もう一度押すと取り消せます。</li>
     </ul>
-    <p class="note">データの出典：こども家庭庁「令和5年乳幼児身体発育調査」（体重の身体発育値・運動／言語機能通過率）。発育・発達には個人差があります。気になることは健診や小児科で相談してください。</p>
+    <p class="note">データの出典：こども家庭庁「令和5年乳幼児身体発育調査」（体重・身長・頭囲の身体発育値、運動／言語機能通過率）。発育・発達には個人差があります。気になることは健診や小児科で相談してください。</p>
+
+    <h2 id="ja-photo">アイコンの写真</h2>
+    <ul>
+      <li><span class="ui">いま</span> タブのカードの丸いアイコン、または <span class="ui">設定</span> → <span class="ui">アイコンの写真</span> から写真を選びます。</li>
+      <li>拡大と位置を調整して保存します。<span class="ui">写真を外す</span> で元の文字アイコンに戻ります。</li>
+      <li>写真は小さく切り抜いてから、記録と同じデータベースに保存されます。見られるのは登録したふたりだけで、GitHub（アプリの公開コード）には置かれません。</li>
+    </ul>
 
     <h2 id="ja-settings">設定</h2>
     <div class="tw"><table>
@@ -245,6 +265,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li><a href="#zh-screens">畫面說明</a></li>
       <li><a href="#zh-milk">記錄餵奶</a></li>
       <li><a href="#zh-other">尿尿・便便・體重</a></li>
+      <li><a href="#zh-temp">體溫・身體狀況</a></li>
       <li><a href="#zh-batch">事後一次補記</a></li>
       <li><a href="#zh-fix">修改・刪除紀錄</a></li>
       <li><a href="#zh-next">下次餵奶與提醒</a></li>
@@ -252,6 +273,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li><a href="#zh-plan">時刻表</a></li>
       <li><a href="#zh-trend">趨勢（圖表）</a></li>
       <li><a href="#zh-growth">出生紀錄・生長曲線・發展參考</a></li>
+      <li><a href="#zh-photo">頭像照片</a></li>
       <li><a href="#zh-settings">設定</a></li>
       <li><a href="#zh-data">資料與共享</a></li>
       <li><a href="#zh-trouble">疑難排解</a></li>
@@ -264,7 +286,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <tr><td><span class="ui">現在</span></td><td>姊姊、妹妹各自的下次餵奶時間、上次餵奶、今天的合計。從這裡記錄。</td></tr>
       <tr><td><span class="ui">時刻表</span></td><td>左右並排顯示兩人的餵奶時間，也可以用假設的時間來計算。</td></tr>
       <tr><td><span class="ui">紀錄</span></td><td>依日期列出所有紀錄，點一下可以修改或刪除。</td></tr>
-      <tr><td><span class="ui">趨勢</span></td><td>奶量、尿尿、便便的每日／每月圖表，以及體重變化。</td></tr>
+      <tr><td><span class="ui">趨勢</span></td><td>奶量、尿尿、便便的每日／每月圖表，以及體重・身長・頭圍的變化。</td></tr>
     </table></div>
     <p>右上角的 <span class="ui">提醒</span> 用來開關提醒，<span class="ui">設定</span> 是各種設定。</p>
 
@@ -282,9 +304,19 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <ul>
       <li><b>尿尿</b>：選擇時間後儲存。</li>
       <li><b>便便</b>：選擇顏色（黃色／綠色／褐色／偏白）和量。勾選「同時記錄尿尿」就會一起記錄尿尿。</li>
-      <li><b>體重</b>：以 g 輸入，會顯示上次的體重。也可以從 <span class="ui">趨勢</span> 分頁記錄。</li>
+      <li><b>體重</b>：以 g 輸入，會顯示上次的體重。也可以從 <span class="ui">趨勢</span> 分頁記錄。健檢時也有量身長・頭圍的話，展開 <span class="ui">同時記錄身長・頭圍</span> 就能一起記錄（空白則不記錄）。</li>
     </ul>
     <p class="note">選擇「偏白」時會顯示提醒。若持續出現偏白或奶油色的便便，請與兒童健康手冊中的嬰兒大便辨識卡比對，並盡早諮詢小兒科。</p>
+
+    <h2 id="zh-temp">體溫・身體狀況</h2>
+    <ol>
+      <li>點卡片上的 <span class="ui">體溫</span>。</li>
+      <li><b>體溫</b>用 <span class="ui">−0.1</span> <span class="ui">+0.1</span> 或中間的清單選擇（從上次的體溫開始，第一次為36.8℃）。</li>
+      <li><b>身體狀況</b>可複選：流鼻水・咳嗽・吐奶・腹瀉・起疹子・心情不好・喝奶不好・呼吸困難・吃了藥・看了醫生。</li>
+      <li>選擇時間、填寫備註（選填）後點 <span class="ui">儲存</span>。<span class="ui">紀錄</span> 分頁會顯示如「37.0℃・流鼻水」。</li>
+    </ol>
+    <p>37.5℃以上以橘色、38℃以上以紅色顯示。</p>
+    <p class="note">未滿3個月的寶寶發燒38℃以上時，畫面會出現提醒。即使是夜間也請盡早諮詢小兒科。若寶寶活力很差、呼吸困難或無法喝奶，請立即就醫或掛急診。</p>
 
     <h2 id="zh-batch">事後一次補記</h2>
     <p>夜間由別人餵的奶等，可以之後一次補記。從 <span class="ui">現在</span> 分頁最下方，或 <span class="ui">紀錄</span> 分頁的 <span class="ui">事後一次補記</span> 開啟。</p>
@@ -348,7 +380,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <p>從 <span class="ui">設定</span> → <span class="ui">出生紀錄</span>，或卡片上的 <span class="ui">＋ 登錄出生日</span> 輸入。</p>
     <ul>
       <li>兩人相同：<b>出生日期</b>、<b>出生週數</b>（週＋天，健康手冊上記載的週數）。</li>
-      <li>各自輸入：<b>出生時間</b>、<b>出生體重</b>、<b>出生身長</b>（選填）。</li>
+      <li>各自輸入：<b>出生時間</b>、<b>出生體重</b>、<b>出生身長</b>・<b>出生頭圍</b>（選填）。</li>
     </ul>
     <h3>日齡・月齡・矯正月齡</h3>
     <ul>
@@ -358,7 +390,8 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <h3>生長曲線</h3>
     <ul>
       <li><span class="ui">趨勢</span> 分頁的體重圖表，會以月齡為橫軸，並與全國女童的體重範圍（淺色帶3〜97%、深色帶10〜90%、虛線50%）重疊顯示。出生體重也會作為第一個點。</li>
-      <li>圖表下方會顯示最新體重大約位在全國的哪個範圍（例：10〜25%）。</li>
+      <li>可以用圖表上方的 <span class="ui">體重</span> <span class="ui">身長</span> <span class="ui">頭圍</span> 切換項目。選擇身長或頭圍時，下方按鈕會變成 <span class="ui">記錄○○的身長・頭圍</span>。</li>
+      <li>圖表下方會顯示最新數值大約位在全國的哪個範圍（例：10〜25%）。</li>
       <li>早產時可以切換 <span class="ui">實際月齡</span> 和 <span class="ui">矯正月齡</span>（預設為實際月齡，出生體重會落在曲線的起點）。</li>
       <li>下方的體重表格最下面也會列出「出生時」的體重，點一下可以編輯出生紀錄。</li>
     </ul>
@@ -367,7 +400,14 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li>針對抬頭穩定、翻身、獨坐、爬行、扶物站立、獨立行走、說話，用色帶顯示全國半數〜9成寶寶會做到的時期，並用直線標示目前月齡（早產為矯正月齡）。</li>
       <li>點各項目的 <span class="ui">姊姊 還沒</span> 等按鈕，就會記錄為「做到了（日期）」。再點一次可以取消。</li>
     </ul>
-    <p class="note">資料來源：日本兒童家庭廳「2023年嬰幼兒身體發育調查」（體重身體發育值・運動／語言功能通過率）。台灣兒童健康手冊使用的是 WHO 生長曲線，數值會稍有不同。發育與發展有個別差異，若有疑慮請於健檢或小兒科諮詢。</p>
+    <p class="note">資料來源：日本兒童家庭廳「2023年嬰幼兒身體發育調查」（體重・身長・頭圍身體發育值、運動／語言功能通過率）。台灣兒童健康手冊使用的是 WHO 生長曲線，數值會稍有不同。發育與發展有個別差異，若有疑慮請於健檢或小兒科諮詢。</p>
+
+    <h2 id="zh-photo">頭像照片</h2>
+    <ul>
+      <li>點 <span class="ui">現在</span> 分頁卡片上的圓形頭像，或從 <span class="ui">設定</span> → <span class="ui">頭像照片</span> 選擇照片。</li>
+      <li>調整放大與位置後儲存。點 <span class="ui">移除照片</span> 會恢復成文字頭像。</li>
+      <li>照片會縮小裁切後，存在與紀錄相同的資料庫。只有登記的兩人能看到，不會放到 GitHub（App 的公開程式碼）。</li>
+    </ul>
 
     <h2 id="zh-settings">設定</h2>
     <div class="tw"><table>
