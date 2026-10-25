@@ -320,7 +320,22 @@ input, select, textarea { font-size: max(16px, 1em); }
 .tbaby button.ane[aria-pressed="true"] { color: var(--ane); box-shadow: inset 0 -3px 0 var(--ane); }
 .tbaby button.imouto[aria-pressed="true"] { color: var(--imo); box-shadow: inset 0 -3px 0 var(--imo); }
 .tbaby button.both[aria-pressed="true"] { color: var(--ink); }
-.tchart [data-tday] { cursor: pointer; }
+/* per-feed milk chart: fixed y-axis, a week of day columns per screen, swipe right-to-left into older days */
+.fchart { display: grid; grid-template-columns: 30px minmax(0, 1fr); margin-top: 4px; --c: var(--ane); }
+.fchart.imouto { --c: var(--imo); }
+.fc-axis { position: relative; height: 240px; margin-top: 20px; }
+.fc-axis span { position: absolute; right: 5px; transform: translateY(50%); font-size: .64rem; color: var(--muted); line-height: 1; }
+.fc-scroll { display: grid; grid-auto-flow: column; grid-auto-columns: calc(100% / 7); overflow-x: auto; overflow-y: hidden; direction: rtl; scroll-snap-type: x proximity; overscroll-behavior-x: contain; scrollbar-width: thin; padding-bottom: 4px; }
+.fc-day { direction: ltr; scroll-snap-align: start; border: none; background: transparent; border-radius: 10px; padding: 20px 0 4px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; min-height: 0; color: var(--muted); font: inherit; cursor: pointer; }
+.fc-day.sel { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); }
+.fc-plot { position: relative; width: 100%; height: 240px; display: flex; justify-content: center; align-items: flex-end;
+  background: repeating-linear-gradient(to top, var(--line) 0 1px, transparent 1px calc(100% / var(--steps))); box-shadow: inset 0 1px 0 var(--line); }
+.fc-bar { position: relative; width: 62%; max-width: 34px; display: flex; flex-direction: column-reverse; gap: 2px; }
+.fc-bar i { font-style: normal; display: flex; align-items: center; justify-content: center; min-height: 1px; border-radius: 3px; background: var(--c); color: var(--surface); font-size: .68rem; font-weight: 700; line-height: 1; overflow: hidden; }
+.fc-bar i.alt { opacity: .78; }
+.fc-bar b { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 3px; font-family: var(--f-display); font-size: .74rem; color: var(--ink); white-space: nowrap; }
+.fc-day small { font-size: .68rem; line-height: 1.25; text-align: center; }
+.fc-day.sel small { color: var(--ink); font-weight: 700; }
 .tday { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
 .tday-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: .85rem; }
 .tday-head b { font-family: var(--f-display); }
@@ -1105,36 +1120,43 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   }
   // One twin's daily milk, each bar stacked from that day's feeds (earliest at the bottom) so the size of
   // every feed shows. Feeds alternate in shade; the amount is printed inside when the piece is tall enough.
-  const feedsOn = (id, k) => S.logs.filter(l => l.baby === id && l.type === 'milk' && l.at >= k && l.at < k + DAY).sort((a, b) => a.at - b.at);
-  function feedChart(id, keys, labels, sel) {
-    const W = 360, H = 200, pl = 34, pr = 6, pt = 16, pb = 22;
-    const feeds = keys.map(k => feedsOn(id, k).filter(l => l.kind !== 'breast' && Number(l.ml) > 0));
+  // A week fits the screen; older days are a horizontal swipe away (as far back as the loaded records go).
+  const FEED_DAYS_VIEW = 7, FEED_DAYS_MAX = 90, FEED_PLOT_PX = 240;
+  // The live window, plus the 6-month read when the monthly view has already fetched it (no extra reads here).
+  function milkSource() {
+    if (!S.history) return S.logs;
+    const m = new Map(); S.history.forEach(l => m.set(l.id, l)); S.logs.forEach(l => m.set(l.id, l));
+    return [...m.values()];
+  }
+  const feedsOn = (src, id, k) => src.filter(l => l.baby === id && l.type === 'milk' && l.at >= k && l.at < k + DAY).sort((a, b) => a.at - b.at);
+  function feedDays(src, id, today) {
+    const own = src.filter(l => l.baby === id && l.type === 'milk');
+    let first = own.length ? startOfDay(Math.min(...own.map(l => l.at))) : today;
+    // The live window stops at 1000 records, so its oldest day may be cut short — leave that day out.
+    if (!S.history && S.mode === 'db' && S.dbRecent.length >= 1000) first += DAY;
+    const n = Math.min(FEED_DAYS_MAX, Math.max(FEED_DAYS_VIEW, Math.round((today - first) / DAY) + 1));
+    return Array.from({ length: n }, (_, i) => today - (n - 1 - i) * DAY);
+  }
+  function feedChart(src, id, keys, sel, today) {
+    const feeds = keys.map(k => feedsOn(src, id, k).filter(l => l.kind !== 'breast' && Number(l.ml) > 0));
     const totals = feeds.map(f => f.reduce((s, l) => s + Number(l.ml), 0));
     const max = Math.max(1, ...totals), step = niceStep(max), top = Math.ceil(max / step) * step;
-    const n = keys.length, gw = (W - pl - pr) / n, bw = Math.min(20, gw - 4);
-    const y = v => pt + (1 - v / top) * (H - pt - pb);
-    const color = `var(--${id === 'ane' ? 'ane' : 'imo'})`, every = Math.ceil(n / 7);
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">` + yGrid(W, pl, pr, top, step, y);
-    keys.forEach((k, i) => {
-      const gx = pl + i * gw, x = gx + (gw - bw) / 2;
-      svg += `<g data-tday="${k}">`;
-      // The whole column is the tap target; the chosen day gets a soft band behind its bar.
-      svg += `<rect x="${gx.toFixed(1)}" y="${pt - 12}" width="${gw.toFixed(1)}" height="${H - pb - pt + 12}" rx="4" fill="${k === sel ? 'var(--surface-2)' : 'transparent'}"${k === sel ? ' stroke="var(--line)"' : ''}/>`;
-      let acc = 0;
-      feeds[i].forEach((l, j) => {
-        const v = Number(l.ml), y1 = y(acc + v), h = y(acc) - y1; acc += v;
-        svg += `<rect x="${x.toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0.5, h - 1.5).toFixed(1)}" rx="2" fill="${color}" opacity="${j % 2 ? 0.78 : 1}"><title>${fmtT(l.at)} ${v}mL</title></rect>`;
-        if (h >= 10) svg += `<text x="${(x + bw / 2).toFixed(1)}" y="${(y1 + h / 2 + 2.5).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="var(--surface)" pointer-events="none">${v}</text>`;
-      });
-      if (totals[i]) svg += `<text x="${(gx + gw / 2).toFixed(1)}" y="${(y(totals[i]) - 3).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--ink)" pointer-events="none">${totals[i]}</text>`;
-      if ((n - 1 - i) % every === 0 || k === sel) svg += `<text x="${(gx + gw / 2).toFixed(1)}" y="${H - 7}" text-anchor="middle" font-size="9" fill="${k === sel ? 'var(--ink)' : 'var(--muted)'}" font-weight="${k === sel ? 700 : 400}" pointer-events="none">${labels[i]}</text>`;
-      svg += '</g>';
-    });
-    return svg + '</svg>';
+    const pct = v => `${(v / top * 100).toFixed(2)}%`, ticks = [];
+    for (let v = 0; v <= top; v += step) ticks.push(v);
+    const axis = `<div class="fc-axis" aria-hidden="true">${ticks.map(v => `<span style="bottom:${pct(v)}">${fmtG(v)}</span>`).join('')}</div>`;
+    // Newest first in the markup: the scroller runs right-to-left, so it opens on today with older days to the left.
+    const cols = keys.map((k, i) => [k, i]).reverse().map(([k, i]) => {
+      const d = new Date(k);
+      const segs = feeds[i].map((l, j) => { const v = Number(l.ml); return `<i class="${j % 2 ? 'alt' : ''}" style="flex:${v} 0 0" title="${fmtT(l.at)} ${v}mL">${v / top * FEED_PLOT_PX >= 14 ? v : ''}</i>`; }).join('');
+      return `<button type="button" class="fc-day${k === sel ? ' sel' : ''}" data-tday="${k}" aria-pressed="${k === sel}" aria-label="${dayLabel(k)} ${totals[i]}mL">
+        <span class="fc-plot"><span class="fc-bar" style="height:${pct(totals[i])}">${totals[i] ? `<b>${totals[i]}</b>` : ''}${segs}</span></span>
+        <small>${d.getMonth() + 1}/${d.getDate()}<br>${k === today ? L('今日', '今天') : L('日月火水木金土', '日一二三四五六')[d.getDay()]}</small></button>`;
+    }).join('');
+    return `<div class="fchart ${id}" style="--steps:${top / step}">${axis}<div class="fc-scroll">${cols}</div></div>`;
   }
   // The feeds of the chosen day, in order, under the chart.
-  function feedDayHTML(id, k) {
-    const all = feedsOn(id, k), ml = all.filter(l => l.kind !== 'breast' && Number(l.ml) > 0);
+  function feedDayHTML(src, id, k) {
+    const all = feedsOn(src, id, k), ml = all.filter(l => l.kind !== 'breast' && Number(l.ml) > 0);
     const total = ml.reduce((s, l) => s + Number(l.ml), 0);
     const sum = all.length
       ? L(`合計 ${fmtG(total)}mL ・ ${all.length}回${ml.length ? ` ・ 1回平均 ${Math.round(total / ml.length)}mL` : ''}`, `合計 ${fmtG(total)}mL ・ ${all.length}次${ml.length ? ` ・ 每次平均 ${Math.round(total / ml.length)}mL` : ''}`)
@@ -1194,16 +1216,20 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       html += chart('ml', L('ミルク量', '奶量'), 'mL');
     } else if (S.trendMode === 'day') {
       // One twin by day: bars split into each feed, and the tapped day's feeds listed under the chart.
-      if (!keys.includes(S.trendDay)) S.trendDay = today;
-      html += `<div class="tchart"><div class="tchart-head"><h3>${L('ミルク量', '奶量')}</h3><small>${L('1日の合計を1回ずつに分けて表示（mL）', '每日合計，依每次分段顯示（mL）')}</small></div>${feedChart(who, keys, labels, S.trendDay)}</div>`
-        + feedDayHTML(who, S.trendDay)
-        + `<p class="trend-note">${L('棒の1区切りが1回分のミルクです（下から時間順）。棒をタップすると、その日の内訳を表示します。', '長條的每一段是一次的奶量（由下往上依時間順序）。點長條可以看當天的明細。')}</p>`;
+      const src = milkSource(), fdays = feedDays(src, who, today);
+      if (!fdays.includes(S.trendDay)) S.trendDay = today;
+      html += `<div class="tchart"><div class="tchart-head"><h3>${L('ミルク量', '奶量')}</h3><small>${L('1日の合計を1回ずつに分けて表示（mL）', '每日合計，依每次分段顯示（mL）')}</small></div>${feedChart(src, who, fdays, S.trendDay, today)}</div>`
+        + feedDayHTML(src, who, S.trendDay)
+        + `<p class="trend-note">${L('棒の1区切りが1回分のミルクです（下から時間順）。横にスクロールすると前の日、棒をタップするとその日の内訳を表示します。', '長條的每一段是一次的奶量（由下往上依時間順序）。左右滑動可以看之前的日子，點長條可以看當天的明細。')}</p>`;
     } else html += chart('ml', L('ミルク量', '奶量'), 'mL');
     html += chart('pee', TYPE_LABEL.pee, L('回', '次')) + chart('poo', TYPE_LABEL.poo, L('回', '次'));
     html += `<p class="trend-note">${S.trendMode === 'month'
       ? L('薄い棒は今月（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是本月（統計中）。親餵不計入奶量。')
       : L('薄い棒は今日（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是今天（統計中）。親餵不計入奶量。')}</p>`;
+    // Re-renders (a tapped day, new data) keep the swipe position; 0 is the newest end of the right-to-left scroller.
+    const sl = el.querySelector('.fc-scroll')?.scrollLeft || 0;
     el.innerHTML = html;
+    const sc = el.querySelector('.fc-scroll'); if (sc) sc.scrollLeft = sl;
   }
 
   // ---------- birth, age, growth curve and development ----------
