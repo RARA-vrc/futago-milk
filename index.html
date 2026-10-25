@@ -87,7 +87,7 @@ input, select, textarea { font-size: max(16px, 1em); }
 .top-right { display: flex; align-items: center; gap: 8px; }
 .clock { font-family: var(--f-display); font-size: 1.35rem; font-weight: 700; margin-right: 2px; }
 .icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 40px; padding: 0 12px; font-size: .88rem; }
-.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 99px; min-height: 40px; padding: 0 12px; font-size: .82rem; font-weight: 700; border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); background: var(--warn-soft); color: var(--warn); }
+.pill { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; border-radius: 99px; min-height: 40px; padding: 0 12px; font-size: .82rem; font-weight: 700; border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); background: var(--warn-soft); color: var(--warn); }
 .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .pill.on { border-color: color-mix(in srgb, var(--imo) 45%, transparent); background: var(--imo-soft); color: var(--imo); }
 
@@ -404,7 +404,10 @@ input, select, textarea { font-size: max(16px, 1em); }
 .rx-pal { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 2px; margin-top: 6px; padding: 4px; border-radius: 14px; background: var(--surface); box-shadow: 0 4px 14px rgba(0,0,0,.14); }
 .rx-pal button { border: none; background: transparent; font-size: 1.35rem; min-height: 40px; border-radius: 10px; padding: 0; }
 .rx-pal button[aria-pressed="true"] { background: color-mix(in srgb, var(--mc) 18%, transparent); }
-.tr-toggle { display: block; border: none; background: transparent; color: var(--muted); font-size: .72rem; padding: 2px 0; min-height: 26px; }
+.tr-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; font-size: .72rem; color: var(--muted); }
+.tr-switch button { border: 1px solid var(--paper-line); background: transparent; border-radius: 99px; min-height: 28px; padding: 0 9px; font-size: .72rem; color: var(--muted); }
+.tr-switch button small { margin-left: 3px; font-size: .62rem; opacity: .8; }
+.tr-switch button[aria-pressed="true"] { border-color: var(--mc); color: var(--mc); background: color-mix(in srgb, var(--mc) 10%, transparent); font-weight: 700; }
 .memo-date { border: none; background: transparent; font-family: var(--f-display); font-weight: 700; font-size: .95rem; min-height: 40px; padding: 0 6px; border-radius: 10px; color: var(--ink); }
 .memo-date:hover { background: var(--surface-2); }
 /* calendar sheet */
@@ -624,58 +627,58 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
 <div class="app">
   <header class="top">
-    <h1 data-zh="雙胞胎餵奶紀錄">ふたごミルク帳</h1>
+    <h1 data-zh="雙胞胎餵奶紀錄" data-id="Susu Si Kembar">ふたごミルク帳</h1>
     <div class="top-right">
       <div class="clock num" id="clock">--:--</div>
       <button class="pill" id="alarm-pill" type="button" data-act="alarm-toggle" aria-live="polite">アラーム</button>
-      <button class="icon-btn" id="open-settings" type="button" data-zh="設定">設定</button>
+      <button class="icon-btn" id="open-settings" type="button" data-zh="設定" data-id="Atur">設定</button>
     </div>
   </header>
 
-  <nav class="tabs" id="tabs" aria-label="表示の切り替え" data-zh-aria="切換顯示">
-    <button type="button" data-tab="now" data-zh="現在">いま</button>
-    <button type="button" data-tab="plan" data-zh="時刻表">時刻表</button>
-    <button type="button" data-tab="log" data-zh="紀錄">記録</button>
-    <button type="button" data-tab="weight" data-zh="趨勢">推移</button>
-    <button type="button" data-tab="note" data-zh="筆記">ノート</button>
+  <nav class="tabs" id="tabs" aria-label="表示の切り替え" data-zh-aria="切換顯示" data-id-aria="Ganti tampilan">
+    <button type="button" data-tab="now" data-zh="現在" data-id="Kini">いま</button>
+    <button type="button" data-tab="plan" data-zh="時刻表" data-id="Jadwal">時刻表</button>
+    <button type="button" data-tab="log" data-zh="紀錄" data-id="Catatan">記録</button>
+    <button type="button" data-tab="weight" data-zh="趨勢" data-id="Grafik">推移</button>
+    <button type="button" data-tab="note" data-zh="筆記" data-id="Memo">ノート</button>
   </nav>
 
-  <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況" data-zh-aria="寶寶狀況"></section>
+  <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況" data-zh-aria="寶寶狀況" data-id-aria="Status tiap bayi"></section>
   <div class="view batch-entry" data-view="now">
-    <button type="button" class="btn" data-act="batch" data-zh="事後一次補記">あとからまとめて記録</button>
+    <button type="button" class="btn" data-act="batch" data-zh="事後一次補記" data-id="Catat sekaligus belakangan">あとからまとめて記録</button>
   </div>
 
   <section class="panel view" data-view="plan" aria-labelledby="plan-title">
     <div class="panel-head">
-      <h2 id="plan-title" data-zh="餵奶時刻表">授乳の時刻表</h2>
+      <h2 id="plan-title" data-zh="餵奶時刻表" data-id="Jadwal minum susu">授乳の時刻表</h2>
     </div>
-    <p class="hint" data-zh="顯示過去12小時的餵奶與接下來24小時的預定。預定時間是依最後一次餵奶加上各自的間隔計算。">これまで12時間の授乳と、これから24時間の予定です。予定は最後の授乳から、それぞれの間隔で計算しています。</p>
+    <p class="hint" data-zh="顯示過去12小時的餵奶與接下來24小時的預定。預定時間是依最後一次餵奶加上各自的間隔計算。" data-id="Minum susu 12 jam terakhir dan jadwal 24 jam ke depan. Jadwal dihitung dari minum terakhir ditambah jeda masing-masing.">これまで12時間の授乳と、これから24時間の予定です。予定は最後の授乳から、それぞれの間隔で計算しています。</p>
     <div class="plan-sim" id="plan-sim"></div>
     <div id="plan"></div>
   </section>
 
   <section class="panel view" data-view="log" aria-labelledby="tl-title">
     <div class="panel-head">
-      <h2 id="tl-title" data-zh="紀錄">記録</h2>
-      <div class="seg" id="filter" role="group" aria-label="表示する子" data-zh-aria="顯示哪個寶寶">
-        <button type="button" data-filter="all" aria-pressed="true" data-zh="兩人">ふたり</button>
+      <h2 id="tl-title" data-zh="紀錄" data-id="Catatan">記録</h2>
+      <div class="seg" id="filter" role="group" aria-label="表示する子" data-zh-aria="顯示哪個寶寶" data-id-aria="Anak yang ditampilkan">
+        <button type="button" data-filter="all" aria-pressed="true" data-zh="兩人" data-id="Berdua">ふたり</button>
         <button type="button" data-filter="ane" aria-pressed="false" data-name="ane">姉</button>
         <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
       </div>
     </div>
     <div class="batch-entry log-tools">
-      <button type="button" class="btn ghost" data-act="cal" data-zh="📅 用月曆回顧">📅 カレンダーでさかのぼる</button>
-      <button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記">あとからまとめて記録</button>
+      <button type="button" class="btn ghost" data-act="cal" data-zh="📅 用月曆回顧" data-id="📅 Lihat lewat kalender">📅 カレンダーでさかのぼる</button>
+      <button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記" data-id="Catat sekaligus belakangan">あとからまとめて記録</button>
     </div>
     <div id="timeline"></div>
   </section>
 
   <section class="panel view" data-view="weight" aria-labelledby="trend-title">
     <div class="panel-head">
-      <h2 id="trend-title" data-zh="趨勢">推移</h2>
-      <div class="seg" id="trend-mode" role="group" aria-label="集計の単位" data-zh-aria="統計單位">
-        <button type="button" data-trend="day" data-zh="每日">日ごと</button>
-        <button type="button" data-trend="month" data-zh="每月">月ごと</button>
+      <h2 id="trend-title" data-zh="趨勢" data-id="Grafik">推移</h2>
+      <div class="seg" id="trend-mode" role="group" aria-label="集計の単位" data-zh-aria="統計單位" data-id-aria="Satuan">
+        <button type="button" data-trend="day" data-zh="每日" data-id="Harian">日ごと</button>
+        <button type="button" data-trend="month" data-zh="每月" data-id="Bulanan">月ごと</button>
       </div>
     </div>
     <div id="trend"></div>
@@ -683,7 +686,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   <section class="panel view" data-view="weight" aria-labelledby="w-title">
     <div class="panel-head">
-      <h2 id="w-title" data-zh="體重變化">体重の推移</h2>
+      <h2 id="w-title" data-zh="體重變化" data-id="Berat & pertumbuhan">体重の推移</h2>
       <div class="row" id="w-add"></div>
     </div>
     <div id="birth-info"></div>
@@ -694,24 +697,24 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   <section class="panel view" data-view="weight" aria-labelledby="dev-title">
     <div class="panel-head">
-      <h2 id="dev-title" data-zh="發展參考">発達の目安</h2>
+      <h2 id="dev-title" data-zh="發展參考" data-id="Perkiraan perkembangan">発達の目安</h2>
     </div>
     <div id="dev"></div>
   </section>
 
   <section class="panel view" data-view="note" aria-labelledby="note-title">
     <div class="panel-head">
-      <h2 id="note-title" data-zh="筆記">ノート</h2>
-      <div class="seg" id="note-mode" role="group" aria-label="表示する内容" data-zh-aria="顯示內容">
-        <button type="button" data-nmode="memo" data-zh="今日筆記">今日のメモ</button>
-        <button type="button" data-nmode="cost" data-zh="費用">費用</button>
+      <h2 id="note-title" data-zh="筆記" data-id="Memo">ノート</h2>
+      <div class="seg" id="note-mode" role="group" aria-label="表示する内容" data-zh-aria="顯示內容" data-id-aria="Isi yang ditampilkan">
+        <button type="button" data-nmode="memo" data-zh="今日筆記" data-id="Memo hari ini">今日のメモ</button>
+        <button type="button" data-nmode="cost" data-zh="費用" data-id="Pengeluaran">費用</button>
       </div>
     </div>
     <div id="note"></div>
   </section>
 
   <footer class="foot">
-    <p><a class="linklike" href="help.html" data-zh="使用說明">使い方（仕様解説）</a></p>
+    <p><a class="linklike" href="help.html" data-zh="使用說明" data-id="Cara pakai">使い方（仕様解説）</a></p>
     <p id="mode-note">読み込み中…</p>
     <p id="account" hidden></p>
     <p class="recaptcha-note">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" rel="noopener">Terms of Service</a> apply.</p>
@@ -744,33 +747,40 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
-  // ---------- language (per device): 'ja' or 'zh' (Taiwanese Mandarin, Traditional Chinese) ----------
-  // Every visible string is written as L(japanese, chinese) next to where it is used.
-  let LANG = ['ja', 'zh'].includes(lsGet('futago-lang', '')) ? lsGet('futago-lang', '') : (/^zh/i.test(navigator.language || '') ? 'zh' : 'ja');
-  const L = (ja, zh) => LANG === 'zh' ? zh : ja;
+  // ---------- language (per device): 'ja', 'zh' (Taiwanese Mandarin, Traditional Chinese) or 'id' (Indonesian) ----------
+  // Every visible string is written as L(japanese, chinese, indonesian) next to where it is used.
+  const LANGS = ['ja', 'zh', 'id'];
+  let LANG = LANGS.includes(lsGet('futago-lang', '')) ? lsGet('futago-lang', '') : (/^zh/i.test(navigator.language || '') ? 'zh' : /^(id|ms)/i.test(navigator.language || '') ? 'id' : 'ja');
+  const L = (ja, zh, id) => LANG === 'zh' ? zh : LANG === 'id' ? (id ?? ja) : ja;
+  const ID_WD = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const ID_MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const ID_MON_LONG = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  const monthTitle = (y, m) => L(`${y}年${m + 1}月`, `${y}年${m + 1}月`, `${ID_MON_LONG[m]} ${y}`);
+  const WEEK_HEAD = () => LANG === 'zh' ? [...'日一二三四五六'] : LANG === 'id' ? ID_WD : [...'日月火水木金土'];
   let KIND, POO_COLOR, POO_AMT, TYPE_LABEL, SYMPTOMS;
   function setLabels() {
-    KIND = { formula: L('ミルク', '配方奶'), expressed: L('搾母乳', '擠出母乳'), breast: L('母乳', '親餵') };
-    POO_COLOR = { yellow: L('黄色', '黃色'), green: L('緑', '綠色'), brown: L('茶色', '褐色'), pale: L('白っぽい', '偏白') };
-    POO_AMT = { small: L('少なめ', '少'), normal: L('ふつう', '普通'), large: L('多め', '多') };
-    TYPE_LABEL = { milk: L('授乳', '餵奶'), pee: L('おしっこ', '尿尿'), poo: L('うんち', '便便'), weight: L('体重', '體重'), measure: L('身長・頭囲', '身長・頭圍'), temp: L('体温・体調', '體溫・身體狀況') };
+    KIND = { formula: L('ミルク', '配方奶', 'Susu formula'), expressed: L('搾母乳', '擠出母乳', 'ASI perah'), breast: L('母乳', '親餵', 'ASI langsung') };
+    POO_COLOR = { yellow: L('黄色', '黃色', 'Kuning'), green: L('緑', '綠色', 'Hijau'), brown: L('茶色', '褐色', 'Cokelat'), pale: L('白っぽい', '偏白', 'Pucat') };
+    POO_AMT = { small: L('少なめ', '少', 'Sedikit'), normal: L('ふつう', '普通', 'Normal'), large: L('多め', '多', 'Banyak') };
+    TYPE_LABEL = { milk: L('授乳', '餵奶', 'Minum susu'), pee: L('おしっこ', '尿尿', 'Pipis'), poo: L('うんち', '便便', 'BAB'), weight: L('体重', '體重', 'Berat'), measure: L('身長・頭囲', '身長・頭圍', 'Tinggi & lingkar kepala'), temp: L('体温・体調', '體溫・身體狀況', 'Suhu & kondisi') };
     SYMPTOMS = {
-      runny: L('鼻水', '流鼻水'), cough: L('咳', '咳嗽'), vomit: L('吐いた', '嘔吐'), diarrhea: L('下痢', '腹瀉'),
-      rash: L('発疹', '起疹子'), fussy: L('機嫌が悪い', '哭鬧不安'), poorfeed: L('飲みが悪い', '喝奶量少'), breath: L('息が苦しそう', '呼吸急促'),
-      medicine: L('薬を飲んだ', '吃了藥'), doctor: L('受診した', '去看醫生'),
+      runny: L('鼻水', '流鼻水', 'Pilek'), cough: L('咳', '咳嗽', 'Batuk'), vomit: L('吐いた', '嘔吐', 'Muntah'), diarrhea: L('下痢', '腹瀉', 'Diare'),
+      rash: L('発疹', '起疹子', 'Ruam'), fussy: L('機嫌が悪い', '哭鬧不安', 'Rewel'), poorfeed: L('飲みが悪い', '喝奶量少', 'Malas minum'), breath: L('息が苦しそう', '呼吸急促', 'Sesak napas'),
+      medicine: L('薬を飲んだ', '吃了藥', 'Minum obat'), doctor: L('受診した', '去看醫生', 'Ke dokter'),
     };
   }
   setLabels();
   // Static HTML carries its Chinese in data-zh / data-zh-aria; the Japanese original is kept in data-ja.
   function applyLang() {
-    document.documentElement.lang = L('ja', 'zh-Hant-TW');
+    document.documentElement.lang = L('ja', 'zh-Hant-TW', 'id');
     document.querySelectorAll('[data-zh]').forEach(el => {
       if (el.dataset.ja === undefined) el.dataset.ja = el.textContent;
-      el.textContent = L(el.dataset.ja, el.dataset.zh);
+      el.textContent = L(el.dataset.ja, el.dataset.zh, el.dataset.id);
     });
     document.querySelectorAll('[data-zh-aria]').forEach(el => {
       if (el.dataset.jaAria === undefined) el.dataset.jaAria = el.getAttribute('aria-label') || '';
-      el.setAttribute('aria-label', L(el.dataset.jaAria, el.dataset.zhAria));
+      // (Indonesian lives in data-id / data-id-aria.)
+      el.setAttribute('aria-label', L(el.dataset.jaAria, el.dataset.zhAria, el.dataset.idAria));
     });
   }
   function setLang(lang) {
@@ -778,14 +788,14 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     setLabels(); applyLang(); render(); renderRing();
     if (S.form && S.form.type === 'settings') renderSettings(); else renderForm();
   }
-  const langSwitchHTML = () => `<div class="seg" role="group" aria-label="言語 / 語言">${[['ja', '日本語'], ['zh', '繁體中文']].map(([k, label]) =>
+  const langSwitchHTML = () => `<div class="seg" role="group" aria-label="言語 / 語言 / Bahasa">${[['ja', '日本語'], ['zh', '繁體中文'], ['id', 'Bahasa Indonesia']].map(([k, label]) =>
     `<button type="button" data-lang="${k}" aria-pressed="${LANG === k}">${label}</button>`).join('')}</div>`;
 
   function dayLabel(ms) {
     const d = new Date(ms), today = startOfDay(Date.now()), k = startOfDay(ms);
-    const base = L(`${d.getMonth() + 1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`, `${d.getMonth() + 1}月${d.getDate()}日（週${'日一二三四五六'[d.getDay()]}）`);
-    if (k === today) return `${L('今日', '今天')} ${base}`;
-    if (k === today - DAY) return `${L('きのう', '昨天')} ${base}`;
+    const base = L(`${d.getMonth() + 1}月${d.getDate()}日（${'日月火水木金土'[d.getDay()]}）`, `${d.getMonth() + 1}月${d.getDate()}日（週${'日一二三四五六'[d.getDay()]}）`, `${ID_WD[d.getDay()]}, ${d.getDate()} ${ID_MON[d.getMonth()]}`);
+    if (k === today) return `${L('今日', '今天', 'Hari ini')} ${base}`;
+    if (k === today - DAY) return `${L('きのう', '昨天', 'Kemarin')} ${base}`;
     return base;
   }
   function durParts(ms) {
@@ -794,7 +804,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   }
   function durText(ms) {
     const { h, m } = durParts(ms);
-    return h ? L(`${h}時間${m}分`, `${h}小時${m}分`) : L(`${m}分`, `${m}分鐘`);
+    return h ? L(`${h}時間${m}分`, `${h}小時${m}分`, `${h} jam ${m} mnt`) : L(`${m}分`, `${m}分鐘`, `${m} mnt`);
   }
 
   // ---------- time picker: ±1 hour and :00 / :15 / :30 / :45, no scrolling ----------
@@ -805,9 +815,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   const nowQ = () => roundQ(Date.now());
   function tpDay(at) {
     const k = startOfDay(at), today = startOfDay(Date.now()), d = new Date(at);
-    if (k === today) return L('今日', '今天');
-    if (k === today - DAY) return L('きのう', '昨天');
-    if (k === today + DAY) return L('明日', '明天');
+    if (k === today) return L('今日', '今天', 'Hari ini');
+    if (k === today - DAY) return L('きのう', '昨天', 'Kemarin');
+    if (k === today + DAY) return L('明日', '明天', 'Besok');
     return `${d.getMonth() + 1}/${d.getDate()}`;
   }
   const tpLabel = at => `<small>${tpDay(at)}</small><b>${fmtT(at)}</b>`;
@@ -824,13 +834,13 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const mins = new Date(at).getMinutes();
     return `<div class="tp">
       <div class="tp-row">
-        <button type="button" class="tp-step" data-tp="${scope}:h-1">−1${L('時間', '小時')}</button>
+        <button type="button" class="tp-step" data-tp="${scope}:h-1">−1${L('時間', '小時', ' jam')}</button>
         <div class="tp-val num">${tpLabel(at)}</div>
-        <button type="button" class="tp-step" data-tp="${scope}:h+1" ${dis(at + HOUR)}>+1${L('時間', '小時')}</button>
+        <button type="button" class="tp-step" data-tp="${scope}:h+1" ${dis(at + HOUR)}>+1${L('時間', '小時', ' jam')}</button>
       </div>
-      <div class="tp-mins" role="group" aria-label="${L('分', '分')}">${[0, 15, 30, 45].map(m =>
+      <div class="tp-mins" role="group" aria-label="${L('分', '分', ' mnt')}">${[0, 15, 30, 45].map(m =>
         `<button type="button" data-tp="${scope}:m${m}" aria-pressed="${mins === m}" ${dis(tpApply(at, 'm' + m))}>:${p2(m)}</button>`).join('')}
-        ${past ? `<button type="button" class="tp-now" data-tp="${scope}:now">${L('今', '現在')}</button>` : ''}</div>
+        ${past ? `<button type="button" class="tp-now" data-tp="${scope}:now">${L('今', '現在', 'Kini')}</button>` : ''}</div>
     </div>`;
   }
 
@@ -855,16 +865,17 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     costMonth: null, costView: 'bought',
     // Calendar back-numbers: logDay = the one day the 記録 tab shows (null = latest days); dayCache = older days read once.
     logDay: null, dayCache: {},
-    rxOpen: null, showOrig: {},
+    rxOpen: null, memoView: {},   // memo id → language picked with the memo's 🌐 switch (default: this device's language)
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
   };
-  // The default names 姉/妹 are shown as 姊姊/妹妹 in Chinese; a name the family typed is shown as typed.
-  const ZH_DEFAULT_NAME = { ane: '姊姊', imouto: '妹妹' };
+  // The default names 姉/妹 are shown as 姊姊/妹妹 in Chinese and Kakak/Adik in Indonesian; a name the family typed is shown as typed.
+  const LOCAL_DEFAULT_NAME = { zh: { ane: '姊姊', imouto: '妹妹' }, id: { ane: 'Kakak', imouto: 'Adik' } };
+  const isDefaultName = (id, name) => name === DEFAULTS[id].name || Object.values(LOCAL_DEFAULT_NAME).some(n => n[id] === name);
   const baby = id => {
     const b = { ...DEFAULTS[id], ...(S.babies[id] || {}) };
-    if (LANG === 'zh' && b.name === DEFAULTS[id].name) b.name = ZH_DEFAULT_NAME[id];
+    if (LOCAL_DEFAULT_NAME[LANG] && b.name === DEFAULTS[id].name) b.name = LOCAL_DEFAULT_NAME[LANG][id];
     return b;
   };
 
@@ -907,7 +918,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const fs = S.db;
     const onErr = e => {
       if (e && e.code === 'permission-denied') { S.mode = 'denied'; stopSubs(); render(); }
-      else toast(L('記録を読み込めませんでした。通信状況を確認してください。', '無法載入紀錄，請確認網路連線。'));
+      else toast(L('記録を読み込めませんでした。通信状況を確認してください。', '無法載入紀錄，請確認網路連線。', 'Gagal memuat catatan. Periksa koneksi internet.'));
     };
     unsubs.push(fs.collection('babies').onSnapshot(s => {
       const b = {}; s.docs.forEach(d => { b[d.id] = d.data(); }); S.babies = b; render();
@@ -935,18 +946,18 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     p.setCustomParameters({ prompt: 'select_account' });
     S.auth.signInWithPopup(p).catch(e => {
       if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
-      if (e && e.code === 'auth/popup-blocked') return toast(L('ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。', '彈出視窗被封鎖了，請在瀏覽器設定中允許此網站的彈出視窗。'));
-      if (e && e.code === 'auth/unauthorized-domain') return toast(L('このURLはまだ Firebase に登録されていません。手順書の「承認済みドメイン」を設定してください。', '此網址尚未在 Firebase 登記，請設定「已授權網域」。'));
-      toast(L('ログインできませんでした（', '無法登入（') + (e && e.code || L('不明なエラー', '未知錯誤')) + L('）', '）'));
+      if (e && e.code === 'auth/popup-blocked') return toast(L('ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。', '彈出視窗被封鎖了，請在瀏覽器設定中允許此網站的彈出視窗。', 'Pop-up diblokir. Izinkan pop-up untuk situs ini di pengaturan browser.'));
+      if (e && e.code === 'auth/unauthorized-domain') return toast(L('このURLはまだ Firebase に登録されていません。手順書の「承認済みドメイン」を設定してください。', '此網址尚未在 Firebase 登記，請設定「已授權網域」。', 'URL ini belum terdaftar di Firebase. Atur "domain yang diizinkan" sesuai panduan.'));
+      toast(L('ログインできませんでした（', '無法登入（', 'Gagal masuk (') + (e && e.code || L('不明なエラー', '未知錯誤', 'kesalahan tidak diketahui')) + L('）', '）', ')'));
     });
   }
   function signOut() { S.auth && S.auth.signOut(); }
 
   function errMsg(e) {
     const c = e && e.code;
-    if (c === 'permission-denied') return L('保存できませんでした。許可された Google アカウントでログインしているか確認してください。', '無法儲存。請確認是否使用已授權的 Google 帳號登入。');
-    if (c === 'resource-exhausted') return L('保存の上限に達しました。しばらくしてからもう一度お試しください。', '已達儲存上限，請稍後再試。');
-    return L('保存できませんでした。もう一度お試しください。', '無法儲存，請再試一次。');
+    if (c === 'permission-denied') return L('保存できませんでした。許可された Google アカウントでログインしているか確認してください。', '無法儲存。請確認是否使用已授權的 Google 帳號登入。', 'Gagal menyimpan. Pastikan Anda masuk dengan akun Google yang diizinkan.');
+    if (c === 'resource-exhausted') return L('保存の上限に達しました。しばらくしてからもう一度お試しください。', '已達儲存上限，請稍後再試。', 'Batas penyimpanan tercapai. Coba lagi nanti.');
+    return L('保存できませんでした。もう一度お試しください。', '無法儲存，請再試一次。', 'Gagal menyimpan. Coba lagi.');
   }
   const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   // Firestore applies writes locally right away and syncs in the background (also when offline),
@@ -1004,17 +1015,17 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (S.mode === 'signin') {
       root.innerHTML = `<div class="gate"><div class="gate-box">
         <div class="twin" aria-hidden="true"><i></i><i></i></div>
-        <h1>${L('ふたごミルク帳', '雙胞胎餵奶紀錄')}</h1>
-        <p>${L('家族専用の記録帳です。登録した Google アカウントでログインしてください。', '這是家人專用的紀錄。請使用已登記的 Google 帳號登入。')}</p>
-        <button type="button" class="btn solid" data-act="signin">${L('Google でログイン', '使用 Google 登入')}</button>
+        <h1>${L('ふたごミルク帳', '雙胞胎餵奶紀錄', 'Catatan Susu Si Kembar')}</h1>
+        <p>${L('家族専用の記録帳です。登録した Google アカウントでログインしてください。', '這是家人專用的紀錄。請使用已登記的 Google 帳號登入。', 'Catatan khusus keluarga. Masuk dengan akun Google yang terdaftar.')}</p>
+        <button type="button" class="btn solid" data-act="signin">${L('Google でログイン', '使用 Google 登入', 'Masuk dengan Google')}</button>
         <div>${langSwitchHTML()}</div>
-        <a class="linklike" href="help.html">${L('使い方を見る', '查看使用說明')}</a>
+        <a class="linklike" href="help.html">${L('使い方を見る', '查看使用說明', 'Lihat cara pakai')}</a>
       </div></div>`;
     } else if (S.mode === 'denied') {
       root.innerHTML = `<div class="gate"><div class="gate-box">
-        <h1>${L('このアカウントでは見られません', '此帳號無法查看')}</h1>
-        <p>${L(`${esc(S.user && S.user.email)} は、この記録帳を見られるアカウントに登録されていません。`, `${esc(S.user && S.user.email)} 尚未登記為可查看此紀錄的帳號。`)}</p>
-        <button type="button" class="btn" data-act="signout">${L('別のアカウントでログイン', '使用其他帳號登入')}</button>
+        <h1>${L('このアカウントでは見られません', '此帳號無法查看', 'Akun ini tidak punya akses')}</h1>
+        <p>${L(`${esc(S.user && S.user.email)} は、この記録帳を見られるアカウントに登録されていません。`, `${esc(S.user && S.user.email)} 尚未登記為可查看此紀錄的帳號。`, `${esc(S.user && S.user.email)} tidak terdaftar sebagai akun yang boleh melihat catatan ini.`)}</p>
+        <button type="button" class="btn" data-act="signout">${L('別のアカウントでログイン', '使用其他帳號登入', 'Masuk dengan akun lain')}</button>
         <div>${langSwitchHTML()}</div>
       </div></div>`;
     } else root.innerHTML = '';
@@ -1033,7 +1044,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   };
   function nextAt(id) { const m = lastOf(id, 'milk'); return m ? m.at + baby(id).intervalH * HOUR : null; }
   function milkText(l) {
-    if (l.kind === 'breast') return `${KIND.breast} ${l.min || '?'}${L('分', '分鐘')}`;
+    if (l.kind === 'breast') return `${KIND.breast} ${l.min || '?'}${L('分', '分鐘', ' mnt')}`;
     return `${KIND[l.kind] || KIND.formula} ${l.ml ?? '?'}mL`;
   }
   // Amounts are picked from a 10 mL scroll list that opens at the twin's previous bottle amount.
@@ -1069,7 +1080,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       return TYPE_LABEL.poo + (parts.length ? ' · ' + parts.join(' · ') : '');
     }
     if (l.type === 'weight') return `${fmtG(l.grams)}g`;
-    if (l.type === 'measure') return [l.height ? `${L('身長', '身長')} ${Number(l.height).toFixed(1)}cm` : '', l.head ? `${L('頭囲', '頭圍')} ${Number(l.head).toFixed(1)}cm` : ''].filter(Boolean).join(' · ');
+    if (l.type === 'measure') return [l.height ? `${L('身長', '身長', 'Tinggi')} ${Number(l.height).toFixed(1)}cm` : '', l.head ? `${L('頭囲', '頭圍', 'Lingkar kepala')} ${Number(l.head).toFixed(1)}cm` : ''].filter(Boolean).join(' · ');
     if (l.type === 'temp') {
       const syms = (l.sym || []).map(k => SYMPTOMS[k]).filter(Boolean);
       return [l.temp ? `<span class="temp ${tempLevel(l.temp)}">${Number(l.temp).toFixed(1)}℃</span>` : '', syms.join('・')].filter(Boolean).join(' · ') || TYPE_LABEL.temp;
@@ -1086,11 +1097,11 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   }
   function renderModeNote() {
     const el = $('#mode-note'), acc = $('#account');
-    if (S.mode === 'db') el.textContent = L('記録はクラウドに保存され、登録したふたりのアカウントで共有されます。', '紀錄儲存在雲端，由兩個登記的帳號共享。');
-    else if (S.mode === 'local') el.textContent = L('Firebase が未設定のため、記録はこの端末のブラウザだけに保存されています。', 'Firebase 尚未設定，紀錄只儲存在此裝置的瀏覽器中。');
-    else el.textContent = L('読み込み中…', '載入中…');
+    if (S.mode === 'db') el.textContent = L('記録はクラウドに保存され、登録したふたりのアカウントで共有されます。', '紀錄儲存在雲端，由兩個登記的帳號共享。', 'Catatan disimpan di cloud dan dibagikan ke akun yang terdaftar.');
+    else if (S.mode === 'local') el.textContent = L('Firebase が未設定のため、記録はこの端末のブラウザだけに保存されています。', 'Firebase 尚未設定，紀錄只儲存在此裝置的瀏覽器中。', 'Firebase belum diatur, jadi catatan hanya tersimpan di browser perangkat ini.');
+    else el.textContent = L('読み込み中…', '載入中…', 'Memuat…');
     acc.hidden = S.mode !== 'db' || !S.user;
-    if (!acc.hidden) acc.innerHTML = `${L(`${esc(S.user.email)} でログイン中`, `已用 ${esc(S.user.email)} 登入`)} <button type="button" class="linklike" data-act="signout">${L('ログアウト', '登出')}</button>`;
+    if (!acc.hidden) acc.innerHTML = `${L(`${esc(S.user.email)} でログイン中`, `已用 ${esc(S.user.email)} 登入`, `Masuk sebagai ${esc(S.user.email)}`)} <button type="button" class="linklike" data-act="signout">${L('ログアウト', '登出', 'Keluar')}</button>`;
   }
 
   function renderCards() {
@@ -1100,45 +1111,45 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       const st = dayStats(id, t0, t0 + DAY);
       const lastPoo = lastOf(id, 'poo'), lastMilk = lastOf(id, 'milk');
       const range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
-      let wHTML = `<b>—</b><small>${L('体重未記録', '尚未記錄體重')}</small>`;
+      let wHTML = `<b>—</b><small>${L('体重未記録', '尚未記錄體重', 'Berat belum dicatat')}</small>`;
       if (w) {
         const diff = prev ? w.grams - prev.grams : null;
         const d = new Date(w.at);
-        wHTML = `<b class="num">${fmtG(w.grams)}g</b><small>${d.getMonth() + 1}/${d.getDate()}${diff !== null ? ` · ${L('前回比', '比上次')} ${diff >= 0 ? '+' : ''}${fmtG(diff)}g` : ''}</small>`;
+        wHTML = `<b class="num">${fmtG(w.grams)}g</b><small>${d.getMonth() + 1}/${d.getDate()}${diff !== null ? ` · ${L('前回比', '比上次', 'Selisih')} ${diff >= 0 ? '+' : ''}${fmtG(diff)}g` : ''}</small>`;
       }
-      const leadTxt = S.alarm.lead ? L(`${S.alarm.lead}分前`, `前${S.alarm.lead}分鐘`) : L('時刻', '時間');
+      const leadTxt = S.alarm.lead ? L(`${S.alarm.lead}分前`, `前${S.alarm.lead}分鐘`, `${S.alarm.lead} mnt sebelum`) : L('時刻', '時間', 'Waktu');
       // Card reads top to bottom: when is the next feed → what was the last one → record → today's totals.
       return `<article class="card" data-baby="${id}">
         <div class="card-head">
           <div class="who-wrap">${avatarHTML(id, 'lg', true)}
           <div class="who-age"><h2>${esc(b.name)}</h2>${b.birthAt
             ? `<small class="age">${ageText(id, true)}</small>`
-            : `<button type="button" class="age-add" data-act="birth">${L('＋ 出生日を登録', '＋ 登錄出生日')}</button>`}</div></div>
+            : `<button type="button" class="age-add" data-act="birth">${L('＋ 出生日を登録', '＋ 登錄出生日', '+ Isi tanggal lahir')}</button>`}</div></div>
           <div class="weight">${wHTML}</div>
         </div>
         <div class="next">
           <div class="next-top">
-            <span class="label">${L('次の授乳', '下次餵奶')}</span>
-            <button type="button" class="rule" data-bset="${id}" aria-label="${L(`${esc(b.name)}の授乳間隔と量を変更`, `更改${esc(b.name)}的餵奶間隔與量`)}">${L(`${b.intervalH}時間ごと`, `每${b.intervalH}小時`)}・${range}<span>${L('変更', '更改')}</span></button>
+            <span class="label">${L('次の授乳', '下次餵奶', 'Minum berikutnya')}</span>
+            <button type="button" class="rule" data-bset="${id}" aria-label="${L(`${esc(b.name)}の授乳間隔と量を変更`, `更改${esc(b.name)}的餵奶間隔與量`, `Ubah jeda & takaran ${esc(b.name)}`)}">${L(`${b.intervalH}時間ごと`, `每${b.intervalH}小時`, `tiap ${b.intervalH} jam`)}・${range}<span>${L('変更', '更改', 'Ubah')}</span></button>
           </div>
           <div class="cd" data-cd="${id}"></div>
           <div class="bar" data-bar="${id}"><i></i></div>
           <div class="last-row">
             <div class="cd-sub num" data-cdsub="${id}"></div>
-            ${lastMilk ? `<button type="button" class="fix-last" data-edit="${esc(lastMilk.id)}" aria-label="${L(`前回の授乳（${fmtT(lastMilk.at)}）を修正・削除`, `修改或刪除上次餵奶（${fmtT(lastMilk.at)}）`)}">${L('修正', '修改')}</button>` : ''}
+            ${lastMilk ? `<button type="button" class="fix-last" data-edit="${esc(lastMilk.id)}" aria-label="${L(`前回の授乳（${fmtT(lastMilk.at)}）を修正・削除`, `修改或刪除上次餵奶（${fmtT(lastMilk.at)}）`, `Ubah/hapus minum terakhir (${fmtT(lastMilk.at)})`)}">${L('修正', '修改', 'Ubah')}</button>` : ''}
           </div>
         </div>
         <div class="actions${IS_IOS ? ' has-timer' : ''}">
-          <button type="button" class="milk" data-add="milk" data-baby="${id}">${L('授乳を記録', '記錄餵奶')}</button>
-          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="${L(`iPhone のタイマーを次のミルクの${leadTxt}にセット`, `把 iPhone 計時器設在下次餵奶${leadTxt}`)}">iPhone<br>${L('タイマー', '計時器')}${S.alarm.lead ? `<small>${L(`${S.alarm.lead}分前`, `前${S.alarm.lead}分`)}</small>` : ''}</button>` : ''}
+          <button type="button" class="milk" data-add="milk" data-baby="${id}">${L('授乳を記録', '記錄餵奶', 'Catat minum susu')}</button>
+          ${IS_IOS ? `<button type="button" class="timer" data-iostimer="${id}" aria-label="${L(`iPhone のタイマーを次のミルクの${leadTxt}にセット`, `把 iPhone 計時器設在下次餵奶${leadTxt}`, `Pasang timer iPhone ${leadTxt} susu berikutnya`)}">iPhone<br>${L('タイマー', '計時器', 'Timer')}${S.alarm.lead ? `<small>${L(`${S.alarm.lead}分前`, `前${S.alarm.lead}分`, `${S.alarm.lead} mnt sebelum`)}</small>` : ''}</button>` : ''}
           <div class="subs">
             <button type="button" class="sub" data-add="pee" data-baby="${id}">${TYPE_LABEL.pee}</button>
             <button type="button" class="sub" data-add="poo" data-baby="${id}">${TYPE_LABEL.poo}</button>
-            <button type="button" class="sub" data-add="temp" data-baby="${id}">${L('体温', '體溫')}</button>
+            <button type="button" class="sub" data-add="temp" data-baby="${id}">${L('体温', '體溫', 'Suhu')}</button>
             <button type="button" class="sub" data-add="weight" data-baby="${id}">${TYPE_LABEL.weight}</button>
           </div>
         </div>
-        <div class="today num"><span class="lbl">${L('今日', '今天')}</span>${TYPE_LABEL.milk} <b>${st.milkN}</b>${L('回', '次')}${st.ml ? ` ${st.ml}mL` : ''}${st.breastN ? L(`（母乳${st.breastN}回）`, `（親餵${st.breastN}次）`) : ''} ・ ${TYPE_LABEL.pee} <b>${st.pee}</b> ・ ${TYPE_LABEL.poo} <b>${st.poo}</b>${lastPoo ? L(`（最後 ${durText(now - lastPoo.at)}前）`, `（最後一次 ${durText(now - lastPoo.at)}前）`) : ''}</div>
+        <div class="today num"><span class="lbl">${L('今日', '今天', 'Hari ini')}</span>${TYPE_LABEL.milk} <b>${st.milkN}</b>${L('回', '次', ' kali')}${st.ml ? ` ${st.ml}mL` : ''}${st.breastN ? L(`（母乳${st.breastN}回）`, `（親餵${st.breastN}次）`, ` (ASI langsung ${st.breastN} kali)`) : ''} ・ ${TYPE_LABEL.pee} <b>${st.pee}</b> ・ ${TYPE_LABEL.poo} <b>${st.poo}</b>${lastPoo ? L(`（最後 ${durText(now - lastPoo.at)}前）`, `（最後一次 ${durText(now - lastPoo.at)}前）`, ` (terakhir ${durText(now - lastPoo.at)} lalu)`) : ''}</div>
       </article>`;
     }).join('');
   }
@@ -1148,7 +1159,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   const PLAN_PAST = 12 * HOUR, PLAN_AHEAD = 24 * HOUR, CLOSE_GAP = 30 * MIN;
   function renderPlan() {
     const el = $('#plan');
-    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
     const now = Date.now(), items = [], missing = [];
     for (const id of BABY_IDS) {
       const b = baby(id), last = lastOf(id, 'milk'), start = S.planStart[id];
@@ -1168,7 +1179,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       }
     }
     if (!items.length) {
-      el.innerHTML = `<p class="empty-note">${L('「いま」タブで授乳を記録すると、ここに次からの予定がふたり並んで表示されます。', '在「現在」分頁記錄餵奶後，這裡會並排顯示兩人接下來的預定時間。')}</p>`;
+      el.innerHTML = `<p class="empty-note">${L('「いま」タブで授乳を記録すると、ここに次からの予定がふたり並んで表示されます。', '在「現在」分頁記錄餵奶後，這裡會並排顯示兩人接下來的預定時間。', 'Setelah minum susu dicatat di tab "Kini", jadwal berikutnya untuk keduanya tampil berdampingan di sini.')}</p>`;
       return;
     }
     items.sort((a, b) => a.at - b.at);
@@ -1185,24 +1196,24 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const cell = (id, i) => {
       if (!i) return `<div class="pc ${id}"></div>`;
       const b = baby(id), range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
-      if (i.kind === 'done') return `<div class="pc ${id} done">${L('済', '已餵')} ${esc(milkText(i.log))}</div>`;
-      if (i.kind === 'start') return `<div class="pc ${id} start"><b>${L('ここで飲む', '此時餵奶')}</b> ${range}</div>`;
+      if (i.kind === 'done') return `<div class="pc ${id} done">${L('済', '已餵', '✓')} ${esc(milkText(i.log))}</div>`;
+      if (i.kind === 'start') return `<div class="pc ${id} start"><b>${L('ここで飲む', '此時餵奶', 'Minum di sini')}</b> ${range}</div>`;
       if (i.kind === 'next') {
         const due = now >= i.at;
-        return `<div class="pc ${id} next${due ? ' due' : ''}"><b>${L('次', '下次')}</b> ${range}<small>${due ? L(`${durText(now - i.at)} すぎ`, `已超過 ${durText(now - i.at)}`) : L(`あと ${durText(i.at - now)}`, `還有 ${durText(i.at - now)}`)}</small></div>`;
+        return `<div class="pc ${id} next${due ? ' due' : ''}"><b>${L('次', '下次', 'Berikut')}</b> ${range}<small>${due ? L(`${durText(now - i.at)} すぎ`, `已超過 ${durText(now - i.at)}`, `lewat ${durText(now - i.at)}`) : L(`あと ${durText(i.at - now)}`, `還有 ${durText(i.at - now)}`, `${durText(i.at - now)} lagi`)}</small></div>`;
       }
       return `<div class="pc ${id} plan">${range}</div>`;
     };
-    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${avatarHTML(id, 'sm')}${esc(baby(id).name)}<small>${L(`${baby(id).intervalH}時間ごと`, `每${baby(id).intervalH}小時`)}</small></div>`).join('')}</div>`;
+    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${avatarHTML(id, 'sm')}${esc(baby(id).name)}<small>${L(`${baby(id).intervalH}時間ごと`, `每${baby(id).intervalH}小時`, `tiap ${baby(id).intervalH} jam`)}</small></div>`).join('')}</div>`;
     let lastDay = null, nowShown = false;
     for (const r of rows) {
       const day = startOfDay(r.at);
       if (day !== lastDay) { html += `<div class="plan-day">${dayLabel(r.at)}</div>`; lastDay = day; }
-      if (!nowShown && r.at > now) { html += `<div class="plan-now num">${L('いま', '現在')} ${fmtT(now)}</div>`; nowShown = true; }
+      if (!nowShown && r.at > now) { html += `<div class="plan-now num">${L('いま', '現在', 'Kini')} ${fmtT(now)}</div>`; nowShown = true; }
       const close = BABY_IDS.some(id => r[id] && r[id].close);
-      html += `<div class="plan-row${r.at <= now ? ' row-past' : ''}"><div class="pt num">${fmtT(r.at)}${close ? `<small>${L('ふたり続けて', '兩人接連')}</small>` : ''}</div>${BABY_IDS.map(id => cell(id, r[id])).join('')}</div>`;
+      html += `<div class="plan-row${r.at <= now ? ' row-past' : ''}"><div class="pt num">${fmtT(r.at)}${close ? `<small>${L('ふたり続けて', '兩人接連', 'Berurutan berdua')}</small>` : ''}</div>${BABY_IDS.map(id => cell(id, r[id])).join('')}</div>`;
     }
-    if (missing.length) html += `<p class="hint">${L(`${missing.map(id => esc(baby(id).name)).join('と')}はまだ授乳の記録がないため、予定を出せません。`, `${missing.map(id => esc(baby(id).name)).join('和')}還沒有餵奶紀錄，無法顯示預定時間。`)}</p>`;
+    if (missing.length) html += `<p class="hint">${L(`${missing.map(id => esc(baby(id).name)).join('と')}はまだ授乳の記録がないため、予定を出せません。`, `${missing.map(id => esc(baby(id).name)).join('和')}還沒有餵奶紀錄，無法顯示預定時間。`, `${missing.map(id => esc(baby(id).name)).join(' & ')} belum punya catatan minum, jadi jadwal belum bisa dibuat.`)}</p>`;
     el.innerHTML = html;
   }
 
@@ -1215,15 +1226,15 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     simKey = key;
     const on = BABY_IDS.some(id => S.planStart[id]), el = $('#plan-sim'), open = S.simOpen;
     el.className = 'plan-sim' + (on ? ' on' : '');
-    el.innerHTML = `<div class="sim-head"><b>${L('飲む時刻を指定して計算', '指定餵奶時間來計算')}</b>
-        ${on ? `<button type="button" class="fix-last" data-act="sim-reset">${L('記録どおりに戻す', '回到實際紀錄')}</button>` : ''}</div>
+    el.innerHTML = `<div class="sim-head"><b>${L('飲む時刻を指定して計算', '指定餵奶時間來計算', 'Hitung dari jam minum tertentu')}</b>
+        ${on ? `<button type="button" class="fix-last" data-act="sim-reset">${L('記録どおりに戻す', '回到實際紀錄', 'Kembali ke catatan asli')}</button>` : ''}</div>
       <div class="sim-row">${BABY_IDS.map(id => `<div class="sim-field ${id}"><span>${esc(baby(id).name)}</span>
-        <button type="button" class="tbtn" data-sopen="${id}" aria-expanded="${open === id}">${S.planStart[id] ? tpLabel(S.planStart[id]) : `<small>${L('タップして時刻を選ぶ', '點選設定時間')}</small>`}</button></div>`).join('')}</div>
+        <button type="button" class="tbtn" data-sopen="${id}" aria-expanded="${open === id}">${S.planStart[id] ? tpLabel(S.planStart[id]) : `<small>${L('タップして時刻を選ぶ', '點選設定時間', 'Ketuk untuk pilih jam')}</small>`}</button></div>`).join('')}</div>
       ${open ? `<div class="sim-tp">${tpHTML('s:' + open, S.planStart[open], false)}
-        <div class="row"><button type="button" class="btn ghost" data-act="sim-clear">${L(`${esc(baby(open).name)}の指定を消す`, `清除${esc(baby(open).name)}的設定`)}</button><span class="spacer" style="flex:1"></span><button type="button" class="btn solid" data-act="sim-done">${L('OK', '完成')}</button></div></div>` : ''}
+        <div class="row"><button type="button" class="btn ghost" data-act="sim-clear">${L(`${esc(baby(open).name)}の指定を消す`, `清除${esc(baby(open).name)}的設定`, `Hapus pilihan ${esc(baby(open).name)}`)}</button><span class="spacer" style="flex:1"></span><button type="button" class="btn solid" data-act="sim-done">${L('OK', '完成', 'OK')}</button></div></div>` : ''}
       <p class="hint">${on
-        ? L('指定した時刻に飲んだ場合の予定です。記録はされません。', '這是在指定時間餵奶時的預定，不會存成紀錄。')
-        : L('時刻を選ぶと、その時刻に飲んだ場合の次からの時間を一覧できます（記録はされません）。', '選擇時間後，可以看到在那個時間餵奶時之後的時間表（不會存成紀錄）。')}</p>`;
+        ? L('指定した時刻に飲んだ場合の予定です。記録はされません。', '這是在指定時間餵奶時的預定，不會存成紀錄。', 'Ini jadwal jika minum pada jam yang dipilih. Tidak dicatat.')
+        : L('時刻を選ぶと、その時刻に飲んだ場合の次からの時間を一覧できます（記録はされません）。', '選擇時間後，可以看到在那個時間餵奶時之後的時間表（不會存成紀錄）。', 'Pilih jam untuk melihat jadwal berikutnya jika minum pada jam itu (tidak dicatat).')}</p>`;
   }
 
   // Records of one calendar day. The live window covers the recent weeks; an older day is read once from
@@ -1239,7 +1250,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       S.db.collection('logs').where('at', '>=', k).where('at', '<', k + DAY).get().then(s => {
         S.dayCache[k] = s.docs.map(d => ({ ...d.data(), id: d.id })).filter(l => BABY_IDS.includes(l.baby) && TYPE_LABEL[l.type]).sort((a, b) => b.at - a.at);
         renderTimeline(); if (S.form && S.form.type === 'cal') renderCal();
-      }).catch(() => { delete S.dayCache[k]; toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。')); });
+      }).catch(() => { delete S.dayCache[k]; toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。', 'Gagal memuat catatan lama.')); });
     }
     return null;
   }
@@ -1253,17 +1264,17 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   function renderTimeline() {
     const el = $('#timeline');
-    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
     // A day picked in the calendar shows on its own, with a way back to the latest days.
     let src = S.logs, bar = '';
     if (S.logDay != null) {
-      bar = `<div class="log-daybar"><span>📅 ${L(`${dayLabel(S.logDay)}の記録`, `${dayLabel(S.logDay)}的紀錄`)}</span><button type="button" class="btn ghost" data-act="log-latest">${L('最新に戻る', '回到最新')}</button></div>`;
+      bar = `<div class="log-daybar"><span>📅 ${L(`${dayLabel(S.logDay)}の記録`, `${dayLabel(S.logDay)}的紀錄`, `Catatan ${dayLabel(S.logDay)}`)}</span><button type="button" class="btn ghost" data-act="log-latest">${L('最新に戻る', '回到最新', 'Kembali ke terbaru')}</button></div>`;
       src = dayLogs(S.logDay);
-      if (!src) { el.innerHTML = bar + `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+      if (!src) { el.innerHTML = bar + `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
     }
     const list = src.filter(l => S.filter === 'all' || l.baby === S.filter);
     if (!list.length) {
-      el.innerHTML = bar + `<p class="empty-note">${S.logDay != null ? L('この日の記録はありません。', '這天沒有紀錄。') : L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。')}</p>`;
+      el.innerHTML = bar + `<p class="empty-note">${S.logDay != null ? L('この日の記録はありません。', '這天沒有紀錄。', 'Tidak ada catatan pada hari ini.') : L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。', 'Belum ada catatan. Tekan "Catat minum susu" di kartu pada tab "Kini" untuk mulai.')}</p>`;
       return;
     }
     const groups = new Map();
@@ -1274,17 +1285,17 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     el.innerHTML = bar + shown.map(k => {
       const sums = ids.map(id => {
         const st = dayStats(id, k, k + DAY, src);
-        return `<span><em class="${id}">${esc(baby(id).name)}</em> ${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`)} ${st.ml}mL · ${L('尿', '尿')}${st.pee} · ${L('便', '便')}${st.poo}</span>`;
+        return `<span><em class="${id}">${esc(baby(id).name)}</em> ${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`, `Susu ${st.milkN} kali`)} ${st.ml}mL · ${L('尿', '尿', 'Pipis ')}${st.pee} · ${L('便', '便', 'BAB ')}${st.poo}</span>`;
       }).join('　');
       return `<div class="day"><div class="day-head"><h3>${dayLabel(k)}</h3><div class="sum num">${sums}</div></div>
-        <ul class="items">${groups.get(k).map(l => `<li><button type="button" class="item" data-edit="${esc(l.id)}" aria-label="${L(`${esc(baby(l.baby).name)} ${TYPE_LABEL[l.type]} ${fmtT(l.at)} を修正`, `修改 ${esc(baby(l.baby).name)} ${fmtT(l.at)} 的${TYPE_LABEL[l.type]}`)}">
+        <ul class="items">${groups.get(k).map(l => `<li><button type="button" class="item" data-edit="${esc(l.id)}" aria-label="${L(`${esc(baby(l.baby).name)} ${TYPE_LABEL[l.type]} ${fmtT(l.at)} を修正`, `修改 ${esc(baby(l.baby).name)} ${fmtT(l.at)} 的${TYPE_LABEL[l.type]}`, `Ubah ${TYPE_LABEL[l.type]} ${esc(baby(l.baby).name)} ${fmtT(l.at)}`)}">
           <span class="t num">${fmtT(l.at)}</span>
           <span class="chip ${l.baby}">${esc(baby(l.baby).name)}</span>
           <span class="k">${TYPE_LABEL[l.type]}</span>
           <span class="d">${describe(l)}${l.note ? `<small>${esc(l.note)}</small>` : ''}</span>
-          <span class="fix" aria-hidden="true">${L('修正', '修改')}</span>
+          <span class="fix" aria-hidden="true">${L('修正', '修改', 'Ubah')}</span>
         </button></li>`).join('')}</ul></div>`;
-    }).join('') + (S.logDay == null && keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`)}</button></div>` : '');
+    }).join('') + (S.logDay == null && keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`, `Tampilkan hari sebelumnya (sisa ${keys.length - S.daysShown} hari)`)}</button></div>` : '');
   }
 
   // ---------- trends: milk mL, pee and poo counts per day (last 14 days) or per month (last 6 months) ----------
@@ -1298,7 +1309,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     try {
       const snap = await S.db.collection('logs').where('at', '>=', monthStart(Date.now(), TREND_MONTHS - 1)).get();
       S.history = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-    } catch { toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。')); }
+    } catch { toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。', 'Gagal memuat catatan lama.')); }
     S.historyLoading = false;
     renderTrend();
   }
@@ -1375,7 +1386,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       const segs = feeds[i].map((l, j) => { const v = Number(l.ml); return `<i class="${j % 2 ? 'alt' : ''}" style="flex:${v} 0 0" title="${fmtT(l.at)} ${v}mL">${v / top * FEED_PLOT_PX >= 14 ? v : ''}</i>`; }).join('');
       return `<button type="button" class="fc-day${k === sel ? ' sel' : ''}" data-tday="${k}" aria-pressed="${k === sel}" aria-label="${dayLabel(k)} ${totals[i]}mL">
         <span class="fc-plot"><span class="fc-bar" style="height:${pct(totals[i])}">${totals[i] ? `<b>${totals[i]}</b>` : ''}${segs}</span></span>
-        <small>${d.getMonth() + 1}/${d.getDate()}<br>${k === today ? L('今日', '今天') : L('日月火水木金土', '日一二三四五六')[d.getDay()]}</small></button>`;
+        <small>${d.getMonth() + 1}/${d.getDate()}<br>${k === today ? L('今日', '今天', 'Hari ini') : L('日月火水木金土', '日一二三四五六', ID_WD)[d.getDay()]}</small></button>`;
     }).join('');
     return `<div class="fchart ${id}" style="--steps:${top / step}">${axis}<div class="fc-scroll">${cols}</div></div>`;
   }
@@ -1384,18 +1395,18 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const all = feedsOn(src, id, k), ml = all.filter(l => l.kind !== 'breast' && Number(l.ml) > 0);
     const total = ml.reduce((s, l) => s + Number(l.ml), 0);
     const sum = all.length
-      ? L(`合計 ${fmtG(total)}mL ・ ${all.length}回${ml.length ? ` ・ 1回平均 ${Math.round(total / ml.length)}mL` : ''}`, `合計 ${fmtG(total)}mL ・ ${all.length}次${ml.length ? ` ・ 每次平均 ${Math.round(total / ml.length)}mL` : ''}`)
-      : L('授乳の記録なし', '沒有餵奶紀錄');
+      ? L(`合計 ${fmtG(total)}mL ・ ${all.length}回${ml.length ? ` ・ 1回平均 ${Math.round(total / ml.length)}mL` : ''}`, `合計 ${fmtG(total)}mL ・ ${all.length}次${ml.length ? ` ・ 每次平均 ${Math.round(total / ml.length)}mL` : ''}`, `Total ${fmtG(total)}mL · ${all.length} kali${ml.length ? ` · rata-rata ${Math.round(total / ml.length)}mL` : ''}`)
+      : L('授乳の記録なし', '沒有餵奶紀錄', 'Tidak ada catatan minum');
     return `<div class="tday"><div class="tday-head"><b>${dayLabel(k)}</b><span class="num">${sum}</span></div>
-      ${all.length ? `<div class="tday-feeds num">${all.map(l => `<span class="${id}"><small>${fmtT(l.at)}</small><b>${l.kind === 'breast' ? L('母乳', '親餵') : `${Number(l.ml) || 0}`}</b>${l.kind === 'breast' ? (l.min ? `<small>${l.min}${L('分', '分')}</small>` : '') : '<small>mL</small>'}</span>`).join('')}</div>` : ''}</div>`;
+      ${all.length ? `<div class="tday-feeds num">${all.map(l => `<span class="${id}"><small>${fmtT(l.at)}</small><b>${l.kind === 'breast' ? L('母乳', '親餵', 'ASI langsung') : `${Number(l.ml) || 0}`}</b>${l.kind === 'breast' ? (l.min ? `<small>${l.min}${L('分', '分', ' mnt')}</small>` : '') : '<small>mL</small>'}</span>`).join('')}</div>` : ''}</div>`;
   }
   function renderTrend() {
     const el = $('#trend'); if (!el) return;
     document.querySelectorAll('#trend-mode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.trend === S.trendMode)));
-    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
     const now = Date.now(), today = startOfDay(now);
     const who = S.trendBaby, ids = who === 'both' ? BABY_IDS : [who];
-    const tabs = `<div class="tbaby" role="group" aria-label="${L('表示する子', '顯示的寶寶')}">${[...BABY_IDS.map(id => [id, esc(baby(id).name)]), ['both', L('ふたり', '兩人')]].map(([k, lab]) =>
+    const tabs = `<div class="tbaby" role="group" aria-label="${L('表示する子', '顯示的寶寶', 'Anak yang ditampilkan')}">${[...BABY_IDS.map(id => [id, esc(baby(id).name)]), ['both', L('ふたり', '兩人', 'Berdua')]].map(([k, lab]) =>
       `<button type="button" class="${k}" data-tbaby="${k}" aria-pressed="${who === k}">${lab}</button>`).join('')}</div>`;
 
     // At a glance: today so far vs the average of the last 7 full days.
@@ -1405,22 +1416,22 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const avgOf = (id, f) => { let s = 0; for (let i = 1; i <= avgDays; i++) { const b = byDay.get(today - i * DAY); if (b) s += b[id][f]; } return s / avgDays; };
     const tile = (id, f, unit) => {
       const t = (byDay.get(today) || {})[id], v = t ? t[f] : 0, a = avgOf(id, f);
-      return `<div class="tile"><b class="num">${fmtG(v)}</b>${unit}<small class="num">${L('平均', '平均')} ${fmtG(Math.round(a))}${unit}</small></div>`;
+      return `<div class="tile"><b class="num">${fmtG(v)}</b>${unit}<small class="num">${L('平均', '平均', 'Rata-rata')} ${fmtG(Math.round(a))}${unit}</small></div>`;
     };
     let html = tabs + `<div class="tiles">
-      <span class="th">${L('今日', '今天')}</span><span class="th">${TYPE_LABEL.milk}</span><span class="th">${TYPE_LABEL.pee}</span><span class="th">${TYPE_LABEL.poo}</span>
-      ${ids.map(id => `<span class="who ${id}">${esc(baby(id).name)}</span>${tile(id, 'ml', 'mL')}${tile(id, 'pee', L('回', '次'))}${tile(id, 'poo', L('回', '次'))}`).join('')}
+      <span class="th">${L('今日', '今天', 'Hari ini')}</span><span class="th">${TYPE_LABEL.milk}</span><span class="th">${TYPE_LABEL.pee}</span><span class="th">${TYPE_LABEL.poo}</span>
+      ${ids.map(id => `<span class="who ${id}">${esc(baby(id).name)}</span>${tile(id, 'ml', 'mL')}${tile(id, 'pee', L('回', '次', ' kali'))}${tile(id, 'poo', L('回', '次', ' kali'))}`).join('')}
     </div>
-    <p class="trend-note" style="margin:-8px 0 10px">${L('大きい数字は今日の合計、小さい数字は直近7日間の1日平均です。', '大的數字是今天的合計，小的數字是最近7天的每日平均。')}</p>`;
+    <p class="trend-note" style="margin:-8px 0 10px">${L('大きい数字は今日の合計、小さい数字は直近7日間の1日平均です。', '大的數字是今天的合計，小的數字是最近7天的每日平均。', 'Angka besar = total hari ini, angka kecil = rata-rata harian 7 hari terakhir.')}</p>`;
 
     let labels, keys, source, keyOf;
     if (S.trendMode === 'month') {
-      if (S.mode === 'db' && !S.history) { loadHistory(); el.innerHTML = html + `<p class="empty-note">${L('過去の記録を集計しています…', '正在統計過去的紀錄…')}</p>`; return; }
+      if (S.mode === 'db' && !S.history) { loadHistory(); el.innerHTML = html + `<p class="empty-note">${L('過去の記録を集計しています…', '正在統計過去的紀錄…', 'Menghitung catatan lama…')}</p>`; return; }
       // Older months come from the one-time read; recent days from the live data, so new records show up.
       const merged = new Map(); (S.history || []).forEach(l => merged.set(l.id, l)); S.logs.forEach(l => merged.set(l.id, l));
       source = [...merged.values()]; keyOf = ms => monthStart(ms);
       keys = Array.from({ length: TREND_MONTHS }, (_, i) => monthStart(now, TREND_MONTHS - 1 - i));
-      labels = keys.map(k => L(`${new Date(k).getMonth() + 1}月`, `${new Date(k).getMonth() + 1}月`));
+      labels = keys.map(k => L(`${new Date(k).getMonth() + 1}月`, `${new Date(k).getMonth() + 1}月`, `${ID_MON[new Date(k).getMonth()]}`));
     } else {
       source = S.logs; keyOf = startOfDay;
       keys = Array.from({ length: TREND_DAYS }, (_, i) => today - (TREND_DAYS - 1 - i) * DAY);
@@ -1431,26 +1442,26 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (S.trendMode === 'month') {
       while (keys.length > 2 && !buckets.has(keys[0])) { keys.shift(); labels.shift(); }
     }
-    const per = S.trendMode === 'month' ? L('月合計', '每月合計') : L('1日あたり', '每天');
+    const per = S.trendMode === 'month' ? L('月合計', '每月合計', 'Total bulanan') : L('1日あたり', '每天', 'Per hari');
     const chart = (f, title, unit) => {
       const series = ids.map(id => ({ name: baby(id).name, color: `var(--${id === 'ane' ? 'ane' : 'imo'})`, values: keys.map(k => (buckets.get(k) || {})[id] ? buckets.get(k)[id][f] : 0) }));
       return `<div class="tchart"><div class="tchart-head"><h3>${title}</h3><small>${per}（${unit}）</small></div>${barChart(labels, series, unit, true)}</div>`;
     };
     if (who === 'both') {
       html += `<div class="legend">${BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'});height:10px;width:10px;border-radius:3px"></i>${esc(baby(id).name)}</span>`).join('')}</div>`;
-      html += chart('ml', L('ミルク量', '奶量'), 'mL');
+      html += chart('ml', L('ミルク量', '奶量', 'Jumlah susu'), 'mL');
     } else if (S.trendMode === 'day') {
       // One twin by day: bars split into each feed, and the tapped day's feeds listed under the chart.
       const src = milkSource(), fdays = feedDays(src, who, today);
       if (!fdays.includes(S.trendDay)) S.trendDay = today;
-      html += `<div class="tchart"><div class="tchart-head"><h3>${L('ミルク量', '奶量')}</h3><small>${L('1日の合計を1回ずつに分けて表示（mL）', '每日合計，依每次分段顯示（mL）')}</small></div>${feedChart(src, who, fdays, S.trendDay, today)}</div>`
+      html += `<div class="tchart"><div class="tchart-head"><h3>${L('ミルク量', '奶量', 'Jumlah susu')}</h3><small>${L('1日の合計を1回ずつに分けて表示（mL）', '每日合計，依每次分段顯示（mL）', 'Total harian, dibagi per kali minum (mL)')}</small></div>${feedChart(src, who, fdays, S.trendDay, today)}</div>`
         + feedDayHTML(src, who, S.trendDay)
-        + `<p class="trend-note">${L('棒の1区切りが1回分のミルクです（下から時間順）。横にスクロールすると前の日、棒をタップするとその日の内訳を表示します。', '長條的每一段是一次的奶量（由下往上依時間順序）。左右滑動可以看之前的日子，點長條可以看當天的明細。')}</p>`;
-    } else html += chart('ml', L('ミルク量', '奶量'), 'mL');
-    html += chart('pee', TYPE_LABEL.pee, L('回', '次')) + chart('poo', TYPE_LABEL.poo, L('回', '次'));
+        + `<p class="trend-note">${L('棒の1区切りが1回分のミルクです（下から時間順）。横にスクロールすると前の日、棒をタップするとその日の内訳を表示します。', '長條的每一段是一次的奶量（由下往上依時間順序）。左右滑動可以看之前的日子，點長條可以看當天的明細。', 'Satu potongan batang = satu kali minum (dari bawah sesuai urutan jam). Geser ke samping untuk hari sebelumnya, ketuk batang untuk rinciannya.')}</p>`;
+    } else html += chart('ml', L('ミルク量', '奶量', 'Jumlah susu'), 'mL');
+    html += chart('pee', TYPE_LABEL.pee, L('回', '次', ' kali')) + chart('poo', TYPE_LABEL.poo, L('回', '次', ' kali'));
     html += `<p class="trend-note">${S.trendMode === 'month'
-      ? L('薄い棒は今月（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是本月（統計中）。親餵不計入奶量。')
-      : L('薄い棒は今日（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是今天（統計中）。親餵不計入奶量。')}</p>`;
+      ? L('薄い棒は今月（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是本月（統計中）。親餵不計入奶量。', 'Batang pucat = bulan ini (masih berjalan). ASI langsung tidak dihitung dalam jumlah.')
+      : L('薄い棒は今日（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是今天（統計中）。親餵不計入奶量。', 'Batang pucat = hari ini (masih berjalan). ASI langsung tidak dihitung dalam jumlah.')}</p>`;
     // Re-renders (a tapped day, new data) keep the swipe position; 0 is the newest end of the right-to-left scroller.
     const sl = el.querySelector('.fc-scroll')?.scrollLeft || 0;
     el.innerHTML = html;
@@ -1500,13 +1511,13 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   ]);
   // Pass rate (%) by lower bound of the month band.
   const MILESTONES = [
-    { key: 'neck', ja: '首がすわる', zh: '頸部挺直（抬頭穩定）', rates: { 2: 5.6, 3: 53.7, 4: 93.5, 5: 100 } },
-    { key: 'roll', ja: '寝返り', zh: '翻身', rates: { 2: 1.6, 3: 20.7, 4: 56.9, 5: 89.7, 6: 97.6, 7: 100 } },
-    { key: 'sit', ja: 'ひとりすわり', zh: '獨坐', rates: { 5: 3.2, 6: 30.1, 7: 65.9, 8: 84.4, 9: 91.7, 10: 98.5, 11: 99.3, 12: 100 } },
-    { key: 'crawl', ja: 'はいはい', zh: '爬行', rates: { 5: 6.3, 6: 19.5, 7: 47.6, 8: 67.4, 9: 76.9, 10: 91.0, 11: 99.3, 12: 99.0, 13: 98.7, 14: 100 } },
-    { key: 'pullup', ja: 'つかまり立ち', zh: '扶物站立', rates: { 5: 2.4, 6: 7.3, 7: 31.7, 8: 61.2, 9: 81.3, 10: 88.1, 11: 96.3, 12: 99.0, 13: 98.7, 14: 100 } },
-    { key: 'walk', ja: 'ひとり歩き', zh: '獨立行走', rates: { 8: 2.3, 9: 6.0, 10: 9.0, 11: 30.9, 12: 47.9, 13: 55.3, 14: 83.0, 15: 88.4, 16: 96.9, 17: 95.1, 18: 97.5, 19: 97.8, 20: 98.6, 21: 100 } },
-    { key: 'word', ja: 'ことばを話す（1語以上）', zh: '會說話（1個詞以上）', rates: { 5: 0.8, 6: 0, 7: 1.6, 8: 3.9, 9: 3.0, 10: 10.4, 11: 21.3, 12: 36.5, 13: 51.3, 14: 61.7, 15: 69.6, 16: 80.6, 17: 86.9, 18: 91.1, 19: 92.4, 20: 93.2, 21: 97.1, 22: 98.7, 23: 94.3 } },
+    { key: 'neck', ja: '首がすわる', zh: '頸部挺直（抬頭穩定）', id: 'Kepala tegak', rates: { 2: 5.6, 3: 53.7, 4: 93.5, 5: 100 } },
+    { key: 'roll', ja: '寝返り', zh: '翻身', id: 'Tengkurap sendiri', rates: { 2: 1.6, 3: 20.7, 4: 56.9, 5: 89.7, 6: 97.6, 7: 100 } },
+    { key: 'sit', ja: 'ひとりすわり', zh: '獨坐', id: 'Duduk sendiri', rates: { 5: 3.2, 6: 30.1, 7: 65.9, 8: 84.4, 9: 91.7, 10: 98.5, 11: 99.3, 12: 100 } },
+    { key: 'crawl', ja: 'はいはい', zh: '爬行', id: 'Merangkak', rates: { 5: 6.3, 6: 19.5, 7: 47.6, 8: 67.4, 9: 76.9, 10: 91.0, 11: 99.3, 12: 99.0, 13: 98.7, 14: 100 } },
+    { key: 'pullup', ja: 'つかまり立ち', zh: '扶物站立', id: 'Berdiri berpegangan', rates: { 5: 2.4, 6: 7.3, 7: 31.7, 8: 61.2, 9: 81.3, 10: 88.1, 11: 96.3, 12: 99.0, 13: 98.7, 14: 100 } },
+    { key: 'walk', ja: 'ひとり歩き', zh: '獨立行走', id: 'Berjalan sendiri', rates: { 8: 2.3, 9: 6.0, 10: 9.0, 11: 30.9, 12: 47.9, 13: 55.3, 14: 83.0, 15: 88.4, 16: 96.9, 17: 95.1, 18: 97.5, 19: 97.8, 20: 98.6, 21: 100 } },
+    { key: 'word', ja: 'ことばを話す（1語以上）', zh: '會說話（1個詞以上）', id: 'Berbicara (1 kata atau lebih)', rates: { 5: 0.8, 6: 0, 7: 1.6, 8: 3.9, 9: 3.0, 10: 10.4, 11: 21.3, 12: 36.5, 13: 51.3, 14: 61.7, 15: 69.6, 16: 80.6, 17: 86.9, 18: 91.1, 19: 92.4, 20: 93.2, 21: 97.1, 22: 98.7, 23: 94.3 } },
   ].map(m => {
     const ages = Object.keys(m.rates).map(Number).sort((a, b) => a - b);
     return { ...m, from: ages.find(a => m.rates[a] >= 50), to: ages.find(a => m.rates[a] >= 90) + 1 };   // "most children" window
@@ -1529,25 +1540,25 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function ymdText({ m, d }) {
     const y = Math.floor(m / 12), mo = m % 12;
     const parts = [];
-    if (y) parts.push(L(`${y}歳`, `${y}歲`));
-    if (mo || (!y && m)) parts.push(L(`${mo}か月`, `${mo}個月`));
-    parts.push(L(`${d}日`, `${d}天`));
-    return parts.join('');
+    if (y) parts.push(L(`${y}歳`, `${y}歲`, `${y} th`));
+    if (mo || (!y && m)) parts.push(L(`${mo}か月`, `${mo}個月`, `${mo} bln`));
+    parts.push(L(`${d}日`, `${d}天`, `${d} hr`));
+    return parts.join(L('', '', ' '));
   }
   function ageText(id, short) {
     const b = baby(id); if (!b.birthAt) return '';
     const days = dayAge(b.birthAt), ma = monthAge(b.birthAt);
     // card (short): "生後12日" / "日齢34・1か月3日"; full: "生後1か月3日（日齢34）"
     let t = short
-      ? (ma.m ? `${L('日齢', '日齡')}${days}・${ymdText(ma)}` : `${L('生後', '出生')}${days}${L('日', '天')}`)
-      : `${L('生後', '出生')}${ymdText(ma)}（${L('日齢', '日齡')}${days}）`;
+      ? (ma.m ? `${L('日齢', '日齡', 'Hari ke-')}${days}・${ymdText(ma)}` : `${L('生後', '出生', 'Usia ')}${days}${L('日', '天', ' hari')}`)
+      : `${L('生後', '出生', 'Usia ')}${ymdText(ma)}（${L('日齢', '日齡', 'Hari ke-')}${days}）`;
     if (isPreterm(b)) {
       const due = dueDateOf(b), cd = dayAge(due);
-      t += ` ・ <span class="nowrap">${L('修正', '矯正')}` + (cd < 0 ? L(`予定日まで${-cd}日`, `距預產期${-cd}天`) : ymdText(monthAge(due))) + '</span>';
+      t += ` ・ <span class="nowrap">${L('修正', '矯正', 'Koreksi ')}` + (cd < 0 ? L(`予定日まで${-cd}日`, `距預產期${-cd}天`, `${-cd} hari lagi ke HPL`) : ymdText(monthAge(due))) + '</span>';
     }
     return t;
   }
-  const gaText = b => b.gaWeeks ? L(`${b.gaWeeks}週${b.gaDays || 0}日`, `${b.gaWeeks}週${b.gaDays || 0}天`) : '';
+  const gaText = b => b.gaWeeks ? L(`${b.gaWeeks}週${b.gaDays || 0}日`, `${b.gaWeeks}週${b.gaDays || 0}天`, `${b.gaWeeks} mgg ${b.gaDays || 0} hr`) : '';
 
   // ---------- icon photos ----------
   // Photos are cropped to a small square JPEG in the browser and stored in the twin's settings doc in
@@ -1557,7 +1568,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const b = baby(id), cls = `avatar ${size || ''}`;
     const inner = b.photo ? `<img class="${cls}" src="${b.photo}" alt="">` : `<span class="${cls} ph" aria-hidden="true">${esc((b.name || '').slice(0, 1))}</span>`;
     if (!editable) return inner;
-    return `<button type="button" class="avatar-btn" data-photo="${id}" aria-label="${L(`${esc(b.name)}の写真を${b.photo ? '変更' : '選ぶ'}`, `${b.photo ? '更換' : '選擇'}${esc(b.name)}的照片`)}">${inner}${b.photo ? '' : `<em>${L('写真', '照片')}</em>`}</button>`;
+    return `<button type="button" class="avatar-btn" data-photo="${id}" aria-label="${L(`${esc(b.name)}の写真を${b.photo ? '変更' : '選ぶ'}`, `${b.photo ? '更換' : '選擇'}${esc(b.name)}的照片`, `${b.photo ? 'Ganti' : 'Pilih'} foto ${esc(b.name)}`)}">${inner}${b.photo ? '' : `<em>${L('写真', '照片', 'Foto')}</em>`}</button>`;
   }
   function openPhoto(id) {
     S.form = { type: 'photo', baby: id, img: null, zoom: 1, px: 0.5, py: 0.3 };
@@ -1572,19 +1583,19 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function renderPhoto() {
     const F = S.form, b = baby(F.baby);
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${L(`${esc(b.name)}の写真`, `${esc(b.name)}的照片`)}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <div class="sheet-head"><h2>${L(`${esc(b.name)}の写真`, `${esc(b.name)}的照片`, `Foto ${esc(b.name)}`)}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
       <div class="ph-stage">${F.img ? `<canvas id="ph-canvas" width="${PHOTO_PX}" height="${PHOTO_PX}"></canvas>` : (b.photo ? `<img src="${b.photo}" alt="">` : `<span class="avatar ph xl">${esc(b.name.slice(0, 1))}</span>`)}</div>
-      <label class="btn" for="ph-file">${F.img || b.photo ? L('別の写真を選ぶ', '選擇其他照片') : L('写真を選ぶ', '選擇照片')}</label>
+      <label class="btn" for="ph-file">${F.img || b.photo ? L('別の写真を選ぶ', '選擇其他照片', 'Pilih foto lain') : L('写真を選ぶ', '選擇照片', 'Pilih foto')}</label>
       <input type="file" id="ph-file" accept="image/*" hidden>
-      ${F.img ? `<div class="field"><label for="ph-zoom">${L('大きさ', '大小')}</label><input type="range" id="ph-zoom" min="1" max="3" step="0.05" value="${F.zoom}"></div>
-        <div class="field"><label for="ph-x">${L('左右の位置', '左右位置')}</label><input type="range" id="ph-x" min="0" max="1" step="0.01" value="${F.px}"></div>
-        <div class="field"><label for="ph-y">${L('上下の位置', '上下位置')}</label><input type="range" id="ph-y" min="0" max="1" step="0.01" value="${F.py}"></div>` : ''}
-      <p class="hint">${L('写真は小さく切り抜いてから、記録と同じデータベースに保存します（見られるのは登録したふたりだけ。GitHub には置きません）。', '照片會縮小裁切後，存在與紀錄相同的資料庫（只有登記的兩人能看到，不會放到 GitHub）。')}</p>
+      ${F.img ? `<div class="field"><label for="ph-zoom">${L('大きさ', '大小', 'Ukuran')}</label><input type="range" id="ph-zoom" min="1" max="3" step="0.05" value="${F.zoom}"></div>
+        <div class="field"><label for="ph-x">${L('左右の位置', '左右位置', 'Posisi kiri-kanan')}</label><input type="range" id="ph-x" min="0" max="1" step="0.01" value="${F.px}"></div>
+        <div class="field"><label for="ph-y">${L('上下の位置', '上下位置', 'Posisi atas-bawah')}</label><input type="range" id="ph-y" min="0" max="1" step="0.01" value="${F.py}"></div>` : ''}
+      <p class="hint">${L('写真は小さく切り抜いてから、記録と同じデータベースに保存します（見られるのは登録したふたりだけ。GitHub には置きません）。', '照片會縮小裁切後，存在與紀錄相同的資料庫（只有登記的兩人能看到，不會放到 GitHub）。', 'Foto dipotong kecil lalu disimpan di database yang sama dengan catatan (hanya akun terdaftar yang bisa melihat; tidak disimpan di GitHub).')}</p>
       <div class="sheet-actions">
-        ${b.photo ? `<button type="button" class="btn danger" data-act="photo-remove">${L('写真を外す', '移除照片')}</button>` : ''}
+        ${b.photo ? `<button type="button" class="btn danger" data-act="photo-remove">${L('写真を外す', '移除照片', 'Hapus foto')}</button>` : ''}
         <span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
-        <button type="submit" class="btn solid" id="f-save" ${F.img ? '' : 'disabled'}>${L('保存', '儲存')}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消', 'Batal')}</button>
+        <button type="submit" class="btn solid" id="f-save" ${F.img ? '' : 'disabled'}>${L('保存', '儲存', 'Simpan')}</button>
       </div>
     </form></div>`;
     const c = $('#ph-canvas'); if (c) drawPhoto(c);
@@ -1594,7 +1605,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const file = e.target.files && e.target.files[0]; if (!file) return;
     const url = URL.createObjectURL(file), img = new Image();
     img.onload = () => { S.form.img = img; S.form.zoom = 1; S.form.px = 0.5; S.form.py = img.naturalHeight > img.naturalWidth ? 0.3 : 0.5; renderPhoto(); };
-    img.onerror = () => toast(L('この写真は読み込めませんでした。別の写真を選んでください。', '無法讀取這張照片，請選擇其他照片。'));
+    img.onerror = () => toast(L('この写真は読み込めませんでした。別の写真を選んでください。', '無法讀取這張照片，請選擇其他照片。', 'Foto ini tidak bisa dibaca. Pilih foto lain.'));
     img.src = url;
   });
   document.addEventListener('input', e => {
@@ -1607,7 +1618,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const c = document.createElement('canvas'); c.width = c.height = PHOTO_PX; drawPhoto(c);
     const photo = c.toDataURL('image/jpeg', 0.85);
     await saveBaby(F.baby, { photo });
-    S.form = null; renderForm(); render(); toast(L('写真を保存しました', '已儲存照片'));
+    S.form = null; renderForm(); render(); toast(L('写真を保存しました', '已儲存照片', 'Foto disimpan'));
   }
 
   // Birth form: date and weeks of gestation are shared by the twins; time, weight and length are per twin.
@@ -1629,25 +1640,25 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const F = S.form;
     const wk = Array.from({ length: 21 }, (_, i) => 22 + i), dy = [0, 1, 2, 3, 4, 5, 6];
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${L('出生時の記録', '出生紀錄')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
-      <p class="hint">${L('日齢・月齢の表示、成長曲線、発達の目安に使います。37週未満で生まれた場合は修正月齢も計算します。', '用於顯示日齡・月齡、生長曲線與發展參考。未滿37週出生時，也會計算矯正月齡。')}</p>
-      <div class="field"><label for="b-date">${L('生年月日（ふたり共通）', '出生日期（兩人相同）')}</label><input type="date" id="b-date" value="${esc(F.date)}" max="${toDateInput(Date.now())}"></div>
-      <div class="field"><span class="lbl">${L('在胎週数（ふたり共通）', '出生週數（兩人相同）')}</span>
+      <div class="sheet-head"><h2>${L('出生時の記録', '出生紀錄', 'Data kelahiran')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
+      <p class="hint">${L('日齢・月齢の表示、成長曲線、発達の目安に使います。37週未満で生まれた場合は修正月齢も計算します。', '用於顯示日齡・月齡、生長曲線與發展參考。未滿37週出生時，也會計算矯正月齡。', 'Dipakai untuk usia (hari/bulan), kurva pertumbuhan, dan perkiraan perkembangan. Jika lahir sebelum 37 minggu, usia koreksi juga dihitung.')}</p>
+      <div class="field"><label for="b-date">${L('生年月日（ふたり共通）', '出生日期（兩人相同）', 'Tanggal lahir (sama untuk keduanya)')}</label><input type="date" id="b-date" value="${esc(F.date)}" max="${toDateInput(Date.now())}"></div>
+      <div class="field"><span class="lbl">${L('在胎週数（ふたり共通）', '出生週數（兩人相同）', 'Usia kehamilan saat lahir (sama untuk keduanya)')}</span>
         <div class="ga-row">
-          <select id="b-gaw" aria-label="${L('週', '週')}"><option value="">--</option>${wk.map(w => `<option value="${w}" ${Number(F.gaWeeks) === w ? 'selected' : ''}>${w}</option>`).join('')}</select><span>${L('週', '週')}</span>
-          <select id="b-gad" aria-label="${L('日', '天')}">${dy.map(v => `<option value="${v}" ${Number(F.gaDays || 0) === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span>${L('日', '天')}</span>
+          <select id="b-gaw" aria-label="${L('週', '週', 'mgg')}"><option value="">--</option>${wk.map(w => `<option value="${w}" ${Number(F.gaWeeks) === w ? 'selected' : ''}>${w}</option>`).join('')}</select><span>${L('週', '週', 'mgg')}</span>
+          <select id="b-gad" aria-label="${L('日', '天', ' hari')}">${dy.map(v => `<option value="${v}" ${Number(F.gaDays || 0) === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span>${L('日', '天', ' hari')}</span>
         </div>
-        <p class="hint">${L('母子手帳の「出産の状態」に書かれている週数です（例：36週4日）。', '請填寫兒童健康手冊上記載的週數（例：36週4天）。')}</p></div>
+        <p class="hint">${L('母子手帳の「出産の状態」に書かれている週数です（例：36週4日）。', '請填寫兒童健康手冊上記載的週數（例：36週4天）。', 'Jumlah minggu yang tertulis di buku KIA (contoh: 36 minggu 4 hari).')}</p></div>
       ${BABY_IDS.map(id => `<div class="settings-baby">
         <h3 class="${id}">${esc(baby(id).name)}</h3>
-        <div class="field wide"><label for="b-${id}-time">${L('出生時刻', '出生時間')}</label><input type="time" id="b-${id}-time" value="${esc(F.per[id].time)}"></div>
-        <div class="field"><label for="b-${id}-w">${L('出生体重（g）', '出生體重（g）')}</label><input type="number" inputmode="numeric" min="300" max="6000" id="b-${id}-w" value="${esc(F.per[id].weight)}"></div>
-        <div class="field"><label for="b-${id}-l">${L('出生身長（cm・任意）', '出生身長（cm・選填）')}</label><input type="number" inputmode="decimal" step="0.1" min="20" max="65" id="b-${id}-l" value="${esc(F.per[id].length)}"></div>
-        <div class="field"><label for="b-${id}-hc">${L('出生頭囲（cm・任意）', '出生頭圍（cm・選填）')}</label><input type="number" inputmode="decimal" step="0.1" min="20" max="45" id="b-${id}-hc" value="${esc(F.per[id].head)}"></div>
+        <div class="field wide"><label for="b-${id}-time">${L('出生時刻', '出生時間', 'Jam lahir')}</label><input type="time" id="b-${id}-time" value="${esc(F.per[id].time)}"></div>
+        <div class="field"><label for="b-${id}-w">${L('出生体重（g）', '出生體重（g）', 'Berat lahir (g)')}</label><input type="number" inputmode="numeric" min="300" max="6000" id="b-${id}-w" value="${esc(F.per[id].weight)}"></div>
+        <div class="field"><label for="b-${id}-l">${L('出生身長（cm・任意）', '出生身長（cm・選填）', 'Panjang lahir (cm, opsional)')}</label><input type="number" inputmode="decimal" step="0.1" min="20" max="65" id="b-${id}-l" value="${esc(F.per[id].length)}"></div>
+        <div class="field"><label for="b-${id}-hc">${L('出生頭囲（cm・任意）', '出生頭圍（cm・選填）', 'Lingkar kepala lahir (cm, opsional)')}</label><input type="number" inputmode="decimal" step="0.1" min="20" max="45" id="b-${id}-hc" value="${esc(F.per[id].head)}"></div>
       </div>`).join('')}
       <div class="sheet-actions"><span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
-        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消', 'Batal')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存', 'Simpan')}</button>
       </div>
     </form></div>`;
   }
@@ -1655,25 +1666,25 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   async function submitBirth() {
     const date = $('#b-date').value, gaw = Number($('#b-gaw').value) || null, gad = Number($('#b-gad').value) || 0;
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date || '');
-    if (!m) return toast(L('生年月日を入れてください。', '請輸入出生日期。'));
+    if (!m) return toast(L('生年月日を入れてください。', '請輸入出生日期。', 'Masukkan tanggal lahir.'));
     for (const id of BABY_IDS) {
       const tm = /^(\d{1,2}):(\d{2})$/.exec($(`#b-${id}-time`).value || '');
       const at = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), tm ? Number(tm[1]) : 12, tm ? Number(tm[2]) : 0).getTime();
-      if (at > Date.now() + FUTURE_OK) return toast(L('生年月日・時刻が未来になっています。', '出生日期・時間是未來的時間。'));
+      if (at > Date.now() + FUTURE_OK) return toast(L('生年月日・時刻が未来になっています。', '出生日期・時間是未來的時間。', 'Tanggal/jam lahir ada di masa depan.'));
       const w = Number($(`#b-${id}-w`).value) || null, len = Number($(`#b-${id}-l`).value) || null, hc = Number($(`#b-${id}-hc`).value) || null;
-      if (hc !== null && !(hc >= 20 && hc <= 45)) return toast(L('出生頭囲は20〜45cmで入力してください。', '出生頭圍請輸入20〜45cm。'));
-      if (w !== null && !(w >= 300 && w <= 6000)) return toast(L('出生体重は300〜6,000gで入力してください。', '出生體重請輸入300〜6,000g。'));
-      if (len !== null && !(len >= 20 && len <= 65)) return toast(L('出生身長は20〜65cmで入力してください。', '出生身長請輸入20〜65cm。'));
+      if (hc !== null && !(hc >= 20 && hc <= 45)) return toast(L('出生頭囲は20〜45cmで入力してください。', '出生頭圍請輸入20〜45cm。', 'Lingkar kepala lahir harus 20–45 cm.'));
+      if (w !== null && !(w >= 300 && w <= 6000)) return toast(L('出生体重は300〜6,000gで入力してください。', '出生體重請輸入300〜6,000g。', 'Berat lahir harus 300–6.000 g.'));
+      if (len !== null && !(len >= 20 && len <= 65)) return toast(L('出生身長は20〜65cmで入力してください。', '出生身長請輸入20〜65cm。', 'Panjang lahir harus 20–65 cm.'));
       await saveBaby(id, { birthAt: at, birthTimeKnown: !!tm, birthWeight: w, birthLength: len, birthHead: hc, gaWeeks: gaw, gaDays: gaw ? gad : null });
     }
-    S.form = null; renderForm(); render(); toast(L('出生時の記録を保存しました', '已儲存出生紀錄'));
+    S.form = null; renderForm(); render(); toast(L('出生時の記録を保存しました', '已儲存出生紀錄', 'Data kelahiran disimpan'));
   }
 
   function renderBirthInfo() {
     const el = $('#birth-info'); if (!el) return;
     if (!BABY_IDS.some(hasBirth)) {
-      el.innerHTML = `<div class="birth-cta"><p>${L('出生時の記録を入れると、日齢・月齢と成長曲線（全国の発育値）で比べられます。', '輸入出生紀錄後，就能看到日齡・月齡，並與生長曲線（全國發育值）比較。')}</p>
-        <button type="button" class="btn solid" data-act="birth">${L('出生時の記録を入れる', '輸入出生紀錄')}</button></div>`;
+      el.innerHTML = `<div class="birth-cta"><p>${L('出生時の記録を入れると、日齢・月齢と成長曲線（全国の発育値）で比べられます。', '輸入出生紀錄後，就能看到日齡・月齡，並與生長曲線（全國發育值）比較。', 'Isi data kelahiran untuk melihat usia dan membandingkan dengan kurva pertumbuhan nasional (Jepang).')}</p>
+        <button type="button" class="btn solid" data-act="birth">${L('出生時の記録を入れる', '輸入出生紀錄', 'Isi data kelahiran')}</button></div>`;
       return;
     }
     const pre = BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id)));
@@ -1681,10 +1692,10 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <span>${b.birthAt ? `${toDateInput(b.birthAt).replace(/-/g, '/')}${b.birthTimeKnown ? ' ' + fmtT(b.birthAt) : ''}` : '—'}${b.birthWeight ? ` ・ ${fmtG(b.birthWeight)}g` : ''}${b.gaWeeks ? ` ・ ${gaText(b)}` : ''}</span>
         <small>${ageText(id) || ''}</small></div>`; }).join('')}</div>
       <div class="row birth-tools">
-        <button type="button" class="fix-last" data-act="birth">${L('出生時の記録を編集', '編輯出生紀錄')}</button>
-        ${pre ? `<div class="seg" role="group" aria-label="${L('横軸', '橫軸')}">
-          <button type="button" data-corr="0" aria-pressed="${!S.corrected}">${L('生後月齢', '實際月齡')}</button>
-          <button type="button" data-corr="1" aria-pressed="${S.corrected}">${L('修正月齢', '矯正月齡')}</button></div>` : ''}
+        <button type="button" class="fix-last" data-act="birth">${L('出生時の記録を編集', '編輯出生紀錄', 'Ubah data kelahiran')}</button>
+        ${pre ? `<div class="seg" role="group" aria-label="${L('横軸', '橫軸', 'Sumbu horizontal')}">
+          <button type="button" data-corr="0" aria-pressed="${!S.corrected}">${L('生後月齢', '實際月齡', 'Usia sebenarnya')}</button>
+          <button type="button" data-corr="1" aria-pressed="${S.corrected}">${L('修正月齢', '矯正月齡', 'Usia koreksi')}</button></div>` : ''}
       </div>`;
   }
 
@@ -1693,15 +1704,15 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function growthMetric() {
     const m = S.gMetric;
     if (m === 'height') return {
-      table: GIRL_HEIGHT, label: L('身長', '身長'), unit: 'cm', step: 5, pad: 1, fmt: v => `${v}`, val: v => `${v.toFixed(1)}cm`,
+      table: GIRL_HEIGHT, label: L('身長', '身長', 'Tinggi'), unit: 'cm', step: 5, pad: 1, fmt: v => `${v}`, val: v => `${v.toFixed(1)}cm`,
       pts: (id, base) => { const b = baby(id), p = measuresOf(id).filter(l => l.height).map(l => ({ x: (l.at - base) / DAY, g: Number(l.height) })); if (b.birthLength) p.push({ x: (b.birthAt - base) / DAY, g: Number(b.birthLength), birth: true }); return p; },
     };
     if (m === 'head') return {
-      table: GIRL_HEAD, label: L('頭囲', '頭圍'), unit: 'cm', step: 2, pad: 0.5, fmt: v => `${v}`, val: v => `${v.toFixed(1)}cm`,
+      table: GIRL_HEAD, label: L('頭囲', '頭圍', 'Lingkar kepala'), unit: 'cm', step: 2, pad: 0.5, fmt: v => `${v}`, val: v => `${v.toFixed(1)}cm`,
       pts: (id, base) => { const b = baby(id), p = measuresOf(id).filter(l => l.head).map(l => ({ x: (l.at - base) / DAY, g: Number(l.head) })); if (b.birthHead) p.push({ x: (b.birthAt - base) / DAY, g: Number(b.birthHead), birth: true }); return p; },
     };
     return {
-      table: GIRL_WEIGHT, label: L('体重', '體重'), unit: 'kg', step: 500, pad: 100, fmt: v => `${(v / 1000).toFixed(1)}kg`, val: v => `${fmtG(v)}g`,
+      table: GIRL_WEIGHT, label: L('体重', '體重', 'Berat badan'), unit: 'kg', step: 500, pad: 100, fmt: v => `${(v / 1000).toFixed(1)}kg`, val: v => `${fmtG(v)}g`,
       pts: (id, base) => weightsWithBirth(id).map(l => ({ x: (l.at - base) / DAY, g: Number(l.grams), birth: !!l.birth })).filter(p => p.g > 0),
     };
   }
@@ -1709,7 +1720,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const M = growthMetric();
     const series = BABY_IDS.filter(hasBirth).map(id => ({ id, pts: M.pts(id, ageBase(baby(id), S.corrected)).sort((a, c) => a.x - c.x) }));
     $('#legend').innerHTML = BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'})"></i>${esc(baby(id).name)}</span>`).join('')
-      + `<span><i style="background:var(--band);height:10px"></i>${L('全国の3〜97%の範囲', '全國3〜97%範圍')}</span>`;
+      + `<span><i style="background:var(--band);height:10px"></i>${L('全国の3〜97%の範囲', '全國3〜97%範圍', 'Rentang 3–97% nasional')}</span>`;
     const all = series.flatMap(s => s.pts);
     const nowX = Math.max(...BABY_IDS.filter(hasBirth).map(id => (Date.now() - ageBase(baby(id), S.corrected)) / DAY));
     const x0 = Math.min(0, ...all.map(p => p.x)), x1 = Math.min(730, Math.max(90, nowX + 45, ...all.map(p => p.x + 15)));
@@ -1722,7 +1733,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const interp = (d, k) => interpTable(M.table, d, k);
     const x = d => pl + (d - x0) / (x1 - x0) * (W - pl - pr), y = g => pt + (1 - (g - g0) / (g1 - g0)) * (H - pt - pb);
     const clip = `<clipPath id="gc"><rect x="${pl}" y="${pt}" width="${W - pl - pr}" height="${H - pt - pb}"/></clipPath>`;
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L(`${M.label}と成長曲線`, `${M.label}與生長曲線`)}">${clip}`;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L(`${M.label}と成長曲線`, `${M.label}與生長曲線`, `${M.label} & kurva pertumbuhan`)}">${clip}`;
     for (let g = g0; g <= g1; g += step) {
       svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width=".6"/>`;
       svg += `<text x="${pl - 4}" y="${y(g) + 3}" text-anchor="end" font-size="9" fill="var(--muted)">${M.fmt(g)}</text>`;
@@ -1738,17 +1749,17 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const mStep = x1 > 365 ? 3 : x1 > 180 ? 2 : 1;
     for (let mo = 0; mo * DAYS_PER_MONTH <= x1; mo += mStep) {
       const xx = x(mo * DAYS_PER_MONTH);
-      svg += `<line x1="${xx}" x2="${xx}" y1="${H - pb}" y2="${H - pb + 3}" stroke="var(--muted)"/><text x="${xx}" y="${H - pb + 13}" text-anchor="middle" font-size="9" fill="var(--muted)">${mo}${L('か月', '月')}</text>`;
+      svg += `<line x1="${xx}" x2="${xx}" y1="${H - pb}" y2="${H - pb + 3}" stroke="var(--muted)"/><text x="${xx}" y="${H - pb + 13}" text-anchor="middle" font-size="9" fill="var(--muted)">${mo}${L('か月', '月', ' bln')}</text>`;
     }
     svg += `<line x1="${pl}" x2="${W - pr}" y1="${H - pb}" y2="${H - pb}" stroke="var(--muted)"/>`;
-    if (nowX > x0 && nowX < x1) svg += `<line x1="${x(nowX)}" x2="${x(nowX)}" y1="${pt}" y2="${H - pb}" stroke="var(--danger)" stroke-width="1" stroke-dasharray="2 3"/><text x="${x(nowX) + 3}" y="${pt + 8}" font-size="8" fill="var(--danger)">${L('今日', '今天')}</text>`;
+    if (nowX > x0 && nowX < x1) svg += `<line x1="${x(nowX)}" x2="${x(nowX)}" y1="${pt}" y2="${H - pb}" stroke="var(--danger)" stroke-width="1" stroke-dasharray="2 3"/><text x="${x(nowX) + 3}" y="${pt + 8}" font-size="8" fill="var(--danger)">${L('今日', '今天', 'Hari ini')}</text>`;
     for (const s of series) {
       if (!s.pts.length) continue;
       const col = `var(--${s.id === 'ane' ? 'ane' : 'imo'})`;
       if (s.pts.length > 1) svg += `<polyline fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" points="${s.pts.map(p => `${x(p.x).toFixed(1)},${y(p.g).toFixed(1)}`).join(' ')}"/>`;
       s.pts.forEach((p, k) => {
         const lastPt = k === s.pts.length - 1;
-        svg += `<circle cx="${x(p.x).toFixed(1)}" cy="${y(p.g).toFixed(1)}" r="${lastPt ? 4 : 2.6}" fill="${lastPt ? col : 'var(--surface)'}" stroke="${col}" stroke-width="1.6"><title>${esc(baby(s.id).name)} ${M.val(p.g)}${p.birth ? L('（出生時）', '（出生時）') : ''}</title></circle>`;
+        svg += `<circle cx="${x(p.x).toFixed(1)}" cy="${y(p.g).toFixed(1)}" r="${lastPt ? 4 : 2.6}" fill="${lastPt ? col : 'var(--surface)'}" stroke="${col}" stroke-width="1.6"><title>${esc(baby(s.id).name)} ${M.val(p.g)}${p.birth ? L('（出生時）', '（出生時）', ' (lahir)') : ''}</title></circle>`;
       });
     }
     svg += '</svg>';
@@ -1756,14 +1767,14 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const where = series.map(s => {
       const lp = s.pts[s.pts.length - 1]; if (!lp) return '';
       const vals = PCT.map((_, k) => interp(Math.max(0, lp.x), k + 1));
-      let band = L('3%未満', '低於3%');
-      for (let k = 0; k < PCT.length; k++) if (lp.g >= vals[k]) band = k === PCT.length - 1 ? L('97%以上', '97%以上') : L(`${PCT[k]}〜${PCT[k + 1]}%`, `${PCT[k]}〜${PCT[k + 1]}%`);
+      let band = L('3%未満', '低於3%', '< 3%');
+      for (let k = 0; k < PCT.length; k++) if (lp.g >= vals[k]) band = k === PCT.length - 1 ? L('97%以上', '97%以上', '≥ 97%') : L(`${PCT[k]}〜${PCT[k + 1]}%`, `${PCT[k]}〜${PCT[k + 1]}%`, `${PCT[k]}–${PCT[k + 1]}%`);
       return `<span><b class="${s.id}">${esc(baby(s.id).name)}</b> ${M.val(lp.g)} ・ ${band}</span>`;
     }).filter(Boolean).join('');
-    const empty = !all.length ? `<p class="empty-note">${L(`${M.label}の記録がまだありません。上のボタンから記録できます。`, `還沒有${M.label}的紀錄，可以從上方的按鈕記錄。`)}</p>` : '';
+    const empty = !all.length ? `<p class="empty-note">${L(`${M.label}の記録がまだありません。上のボタンから記録できます。`, `還沒有${M.label}的紀錄，可以從上方的按鈕記錄。`, `Belum ada catatan ${M.label}. Catat dengan tombol di atas.`)}</p>` : '';
     $('#chart').innerHTML = svg + empty + `<p class="growth-where">${where}</p>
       <p class="trend-note">${L(`帯はこども家庭庁「令和5年乳幼児身体発育調査」女子の${M.label}（濃い帯10〜90%、点線50%）。${BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id))) && S.corrected ? '早産のため横軸は修正月齢（予定日=0）です。' : ''}発育は個人差が大きいので、気になるときは健診で相談してください。`,
-        `色帶為日本兒童家庭廳「2023年嬰幼兒身體發育調查」女童${M.label}（深色10〜90%，虛線50%）。${BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id))) && S.corrected ? '因早產，橫軸為矯正月齡（預產期=0）。' : ''}發育個別差異大，若有疑慮請於健檢時諮詢。`)}</p>`;
+        `色帶為日本兒童家庭廳「2023年嬰幼兒身體發育調查」女童${M.label}（深色10〜90%，虛線50%）。${BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id))) && S.corrected ? '因早產，橫軸為矯正月齡（預產期=0）。' : ''}發育個別差異大，若有疑慮請於健檢時諮詢。`, `Pita = ${M.label} anak perempuan dari survei pertumbuhan bayi Jepang 2023 (pita gelap 10–90%, garis putus-putus 50%). ${BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id))) && S.corrected ? 'Karena prematur, sumbu memakai usia koreksi (HPL = 0). ' : ''}Pertumbuhan tiap anak berbeda; tanyakan saat pemeriksaan bila khawatir.`)}</p>`;
   }
   // Linear interpolation of a percentile column (1..7) at an age in days.
   function interpTable(c, d, k) {
@@ -1776,58 +1787,58 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function renderDev() {
     const el = $('#dev'); if (!el) return;
     const ids = BABY_IDS.filter(hasBirth);
-    if (!ids.length) { el.innerHTML = `<p class="empty-note">${L('出生時の記録を入れると、月齢に合わせた発達の目安が表示されます。', '輸入出生紀錄後，會依月齡顯示發展參考。')}</p>`; return; }
+    if (!ids.length) { el.innerHTML = `<p class="empty-note">${L('出生時の記録を入れると、月齢に合わせた発達の目安が表示されます。', '輸入出生紀錄後，會依月齡顯示發展參考。', 'Isi data kelahiran untuk melihat perkiraan perkembangan sesuai usia.')}</p>`; return; }
     const ageM = id => { const b = baby(id); return (Date.now() - ageBase(b, true)) / DAY / DAYS_PER_MONTH; };
     const MAXM = 24, pos = m => `${Math.max(0, Math.min(100, m / MAXM * 100)).toFixed(1)}%`;
-    const mLabel = m => m >= 12 ? L(`1歳${m - 12 ? `${m - 12}か月` : ''}`, `1歲${m - 12 ? `${m - 12}個月` : ''}`) : L(`${m}か月`, `${m}個月`);
+    const mLabel = m => m >= 12 ? L(`1歳${m - 12 ? `${m - 12}か月` : ''}`, `1歲${m - 12 ? `${m - 12}個月` : ''}`, `1 th${m - 12 ? ` ${m - 12} bln` : ''}`) : L(`${m}か月`, `${m}個月`, `${m} bln`);
     const rateAt = (ms, m) => { const keys = Object.keys(ms.rates).map(Number).filter(k => k <= Math.floor(m)); return keys.length ? ms.rates[Math.max(...keys)] : 0; };
     const nowMarks = ids.map(id => `<i class="dev-now ${id}" style="left:${pos(ageM(id))}"></i>`).join('');
     const ticks = [0, 3, 6, 9, 12, 18, 24].map(m => `<span style="left:${pos(m)}">${m}</span>`).join('');
-    el.innerHTML = `<p class="hint">${L('帯は全国で半数〜9割の子ができるようになる時期です。縦線は今の月齢', '色帶是全國半數〜9成寶寶會做到的時期。直線是目前月齡')}${ids.some(id => isPreterm(baby(id))) ? L('（修正月齢）', '（矯正月齡）') : ''}。${L('できたらボタンで記録できます。', '做到了可以點按鈕記錄。')}</p>
-      <div class="dev-scale">${ticks}<em>${L('か月', '個月')}</em></div>
+    el.innerHTML = `<p class="hint">${L('帯は全国で半数〜9割の子ができるようになる時期です。縦線は今の月齢', '色帶是全國半數〜9成寶寶會做到的時期。直線是目前月齡', 'Pita = masa ketika separuh sampai 90% anak sudah bisa. Garis tegak = usia sekarang')}${ids.some(id => isPreterm(baby(id))) ? L('（修正月齢）', '（矯正月齡）', ' (usia koreksi)') : ''}。${L('できたらボタンで記録できます。', '做到了可以點按鈕記錄。', 'Catat dengan tombol jika sudah bisa.')}</p>
+      <div class="dev-scale">${ticks}<em>${L('か月', '個月', ' bln')}</em></div>
       ${MILESTONES.map(ms => {
         const done = BABY_IDS.map(id => baby(id).ms && baby(id).ms[ms.key]);
         const a = ageM(ids[0]), r = rateAt(ms, a);
-        const status = a < ms.from - 1 ? L('これから', '之後') : a < ms.from ? L('もうすぐ', '快了') : a < ms.to ? L(`できる子が増える時期（約${Math.round(r)}%）`, `會做的寶寶逐漸增加（約${Math.round(r)}%）`) : L('多くの子ができる時期', '多數寶寶會做到的時期');
+        const status = a < ms.from - 1 ? L('これから', '之後', 'Nanti') : a < ms.from ? L('もうすぐ', '快了', 'Sebentar lagi') : a < ms.to ? L(`できる子が増える時期（約${Math.round(r)}%）`, `會做的寶寶逐漸增加（約${Math.round(r)}%）`, `Makin banyak anak bisa (sekitar ${Math.round(r)}%)`) : L('多くの子ができる時期', '多數寶寶會做到的時期', 'Masa kebanyakan anak bisa');
         return `<div class="dev-row">
-          <div class="dev-head"><b>${L(ms.ja, ms.zh)}</b><small>${mLabel(ms.from)}〜${mLabel(ms.to)}${L('ごろ', '左右')} ・ ${status}</small></div>
+          <div class="dev-head"><b>${L(ms.ja, ms.zh, ms.id)}</b><small>${mLabel(ms.from)}〜${mLabel(ms.to)}${L('ごろ', '左右', ' (kira-kira)')} ・ ${status}</small></div>
           <div class="dev-track"><span class="dev-win" style="left:${pos(ms.from)};width:calc(${pos(ms.to)} - ${pos(ms.from)})"></span>${nowMarks}</div>
-          <div class="dev-done">${BABY_IDS.map((id, k) => `<button type="button" class="chip ${id}" data-ms="${id}:${ms.key}" aria-pressed="${!!done[k]}">${esc(baby(id).name)} ${done[k] ? `${L('できた', '做到了')} ${new Date(done[k]).getMonth() + 1}/${new Date(done[k]).getDate()}` : L('まだ', '還沒')}</button>`).join('')}</div>
+          <div class="dev-done">${BABY_IDS.map((id, k) => `<button type="button" class="chip ${id}" data-ms="${id}:${ms.key}" aria-pressed="${!!done[k]}">${esc(baby(id).name)} ${done[k] ? `${L('できた', '做到了', 'Sudah bisa')} ${new Date(done[k]).getMonth() + 1}/${new Date(done[k]).getDate()}` : L('まだ', '還沒', 'Belum')}</button>`).join('')}</div>
         </div>`;
       }).join('')}
-      <p class="trend-note">${L('出典：こども家庭庁「令和5年乳幼児身体発育調査」一般調査による乳幼児の運動・言語機能通過率。発達には個人差があります。早産の場合は修正月齢で見ます。気になることは健診や小児科で相談してください。', '資料來源：日本兒童家庭廳「2023年嬰幼兒身體發育調查」運動・語言功能通過率。發展有個別差異，早產兒以矯正月齡來看。若有疑慮請於健檢或小兒科諮詢。')}</p>`;
+      <p class="trend-note">${L('出典：こども家庭庁「令和5年乳幼児身体発育調査」一般調査による乳幼児の運動・言語機能通過率。発達には個人差があります。早産の場合は修正月齢で見ます。気になることは健診や小児科で相談してください。', '資料來源：日本兒童家庭廳「2023年嬰幼兒身體發育調查」運動・語言功能通過率。發展有個別差異，早產兒以矯正月齡來看。若有疑慮請於健檢或小兒科諮詢。', 'Sumber: survei pertumbuhan bayi Jepang 2023 (persentase anak yang sudah bisa gerakan/bicara). Perkembangan tiap anak berbeda. Untuk bayi prematur, lihat usia koreksi. Tanyakan ke dokter anak bila khawatir.')}</p>`;
   }
 
   function renderWeights() {
     // Switch between weight / height / head circumference; the add buttons follow the choice.
     const gm = S.gMetric, addType = gm === 'weight' ? 'weight' : 'measure';
-    const what = gm === 'weight' ? L('体重', '體重') : L('身長・頭囲', '身長・頭圍');
-    $('#w-add').innerHTML = (BABY_IDS.some(hasBirth) ? `<div class="seg" role="group" aria-label="${L('グラフの項目', '圖表項目')}">${[['weight', L('体重', '體重')], ['height', L('身長', '身長')], ['head', L('頭囲', '頭圍')]].map(([k, lab]) =>
+    const what = gm === 'weight' ? L('体重', '體重', 'Berat badan') : L('身長・頭囲', '身長・頭圍', 'Tinggi & lingkar kepala');
+    $('#w-add').innerHTML = (BABY_IDS.some(hasBirth) ? `<div class="seg" role="group" aria-label="${L('グラフの項目', '圖表項目', 'Item grafik')}">${[['weight', L('体重', '體重', 'Berat badan')], ['height', L('身長', '身長', 'Tinggi')], ['head', L('頭囲', '頭圍', 'Lingkar kepala')]].map(([k, lab]) =>
       `<button type="button" data-gm="${k}" aria-pressed="${gm === k}">${lab}</button>`).join('')}</div>` : '')
-      + BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="${addType}" data-baby="${id}">${L(`${esc(baby(id).name)}の${what}を記録`, `記錄${esc(baby(id).name)}的${what}`)}</button>`).join('');
+      + BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="${addType}" data-baby="${id}">${L(`${esc(baby(id).name)}の${what}を記録`, `記錄${esc(baby(id).name)}的${what}`, `Catat ${what} ${esc(baby(id).name)}`)}</button>`).join('');
     $('#wtable').innerHTML = BABY_IDS.map(id => {
       const ws = weightsWithBirth(id);
-      if (!ws.length) return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3><p class="empty-note">${L('まだ記録がありません。', '還沒有紀錄。')}</p></div>`;
+      if (!ws.length) return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3><p class="empty-note">${L('まだ記録がありません。', '還沒有紀錄。', 'Belum ada catatan.')}</p></div>`;
       const rows = ws.slice(0, S.wShown).map((w, i) => {
         const prev = ws[i + 1], d = new Date(w.at);
         if (w.birth) {
           // The birth row opens 出生時の記録 instead of the weight form.
-          return `<button type="button" class="wrow num" data-act="birth" aria-label="${L('出生時の記録を編集', '編輯出生紀錄')}">
-            <span>${d.getMonth() + 1}/${d.getDate()} <small class="tag-birth">${L('出生時', '出生時')}</small></span><b>${fmtG(w.grams)}g</b><span></span><span></span></button>`;
+          return `<button type="button" class="wrow num" data-act="birth" aria-label="${L('出生時の記録を編集', '編輯出生紀錄', 'Ubah data kelahiran')}">
+            <span>${d.getMonth() + 1}/${d.getDate()} <small class="tag-birth">${L('出生時', '出生時', 'Lahir')}</small></span><b>${fmtG(w.grams)}g</b><span></span><span></span></button>`;
         }
         let diff = '', perDay = '';
         if (prev) {
           const g = w.grams - prev.grams, days = (w.at - prev.at) / DAY;
           const cls = g < 0 ? 'down' : 'up';
           diff = `<span class="${cls}">${g >= 0 ? '+' : ''}${fmtG(g)}g</span>`;
-          if (days >= 0.5) { const pd = Math.round(g / days); perDay = `<span class="${cls}">${pd >= 0 ? '+' : ''}${pd}g/${L('日', '天')}</span>`; }
+          if (days >= 0.5) { const pd = Math.round(g / days); perDay = `<span class="${cls}">${pd >= 0 ? '+' : ''}${pd}g/${L('日', '天', 'hari')}</span>`; }
         }
-        return `<button type="button" class="wrow num" data-edit="${esc(w.id)}" aria-label="${L(`${esc(baby(id).name)}の体重 ${d.getMonth() + 1}月${d.getDate()}日 ${fmtG(w.grams)}g を修正`, `修改${esc(baby(id).name)} ${d.getMonth() + 1}月${d.getDate()}日的體重 ${fmtG(w.grams)}g`)}">
+        return `<button type="button" class="wrow num" data-edit="${esc(w.id)}" aria-label="${L(`${esc(baby(id).name)}の体重 ${d.getMonth() + 1}月${d.getDate()}日 ${fmtG(w.grams)}g を修正`, `修改${esc(baby(id).name)} ${d.getMonth() + 1}月${d.getDate()}日的體重 ${fmtG(w.grams)}g`, `Ubah berat ${esc(baby(id).name)} ${d.getDate()} ${ID_MON[d.getMonth()]} ${fmtG(w.grams)}g`)}">
           <span>${d.getMonth() + 1}/${d.getDate()} ${fmtT(w.at)}${w.note ? ` <small>${esc(w.note)}</small>` : ''}</span><b>${fmtG(w.grams)}g</b><span>${diff}</span><span>${perDay}</span></button>`;
       }).join('');
       return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3>
-        <div class="wrow head" aria-hidden="true"><span>${L('日時', '日期時間')}</span><span>${L('体重', '體重')}</span><span>${L('前回比', '比上次')}</span><span>${L('1日あたり', '每天')}</span></div>${rows}
-        ${ws.length > S.wShown ? `<button type="button" class="btn ghost more" data-act="wmore">${L(`さらに表示（残り${ws.length - S.wShown}件）`, `顯示更多（還有${ws.length - S.wShown}筆）`)}</button>` : ''}</div>`;
+        <div class="wrow head" aria-hidden="true"><span>${L('日時', '日期時間', 'Tanggal')}</span><span>${L('体重', '體重', 'Berat badan')}</span><span>${L('前回比', '比上次', 'Selisih')}</span><span>${L('1日あたり', '每天', 'Per hari')}</span></div>${rows}
+        ${ws.length > S.wShown ? `<button type="button" class="btn ghost more" data-act="wmore">${L(`さらに表示（残り${ws.length - S.wShown}件）`, `顯示更多（還有${ws.length - S.wShown}筆）`, `Tampilkan lagi (sisa ${ws.length - S.wShown})`)}</button>` : ''}</div>`;
     }).join('');
   }
 
@@ -1836,7 +1847,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const series = BABY_IDS.map(id => ({ id, pts: weightsOf(id).map(l => ({ t: l.at, g: Number(l.grams) })).filter(p => p.g > 0).sort((a, b) => a.t - b.t) }));
     $('#legend').innerHTML = BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'})"></i>${esc(baby(id).name)}</span>`).join('');
     const all = series.flatMap(s => s.pts);
-    if (!all.length) { $('#chart').innerHTML = `<p class="empty-note">${L('体重を記録するとここにグラフが表示されます。', '記錄體重後，這裡會顯示圖表。')}</p>`; return; }
+    if (!all.length) { $('#chart').innerHTML = `<p class="empty-note">${L('体重を記録するとここにグラフが表示されます。', '記錄體重後，這裡會顯示圖表。', 'Grafik muncul setelah berat badan dicatat.')}</p>`; return; }
     const W = 640, H = 260, pl = 58, pr = 92, pt = 16, pb = 34;
     let t0 = Math.min(...all.map(p => p.t)), t1 = Math.max(...all.map(p => p.t));
     if (t1 - t0 < 3 * DAY) { const mid = (t0 + t1) / 2; t0 = mid - 1.5 * DAY; t1 = mid + 1.5 * DAY; }
@@ -1847,7 +1858,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     g0 = Math.floor(g0 / step) * step; g1 = Math.ceil(g1 / step) * step;
     const x = t => pl + (t - t0) / (t1 - t0) * (W - pl - pr);
     const y = g => pt + (1 - (g - g0) / (g1 - g0)) * (H - pt - pb);
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L('体重の推移グラフ', '體重變化圖表')}">`;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L('体重の推移グラフ', '體重變化圖表', 'Grafik berat badan')}">`;
     for (let g = g0; g <= g1; g += step) {
       svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width="1"/>`;
       svg += `<text x="${pl - 8}" y="${y(g) + 4}" text-anchor="end" font-size="11" fill="var(--muted)" class="num">${fmtG(g)}g</text>`;
@@ -1890,21 +1901,21 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   // ---------- alarm state (header pill + the block in 設定) ----------
   let wakeLock = null;
   function alarmBlockHTML() {
-    const leadTxt = S.alarm.lead ? L(`予定の${S.alarm.lead}分前`, `預定前${S.alarm.lead}分鐘`) : L('予定時刻', '預定時間');
+    const leadTxt = S.alarm.lead ? L(`予定の${S.alarm.lead}分前`, `預定前${S.alarm.lead}分鐘`, `${S.alarm.lead} mnt sebelum jadwal`) : L('予定時刻', '預定時間', 'Tepat pada jadwal');
     const state = S.alarm.active
       ? L(`オン：${leadTxt}に音とバイブでお知らせします。画面のスリープ防止は${wakeLock ? 'オン' : 'この端末では使えません'}。`,
-          `已開啟：會在${leadTxt}以聲音和震動提醒。螢幕防休眠：${wakeLock ? '已開啟' : '此裝置不支援'}。`)
-      : L('オフです。オンにすると、次の授乳時刻に音とバイブでお知らせします。', '目前關閉。開啟後會在下次餵奶時以聲音和震動提醒。');
-    return `<h3>${L('アラーム（この端末）', '提醒（此裝置）')}</h3>
-      <p class="hint">${state}${L('アラームはこの画面を開いている間だけ鳴ります。夜間は iPhone のタイマーも併用してください。', '提醒只會在此畫面開著時響起。夜間請同時使用 iPhone 計時器。')}</p>
-      <div class="row"><button type="button" class="btn" data-act="test">${L('音を試す', '試聽聲音')}</button>${S.alarm.active
-        ? `<button type="button" class="btn ghost" data-act="alarm-off">${L('オフにする', '關閉')}</button>`
-        : `<button type="button" class="btn solid" data-act="alarm-on">${L('オンにする', '開啟')}</button>`}</div>`;
+          `已開啟：會在${leadTxt}以聲音和震動提醒。螢幕防休眠：${wakeLock ? '已開啟' : '此裝置不支援'}。`, `Aktif: ${leadTxt} akan ada bunyi & getar. Layar tetap menyala: ${wakeLock ? 'aktif' : 'tidak didukung di perangkat ini'}.`)
+      : L('オフです。オンにすると、次の授乳時刻に音とバイブでお知らせします。', '目前關閉。開啟後會在下次餵奶時以聲音和震動提醒。', 'Mati. Jika diaktifkan, akan ada bunyi & getar pada jadwal minum berikutnya.');
+    return `<h3>${L('アラーム（この端末）', '提醒（此裝置）', 'Alarm (perangkat ini)')}</h3>
+      <p class="hint">${state}${L('アラームはこの画面を開いている間だけ鳴ります。夜間は iPhone のタイマーも併用してください。', '提醒只會在此畫面開著時響起。夜間請同時使用 iPhone 計時器。', 'Alarm hanya berbunyi selama layar ini terbuka. Malam hari, gunakan juga timer iPhone.')}</p>
+      <div class="row"><button type="button" class="btn" data-act="test">${L('音を試す', '試聽聲音', 'Tes suara')}</button>${S.alarm.active
+        ? `<button type="button" class="btn ghost" data-act="alarm-off">${L('オフにする', '關閉', 'Matikan')}</button>`
+        : `<button type="button" class="btn solid" data-act="alarm-on">${L('オンにする', '開啟', 'Aktifkan')}</button>`}</div>`;
   }
   function renderAlarmBar() {
     const el = $('#alarm-pill');
     el.className = 'pill' + (S.alarm.active ? ' on' : '');
-    el.textContent = S.alarm.active ? L('アラーム オン', '提醒 開') : L('アラーム オフ', '提醒 關');
+    el.textContent = S.alarm.active ? L('アラーム オン', '提醒 開', 'Alarm aktif') : L('アラーム オフ', '提醒 關', 'Alarm mati');
     const blk = $('#alarm-block'); if (blk) blk.innerHTML = alarmBlockHTML();
   }
 
@@ -1986,31 +1997,31 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (changed) renderRing();
   }
   function notify(ids) {
-    const names = ids.map(id => baby(id).name).join(L('と', '和'));
+    const names = ids.map(id => baby(id).name).join(L('と', '和', ' & '));
     try { navigator.vibrate && navigator.vibrate([400, 200, 400, 200, 400]); } catch {}
-    try { if ('Notification' in window && Notification.permission === 'granted') new Notification(L('ミルクの時間です', '餵奶時間到了'), { body: L(`${names}の授乳時刻になりました`, `${names}該餵奶了`), tag: 'futago-' + ids.join('-') }); } catch {}
+    try { if ('Notification' in window && Notification.permission === 'granted') new Notification(L('ミルクの時間です', '餵奶時間到了', 'Waktunya minum susu'), { body: L(`${names}の授乳時刻になりました`, `${names}該餵奶了`, `Waktunya ${names} minum susu`), tag: 'futago-' + ids.join('-') }); } catch {}
   }
-  const appTitle = () => L('ふたごミルク帳', '雙胞胎餵奶紀錄');
+  const appTitle = () => L('ふたごミルク帳', '雙胞胎餵奶紀錄', 'Catatan Susu Si Kembar');
   function renderRing() {
     const root = $('#ring-root');
     if (!S.ringing.length) {
       root.innerHTML = ''; if (ringTimer) { clearInterval(ringTimer); ringTimer = null; }
       document.title = appTitle(); return;
     }
-    document.title = L('【ミルクの時間】', '【餵奶時間】') + appTitle();
+    document.title = L('【ミルクの時間】', '【餵奶時間】', '[Waktunya susu]') + appTitle();
     if (!ringTimer) { chime(); ringTimer = setInterval(() => { chime(); try { navigator.vibrate && navigator.vibrate([300, 150, 300]); } catch {} }, 3000); }
     const now = Date.now();
-    root.innerHTML = `<div class="ring" role="alertdialog" aria-label="${L('授乳アラーム', '餵奶提醒')}"><div class="ring-inner">${S.ringing.map(id => {
+    root.innerHTML = `<div class="ring" role="alertdialog" aria-label="${L('授乳アラーム', '餵奶提醒', 'Alarm minum susu')}"><div class="ring-inner">${S.ringing.map(id => {
       const b = baby(id), n = nextAt(id), m = lastOf(id, 'milk');
       const when = now >= n
-        ? L(`予定 ${fmtT(n)}（${durText(now - n)}経過）`, `預定 ${fmtT(n)}（已過 ${durText(now - n)}）`)
-        : L(`予定 ${fmtT(n)}（あと${durText(n - now)}）`, `預定 ${fmtT(n)}（還有 ${durText(n - now)}）`);
-      return `<div class="ring-item">${baby(id).photo ? `<img class="avatar xl" src="${baby(id).photo}" alt="">` : ''}<h2>${L(`${esc(b.name)}のミルクの時間です`, `${esc(b.name)}的餵奶時間到了`)}</h2>
-        <p class="num">${when}<br>${L('前回', '上次')} ${fmtT(m.at)} ${esc(milkText(m))}</p>
+        ? L(`予定 ${fmtT(n)}（${durText(now - n)}経過）`, `預定 ${fmtT(n)}（已過 ${durText(now - n)}）`, `Jadwal ${fmtT(n)} (lewat ${durText(now - n)})`)
+        : L(`予定 ${fmtT(n)}（あと${durText(n - now)}）`, `預定 ${fmtT(n)}（還有 ${durText(n - now)}）`, `Jadwal ${fmtT(n)} (${durText(n - now)} lagi)`);
+      return `<div class="ring-item">${baby(id).photo ? `<img class="avatar xl" src="${baby(id).photo}" alt="">` : ''}<h2>${L(`${esc(b.name)}のミルクの時間です`, `${esc(b.name)}的餵奶時間到了`, `Waktunya ${esc(b.name)} minum susu`)}</h2>
+        <p class="num">${when}<br>${L('前回', '上次', 'Sebelumnya')} ${fmtT(m.at)} ${esc(milkText(m))}</p>
         <div class="row">
-          <button type="button" class="primary" data-ring="record" data-baby="${id}">${L('授乳を記録する', '記錄餵奶')}</button>
-          <button type="button" data-ring="snooze" data-baby="${id}">${L('5分後にもう一度', '5分鐘後再提醒')}</button>
-          <button type="button" data-ring="stop" data-baby="${id}">${L('止める', '停止')}</button>
+          <button type="button" class="primary" data-ring="record" data-baby="${id}">${L('授乳を記録する', '記錄餵奶', 'Catat minum susu')}</button>
+          <button type="button" data-ring="snooze" data-baby="${id}">${L('5分後にもう一度', '5分鐘後再提醒', 'Ingatkan 5 menit lagi')}</button>
+          <button type="button" data-ring="stop" data-baby="${id}">${L('止める', '停止', 'Hentikan')}</button>
         </div></div>`;
     }).join('')}</div></div>`;
   }
@@ -2028,15 +2039,15 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       const bar = document.querySelector(`[data-bar="${id}"]`), sub = document.querySelector(`[data-cdsub="${id}"]`);
       const m = lastOf(id, 'milk'), b = baby(id);
       if (!m) {
-        cd.className = 'cd empty'; cd.textContent = S.mode === 'loading' ? L('読み込み中…', '載入中…') : L('最初の授乳を記録すると、ここに次の時間が出ます', '記錄第一次餵奶後，這裡會顯示下次時間');
+        cd.className = 'cd empty'; cd.textContent = S.mode === 'loading' ? L('読み込み中…', '載入中…', 'Memuat…') : L('最初の授乳を記録すると、ここに次の時間が出ます', '記錄第一次餵奶後，這裡會顯示下次時間', 'Catat minum pertama untuk melihat jadwal berikutnya di sini');
         bar.className = 'bar'; bar.firstElementChild.style.width = '0'; sub.textContent = ''; continue;
       }
       const n = m.at + b.intervalH * HOUR, frac = Math.min(1, (now - m.at) / (b.intervalH * HOUR));
-      const dayTag = startOfDay(n) > startOfDay(now) ? `<small>${L('翌日', '隔天')}</small>` : '';
-      if (now < n) { cd.className = 'cd'; cd.innerHTML = `${dayTag}<b>${fmtT(n)}</b><span class="cd-rel">${L('あと', '還有')} ${durText(n - now)}</span>`; bar.className = 'bar'; }
-      else { cd.className = 'cd due'; cd.innerHTML = `<b>${fmtT(n)}</b><span class="cd-rel">${L(`予定から ${durText(now - n)} すぎています`, `已超過預定 ${durText(now - n)}`)}</span>`; bar.className = 'bar due'; }
+      const dayTag = startOfDay(n) > startOfDay(now) ? `<small>${L('翌日', '隔天', 'Besok')}</small>` : '';
+      if (now < n) { cd.className = 'cd'; cd.innerHTML = `${dayTag}<b>${fmtT(n)}</b><span class="cd-rel">${L('あと', '還有', 'dalam')} ${durText(n - now)}</span>`; bar.className = 'bar'; }
+      else { cd.className = 'cd due'; cd.innerHTML = `<b>${fmtT(n)}</b><span class="cd-rel">${L(`予定から ${durText(now - n)} すぎています`, `已超過預定 ${durText(now - n)}`, `Lewat ${durText(now - n)} dari jadwal`)}</span>`; bar.className = 'bar due'; }
       bar.firstElementChild.style.width = (Math.max(0, frac) * 100).toFixed(1) + '%';
-      sub.textContent = L(`前回 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`, `上次 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`);
+      sub.textContent = L(`前回 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`, `上次 ${fmtT(m.at)}・${milkText(m)}（${durText(now - m.at)}前）`, `Sebelumnya ${fmtT(m.at)} · ${milkText(m)} (${durText(now - m.at)} lalu)`);
     }
     checkAlarms(now);
   }
@@ -2048,7 +2059,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   const keyDay = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).getTime(); };
   const MEMO_WHO = ['ane', 'imouto', 'mama', 'papa'];
   const memoWho = w => MEMO_WHO.includes(w) ? w : 'mama';
-  const whoName = w => w === 'mama' ? L('ママ', '媽媽') : w === 'papa' ? L('パパ', '爸爸') : baby(w).name;
+  const whoName = w => w === 'mama' ? L('ママ', '媽媽', 'Mama') : w === 'papa' ? L('パパ', '爸爸', 'Papa') : baby(w).name;
   // Only a real photo is shown next to a name; a letter badge would just repeat the name.
   const whoIcon = w => BABY_IDS.includes(w) && baby(w).photo ? avatarHTML(w, 'sm') : '';
 
@@ -2057,7 +2068,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function renderNote(force) {
     const el = $('#note'); if (!el) return;
     document.querySelectorAll('#note-mode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nmode === S.noteMode)));
-    if (S.mode === 'loading') { noteKey = ''; el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    if (S.mode === 'loading') { noteKey = ''; el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
     if (S.noteMode === 'cost') { noteKey = ''; el.innerHTML = costHTML(); return; }
     const today = dayKey(Date.now());
     if (!S.memoDay || S.memoDay > today) S.memoDay = today;
@@ -2071,26 +2082,26 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function memoTopHTML(today) {
     const isToday = S.memoDay === today, editing = S.memoEdit && S.memos.find(m => m.id === S.memoEdit);
     return `<header class="memo-title"><span class="memo-star" aria-hidden="true">✦</span><h3>Today's Special Memo</h3><span class="memo-star b" aria-hidden="true">✦</span>
-        <p>${L('その日のできごとを、だれでも自由に書いて残せます。', '當天發生的事，誰都可以自由寫下來保存。')}</p></header>
+        <p>${L('その日のできごとを、だれでも自由に書いて残せます。', '當天發生的事，誰都可以自由寫下來保存。', 'Tulis bebas kejadian hari ini — siapa saja boleh.')}</p></header>
       <div class="memo-daynav">
-        <button type="button" class="icon-btn" data-mday="-1" aria-label="${L('前の日', '前一天')}">‹</button>
-        <button type="button" class="memo-date" data-act="cal" data-calk="${keyDay(S.memoDay)}" aria-label="${L('カレンダーを開く', '打開月曆')}">📅 ${dayLabel(keyDay(S.memoDay))}</button>
-        <button type="button" class="icon-btn" data-mday="1" aria-label="${L('次の日', '後一天')}" ${isToday ? 'disabled' : ''}>›</button>
-        ${isToday ? '' : `<button type="button" class="icon-btn" data-mday="today">${L('今日', '今天')}</button>`}
+        <button type="button" class="icon-btn" data-mday="-1" aria-label="${L('前の日', '前一天', 'Hari sebelumnya')}">‹</button>
+        <button type="button" class="memo-date" data-act="cal" data-calk="${keyDay(S.memoDay)}" aria-label="${L('カレンダーを開く', '打開月曆', 'Buka kalender')}">📅 ${dayLabel(keyDay(S.memoDay))}</button>
+        <button type="button" class="icon-btn" data-mday="1" aria-label="${L('次の日', '後一天', 'Hari berikutnya')}" ${isToday ? 'disabled' : ''}>›</button>
+        ${isToday ? '' : `<button type="button" class="icon-btn" data-mday="today">${L('今日', '今天', 'Hari ini')}</button>`}
       </div>
       <div class="memo-compose paper w-${S.memoWho}" id="memo-compose">
         <img class="memo-cat l" src="cat-hachiware.webp" alt="" aria-hidden="true" width="100" height="86">
         <img class="memo-cat r" src="cat-tabby.webp" alt="" aria-hidden="true" width="100" height="92">
         <span class="tape" aria-hidden="true"></span>
-        <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${esc(whoName(w))}</button>`).join('')}</div>
-        <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記')}" placeholder="${L('はじめて笑った、よく飲んだ、ママおつかれさま…など', '第一次笑了、喝得很好、媽媽辛苦了…等等')}">${esc(S.memoDraft)}</textarea>
+        <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記', 'Memo siapa')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${esc(whoName(w))}</button>`).join('')}</div>
+        <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記', 'Memo')}" placeholder="${L('はじめて笑った、よく飲んだ、ママおつかれさま…など', '第一次笑了、喝得很好、媽媽辛苦了…等等', 'Pertama kali tersenyum, minum banyak, terima kasih Mama…')}">${esc(S.memoDraft)}</textarea>
         <div class="memo-actions">
           ${editing ? (S.memoConfirmDel
-            ? `<button type="button" class="btn danger" data-act="memo-del-yes">${L('本当に削除する', '確定刪除')}</button><button type="button" class="btn ghost" data-act="memo-del-no">${L('やめる', '不刪除')}</button>`
-            : `<button type="button" class="btn danger" data-act="memo-del">${L('削除', '刪除')}</button>`) : ''}
+            ? `<button type="button" class="btn danger" data-act="memo-del-yes">${L('本当に削除する', '確定刪除', 'Ya, hapus')}</button><button type="button" class="btn ghost" data-act="memo-del-no">${L('やめる', '不刪除', 'Batal')}</button>`
+            : `<button type="button" class="btn danger" data-act="memo-del">${L('削除', '刪除', 'Hapus')}</button>`) : ''}
           <span class="spacer"></span>
-          ${editing ? `<button type="button" class="btn ghost" data-act="memo-cancel">${L('キャンセル', '取消')}</button>` : ''}
-          <button type="button" class="btn memo-save" data-act="memo-save">${editing ? L('書き直す', '更新') : L('メモを貼る', '貼上筆記')}</button>
+          ${editing ? `<button type="button" class="btn ghost" data-act="memo-cancel">${L('キャンセル', '取消', 'Batal')}</button>` : ''}
+          <button type="button" class="btn memo-save" data-act="memo-save">${editing ? L('書き直す', '更新', 'Perbarui') : L('メモを貼る', '貼上筆記', 'Tempel memo')}</button>
         </div>
       </div>`;
   }
@@ -2101,10 +2112,10 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
           <span class="tape" aria-hidden="true"></span>
           <header>${whoIcon(memoWho(m.who))}<b>${esc(whoName(memoWho(m.who)))}</b>${dayKey(m.at) === m.day ? `<time>${fmtT(m.at)}</time>` : ''}</header>
           ${memoTextHTML(m)}
-          <footer class="memo-foot">${rxHTML(m)}<span class="spacer"></span><button type="button" class="memo-edit" data-memo="${esc(m.id)}">${L('書き直す・削除', '修改・刪除')}</button></footer>
-          ${S.rxOpen === m.id ? `<div class="rx-pal" role="group" aria-label="${L('リアクション', '回應')}">${RX.map(e => `<button type="button" data-rx="${esc(m.id)}|${e}" aria-pressed="${rxMine(m, e)}">${e}</button>`).join('')}</div>` : ''}
+          <footer class="memo-foot">${rxHTML(m)}<span class="spacer"></span><button type="button" class="memo-edit" data-memo="${esc(m.id)}">${L('書き直す・削除', '修改・刪除', 'Ubah · hapus')}</button></footer>
+          ${S.rxOpen === m.id ? `<div class="rx-pal" role="group" aria-label="${L('リアクション', '回應', 'Reaksi')}">${RX.map(e => `<button type="button" data-rx="${esc(m.id)}|${e}" aria-pressed="${rxMine(m, e)}">${e}</button>`).join('')}</div>` : ''}
         </article>`).join('')}</div>`
-      : `<p class="memo-empty">${L('この日のメモはまだありません。', '這天還沒有筆記。')}</p>`;
+      : `<p class="memo-empty">${L('この日のメモはまだありません。', '這天還沒有筆記。', 'Belum ada memo pada hari ini.')}</p>`;
   }
 
   // Emoji-only reactions. Each person's reaction is stored under their account id, so the two phones never overwrite each other.
@@ -2115,7 +2126,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const used = Object.entries(m.rx || {}).filter(([, who]) => who && Object.keys(who).length)
       .sort(([a], [b]) => (RX.indexOf(a) + 99) % 99 - (RX.indexOf(b) + 99) % 99);
     return used.map(([e, who]) => `<button type="button" class="rx${who[myRxId()] ? ' mine' : ''}" data-rx="${esc(m.id)}|${e}" title="${esc(Object.values(who).filter(v => typeof v === 'string').join('・'))}">${e}<b class="num">${Object.keys(who).length}</b></button>`).join('')
-      + `<button type="button" class="rx-add" data-rxopen="${esc(m.id)}" aria-expanded="${S.rxOpen === m.id}" aria-label="${L('リアクションする', '加上回應')}">☺︎<small>＋</small></button>`;
+      + `<button type="button" class="rx-add" data-rxopen="${esc(m.id)}" aria-expanded="${S.rxOpen === m.id}" aria-label="${L('リアクションする', '加上回應', 'Beri reaksi')}">☺︎<small>＋</small></button>`;
   }
   function toggleRx(id, e) {
     const m = S.memos.find(x => x.id === id); if (!m) return;
@@ -2133,18 +2144,26 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     renderNote();
   }
 
-  // ---------- memo translation: Japanese ⇄ Taiwan Mandarin with Gemini (Firebase AI Logic) ----------
-  // A memo keeps its original text. Whichever phone sees it first adds the other language
-  // ({ lang, tr: { ja, zh }, trFor: the text that was translated }); until then, or without AI, the original shows.
-  const memoText = m => (m.lang && m.lang !== LANG && m.trFor === m.text && m.tr && m.tr[LANG]) || m.text;
+  // ---------- memo translation: Japanese ⇄ Taiwan Mandarin ⇄ Indonesian with Gemini (Firebase AI Logic) ----------
+  // A memo keeps its original text. Whichever phone sees it first adds the other languages
+  // ({ lang, tr: { ja, zh, id }, trFor: the text that was translated }); until then, or without AI, the original shows.
+  // Each memo shows in the reader's language by default, with a small switch to the original and the other languages.
+  const LANG_NAME = { ja: '日本語', zh: '中文', id: 'Indonesia' };
+  const trOk = m => m.trFor === m.text && m.tr && LANGS.includes(m.lang);
+  const memoIn = (m, k) => (trOk(m) && k !== m.lang && m.tr[k]) || m.text;
+  const memoText = m => memoIn(m, S.memoView[m.id] || LANG);
   function memoTextHTML(m) {
-    const has = memoText(m) !== m.text, orig = has && S.showOrig[m.id];
-    return `<p>${esc(has && !orig ? memoText(m) : m.text)}</p>${has ? `<button type="button" class="tr-toggle" data-orig="${esc(m.id)}">${orig ? L('🌐 訳を見る', '🌐 看翻譯') : L('🌐 自動翻訳 ・ 原文を見る', '🌐 自動翻譯 ・ 看原文')}</button>` : ''}`;
+    const p = `<p>${esc(memoText(m))}</p>`;
+    if (!trOk(m)) return p;
+    const want = S.memoView[m.id] || LANG, cur = want !== m.lang && m.tr[want] ? want : m.lang;
+    const langs = LANGS.filter(k => k === m.lang || m.tr[k]);
+    return p + `<div class="tr-switch" role="group" aria-label="${L('表示する言語', '顯示語言', 'Bahasa tampilan')}"><span aria-hidden="true">🌐</span>${langs.map(k =>
+      `<button type="button" data-mview="${esc(m.id)}|${k}" aria-pressed="${k === cur}">${LANG_NAME[k]}${k === m.lang ? `<small>${L('原文', '原文', 'asli')}</small>` : ''}</button>`).join('')}</div>`;
   }
   const AI_MODEL = 'gemini-3.5-flash-lite', FB_MODULAR = '12.15.0';
-  const TR_PROMPT = `You translate short family diary notes about newborn twin girls between Japanese and Traditional Chinese as written in Taiwan (台灣華語).
-Detect the language of the note and return only JSON: {"lang":"ja" or "zh","ja":"<the note in Japanese>","zh":"<the note in Taiwan Mandarin, Traditional characters>"}.
-The original language's field must be the note unchanged. Keep emoji, line breaks and numbers. Family words: 姉→姊姊, 妹→妹妹, ママ→媽媽, パパ→爸爸. Keep the warm, casual tone.`;
+  const TR_PROMPT = `You translate short family diary notes about newborn twin girls between Japanese, Traditional Chinese as written in Taiwan (台灣華語), and Indonesian.
+Detect the language of the note and return only JSON: {"lang":"ja" or "zh" or "id","ja":"<the note in Japanese>","zh":"<the note in Taiwan Mandarin, Traditional characters>","id":"<the note in natural, casual Indonesian>"}.
+The original language's field must be the note unchanged. Keep emoji, line breaks and numbers. Family words: 姉 = 姊姊 = Kakak, 妹 = 妹妹 = Adik, ママ = 媽媽 = Mama, パパ = 爸爸 = Papa. Keep the warm, casual tone.`;
   let aiModel = null, aiLoad = null, aiOff = false;
   // The AI SDK is only loaded once a memo needs translating, as a separate app instance (modular SDK beside the compat one).
   function aiReady() {
@@ -2155,17 +2174,20 @@ The original language's field must be the note unchanged. Keep emoji, line break
         const [appMod, aiMod, acMod] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-ai.js'), window.APPCHECK_SITE_KEY ? import(base + 'firebase-app-check.js') : null]);
         const app = appMod.initializeApp(window.FIREBASE_CONFIG, 'ai');
         // App Check via Fraud Defense (reCAPTCHA Enterprise; the classic v3 provider is deprecated).
-        if (acMod) acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaEnterpriseProvider(window.APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
+        // Tokens are fetched only when a translation is sent (no background refresh), to stay well inside the free checks.
+        if (acMod) acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaEnterpriseProvider(window.APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: false });
         aiModel = aiMod.getGenerativeModel(aiMod.getAI(app, { backend: new aiMod.GoogleAIBackend() }), { model: AI_MODEL, generationConfig: { responseMimeType: 'application/json' } });
       } catch (e) { console.warn('memo translation unavailable', e); aiOff = true; }
       return aiModel;
     })());
   }
   const trQueue = new Set(), trFailed = new Set();
+  // Memos translated before Indonesian was added get the third language on their next pass.
+  const needsTr = m => !!m.text && (m.trFor !== m.text || !m.tr || LANGS.some(k => typeof m.tr[k] !== 'string'));
   let trBusy = false;
   function queueTranslations() {
     if (S.mode !== 'db' || aiOff) return;
-    S.memos.forEach(m => { if (m.text && m.trFor !== m.text && !trFailed.has(m.id + m.text)) trQueue.add(m.id); });
+    S.memos.forEach(m => { if (needsTr(m) && !trFailed.has(m.id + m.text)) trQueue.add(m.id); });
     pumpTr();
   }
   async function pumpTr() {
@@ -2177,13 +2199,13 @@ The original language's field must be the note unchanged. Keep emoji, line break
       while (trQueue.size) {
         const id = trQueue.values().next().value; trQueue.delete(id);
         const m = S.memos.find(x => x.id === id);
-        if (!m || m.trFor === m.text) continue;
+        if (!m || !needsTr(m)) continue;
         const text = m.text;
         try {
           const r = await model.generateContent(`${TR_PROMPT}\n\nNote:\n${text}`);
           const j = JSON.parse(r.response.text());
-          if (!['ja', 'zh'].includes(j.lang) || typeof j.ja !== 'string' || typeof j.zh !== 'string') throw new Error('bad translation');
-          await S.db.collection('memos').doc(id).update({ lang: j.lang, tr: { ja: j.ja.slice(0, 2000), zh: j.zh.slice(0, 2000) }, trFor: text });
+          if (!LANGS.includes(j.lang) || LANGS.some(k => typeof j[k] !== 'string')) throw new Error('bad translation');
+          await S.db.collection('memos').doc(id).update({ lang: j.lang, tr: Object.fromEntries(LANGS.map(k => [k, j[k].slice(0, 2000)])), trFor: text });
         } catch (e) {
           console.warn('memo translation failed', e);
           trFailed.add(id + text);   // not retried in this session
@@ -2208,7 +2230,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     const birth = BABY_IDS.map(id => baby(id).birthAt).filter(Boolean).map(startOfDay);
     const memoDays = new Map();
     S.memos.forEach(m => { if (!memoDays.has(m.day)) memoDays.set(m.day, new Set()); memoDays.get(m.day).add(memoWho(m.who)); });
-    const wk = LANG === 'zh' ? '日一二三四五六' : '日月火水木金土';
+    const wk = WEEK_HEAD();
     let cells = '';
     for (let i = 0; i < first.getDay(); i++) cells += '<span></span>';
     for (let d = 1; d <= n; d++) {
@@ -2217,15 +2239,15 @@ The original language's field must be the note unchanged. Keep emoji, line break
       cells += `<button type="button" class="${cls}" data-cald="${k}" ${k > today || k < min ? 'disabled' : ''}>${birth.includes(k) ? '<span class="bd" aria-hidden="true">🎂</span>' : ''}<span>${d}</span>
         <span class="cal-dots">${who ? MEMO_WHO.filter(w => who.has(w)).map(w => `<i class="w-${w}"></i>`).join('') : ''}</span></button>`;
     }
-    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet cal" role="dialog" aria-label="${L('カレンダー', '月曆')}">
-      <div class="sheet-head"><h2>${L('カレンダー', '月曆')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet cal" role="dialog" aria-label="${L('カレンダー', '月曆', 'Kalender')}">
+      <div class="sheet-head"><h2>${L('カレンダー', '月曆', 'Kalender')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
       <div class="memo-daynav">
-        <button type="button" class="icon-btn" data-calm="1" aria-label="${L('前の月', '上個月')}" ${F.month <= monthStart(min) ? 'disabled' : ''}>‹</button>
-        <b>${y}${L('年', '年')}${mo + 1}${L('月', '月')}</b>
-        <button type="button" class="icon-btn" data-calm="-1" aria-label="${L('次の月', '下個月')}" ${F.month >= monthStart(today) ? 'disabled' : ''}>›</button>
+        <button type="button" class="icon-btn" data-calm="1" aria-label="${L('前の月', '上個月', 'Bulan sebelumnya')}" ${F.month <= monthStart(min) ? 'disabled' : ''}>‹</button>
+        <b>${monthTitle(y, mo)}</b>
+        <button type="button" class="icon-btn" data-calm="-1" aria-label="${L('次の月', '下個月', 'Bulan berikutnya')}" ${F.month >= monthStart(today) ? 'disabled' : ''}>›</button>
       </div>
       <div class="cal-grid">${[...wk].map((w, i) => `<span class="cal-w w${i}">${w}</span>`).join('')}${cells}</div>
-      <p class="hint cal-legend">${MEMO_WHO.map(w => `<span><i class="w-${w}"></i>${esc(whoName(w))}</span>`).join('')}<span>${L('＝メモあり', '＝有筆記')}</span></p>
+      <p class="hint cal-legend">${MEMO_WHO.map(w => `<span><i class="w-${w}"></i>${esc(whoName(w))}</span>`).join('')}<span>${L('＝メモあり', '＝有筆記', '= ada memo')}</span></p>
       ${calDigestHTML(F.sel)}
     </div></div>`;
   }
@@ -2233,27 +2255,27 @@ The original language's field must be the note unchanged. Keep emoji, line break
   function calDigestHTML(k) {
     const logs = dayLogs(k), memos = S.memos.filter(m => m.day === dayKey(k)).sort((a, b) => a.at - b.at);
     const b0 = BABY_IDS.map(id => baby(id).birthAt).find(Boolean);
-    const age = b0 && k >= startOfDay(b0) ? L(`生後${dayAge(b0, k)}日`, `出生第${dayAge(b0, k)}天`) : '';
-    const stats = logs === null ? `<p class="hint">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`
-      : `<ul class="cal-stats">${BABY_IDS.map(id => { const st = dayStats(id, k, k + DAY, logs); return `<li class="${id}"><b>${esc(baby(id).name)}</b><span class="num">${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`)} ${fmtG(st.ml)}mL ・ ${L('尿', '尿')}${st.pee} ・ ${L('便', '便')}${st.poo}</span></li>`; }).join('')}</ul>`;
+    const age = b0 && k >= startOfDay(b0) ? L(`生後${dayAge(b0, k)}日`, `出生第${dayAge(b0, k)}天`, `Usia ${dayAge(b0, k)} hari`) : '';
+    const stats = logs === null ? `<p class="hint">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`
+      : `<ul class="cal-stats">${BABY_IDS.map(id => { const st = dayStats(id, k, k + DAY, logs); return `<li class="${id}"><b>${esc(baby(id).name)}</b><span class="num">${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`, `Susu ${st.milkN} kali`)} ${fmtG(st.ml)}mL ・ ${L('尿', '尿', 'Pipis ')}${st.pee} ・ ${L('便', '便', 'BAB ')}${st.poo}</span></li>`; }).join('')}</ul>`;
     return `<div class="cal-dig">
       <h3>${dayLabel(k)}${age ? `<small>${age}</small>` : ''}</h3>
       ${stats}
-      ${memos.length ? `<ul class="cal-memos">${memos.map(m => `<li class="w-${memoWho(m.who)}"><b>${esc(whoName(memoWho(m.who)))}</b><span>${esc(memoText(m))}</span></li>`).join('')}</ul>` : `<p class="hint">${L('この日のメモはありません。', '這天沒有筆記。')}</p>`}
-      <div class="cal-go"><button type="button" class="btn" data-act="cal-log">${L('この日の記録を見る', '查看這天的紀錄')}</button><button type="button" class="btn" data-act="cal-memo">${L('この日のメモを開く', '打開這天的筆記')}</button></div>
+      ${memos.length ? `<ul class="cal-memos">${memos.map(m => `<li class="w-${memoWho(m.who)}"><b>${esc(whoName(memoWho(m.who)))}</b><span>${esc(memoText(m))}</span></li>`).join('')}</ul>` : `<p class="hint">${L('この日のメモはありません。', '這天沒有筆記。', 'Tidak ada memo pada hari ini.')}</p>`}
+      <div class="cal-go"><button type="button" class="btn" data-act="cal-log">${L('この日の記録を見る', '查看這天的紀錄', 'Lihat catatan hari itu')}</button><button type="button" class="btn" data-act="cal-memo">${L('この日のメモを開く', '打開這天的筆記', 'Buka memo hari itu')}</button></div>
     </div>`;
   }
   function memoSave() {
     const text = ($('#memo-text') || {}).value?.trim() || '';
-    if (!text) return toast(L('メモを書いてください。', '請先寫筆記。'));
+    if (!text) return toast(L('メモを書いてください。', '請先寫筆記。', 'Tulis memo dulu.'));
     const edit = S.memoEdit && S.memos.find(m => m.id === S.memoEdit), now = Date.now();
     // Reactions stay with an edited memo; its translation is redone for the new text.
     const data = { day: edit ? edit.day : S.memoDay, who: S.memoWho, text, at: edit ? edit.at : now, updatedAt: now, ...(edit && edit.rx ? { rx: edit.rx } : {}) };
     const before = edit ? (({ id: _drop, ...rest }) => rest)(edit) : null;
     saveDoc('memos', edit ? edit.id : null, data).then(id => {
       S.memoDraft = ''; S.memoEdit = null; S.memoConfirmDel = false; renderNote(true);
-      toast(edit ? L('メモを書き直しました', '已更新筆記') : L('メモを貼りました', '已貼上筆記'), {
-        label: L('取り消す', '復原'),
+      toast(edit ? L('メモを書き直しました', '已更新筆記', 'Memo diperbarui') : L('メモを貼りました', '已貼上筆記', 'Memo ditempel'), {
+        label: L('取り消す', '復原', 'Urungkan'),
         fn: () => edit ? saveDoc('memos', id, before) : deleteDoc('memos', id),
       });
     }).catch(e => toast(errMsg(e)));
@@ -2261,20 +2283,20 @@ The original language's field must be the note unchanged. Keep emoji, line break
 
   // Expenses: things bought (counted in the month's total) and a list of things still to buy.
   const COST_CATS = {
-    milk:    { ja: 'ミルク', zh: '奶粉', c: '#E0963A', ija: ['粉ミルク', '液体ミルク', 'キューブミルク'], izh: ['奶粉', '液態奶', '方塊奶粉'] },
-    diaper:  { ja: 'オムツ', zh: '尿布', c: '#4A8AD6', ija: ['新生児用オムツ', 'Sサイズオムツ', 'おむつ用ゴミ袋'], izh: ['新生兒尿布', 'S號尿布', '尿布垃圾袋'] },
-    wipes:   { ja: 'おしりふき', zh: '濕紙巾', c: '#3FAE9B', ija: ['おしりふき', '手口ふき'], izh: ['屁屁濕紙巾', '手口濕紙巾'] },
-    clothes: { ja: '衣類', zh: '衣物', c: '#D9628A', ija: ['短肌着', 'コンビ肌着', 'ロンパース', 'カバーオール', 'スタイ', '靴下'], izh: ['短版紗布衣', '長版紗布衣', '連身衣', '包屁衣', '圍兜', '襪子'] },
-    feeding: { ja: '授乳用品', zh: '哺乳用品', c: '#9479D2', ija: ['哺乳びん', '乳首', '消毒グッズ', 'ミルクケース', '授乳クッション'], izh: ['奶瓶', '奶嘴頭', '消毒用品', '奶粉分裝盒', '哺乳枕'] },
-    bath:    { ja: 'お風呂・ケア', zh: '洗澡・護理', c: '#38A3C8', ija: ['ベビーソープ', '保湿クリーム', 'ガーゼ', '綿棒', '爪切り', 'ベビーバス'], izh: ['嬰兒沐浴乳', '保濕乳霜', '紗布巾', '棉花棒', '指甲剪', '嬰兒澡盆'] },
-    medical: { ja: '医療・薬', zh: '醫療・藥品', c: '#D45750', ija: ['体温計', '鼻水吸引器', '受診', '薬'], izh: ['體溫計', '吸鼻器', '看診', '藥品'] },
-    gear:    { ja: 'ベビー用品', zh: '嬰兒用品', c: '#7D8C9B', ija: ['ベビーカー', '抱っこひも', 'チャイルドシート', 'ベビーベッド', 'バウンサー'], izh: ['嬰兒推車', '揹巾', '汽車安全座椅', '嬰兒床', '安撫搖椅'] },
-    toy:     { ja: 'おもちゃ', zh: '玩具', c: '#C49A1E', ija: ['ガラガラ', 'メリー', '絵本'], izh: ['搖鈴', '床鈴', '繪本'] },
-    other:   { ja: 'その他', zh: '其他', c: '#9AA3AE', ija: [], izh: [] },
+    milk:    { ja: 'ミルク', zh: '奶粉', id: 'Susu', iid: ['Susu formula bubuk', 'Susu formula cair', 'Susu formula kubus'], c: '#E0963A', ija: ['粉ミルク', '液体ミルク', 'キューブミルク'], izh: ['奶粉', '液態奶', '方塊奶粉'] },
+    diaper:  { ja: 'オムツ', zh: '尿布', id: 'Popok', iid: ['Popok bayi baru lahir', 'Popok ukuran S', 'Kantong buang popok'], c: '#4A8AD6', ija: ['新生児用オムツ', 'Sサイズオムツ', 'おむつ用ゴミ袋'], izh: ['新生兒尿布', 'S號尿布', '尿布垃圾袋'] },
+    wipes:   { ja: 'おしりふき', zh: '濕紙巾', id: 'Tisu basah', iid: ['Tisu basah bokong', 'Tisu basah tangan & mulut'], c: '#3FAE9B', ija: ['おしりふき', '手口ふき'], izh: ['屁屁濕紙巾', '手口濕紙巾'] },
+    clothes: { ja: '衣類', zh: '衣物', id: 'Pakaian', iid: ['Kaus dalam pendek', 'Kaus dalam panjang', 'Romper', 'Baju terusan', 'Celemek', 'Kaus kaki'], c: '#D9628A', ija: ['短肌着', 'コンビ肌着', 'ロンパース', 'カバーオール', 'スタイ', '靴下'], izh: ['短版紗布衣', '長版紗布衣', '連身衣', '包屁衣', '圍兜', '襪子'] },
+    feeding: { ja: '授乳用品', zh: '哺乳用品', id: 'Perlengkapan minum', iid: ['Botol susu', 'Dot', 'Alat sterilisasi', 'Wadah susu bubuk', 'Bantal menyusui'], c: '#9479D2', ija: ['哺乳びん', '乳首', '消毒グッズ', 'ミルクケース', '授乳クッション'], izh: ['奶瓶', '奶嘴頭', '消毒用品', '奶粉分裝盒', '哺乳枕'] },
+    bath:    { ja: 'お風呂・ケア', zh: '洗澡・護理', id: 'Mandi & perawatan', iid: ['Sabun bayi', 'Krim pelembap', 'Kain kasa', 'Cotton bud', 'Gunting kuku', 'Bak mandi bayi'], c: '#38A3C8', ija: ['ベビーソープ', '保湿クリーム', 'ガーゼ', '綿棒', '爪切り', 'ベビーバス'], izh: ['嬰兒沐浴乳', '保濕乳霜', '紗布巾', '棉花棒', '指甲剪', '嬰兒澡盆'] },
+    medical: { ja: '医療・薬', zh: '醫療・藥品', id: 'Kesehatan & obat', iid: ['Termometer', 'Penyedot ingus', 'Periksa ke dokter', 'Obat'], c: '#D45750', ija: ['体温計', '鼻水吸引器', '受診', '薬'], izh: ['體溫計', '吸鼻器', '看診', '藥品'] },
+    gear:    { ja: 'ベビー用品', zh: '嬰兒用品', id: 'Perlengkapan bayi', iid: ['Kereta bayi', 'Gendongan', 'Kursi mobil bayi', 'Tempat tidur bayi', 'Bouncer'], c: '#7D8C9B', ija: ['ベビーカー', '抱っこひも', 'チャイルドシート', 'ベビーベッド', 'バウンサー'], izh: ['嬰兒推車', '揹巾', '汽車安全座椅', '嬰兒床', '安撫搖椅'] },
+    toy:     { ja: 'おもちゃ', zh: '玩具', id: 'Mainan', iid: ['Mainan kerincing', 'Mainan gantung', 'Buku cerita'], c: '#C49A1E', ija: ['ガラガラ', 'メリー', '絵本'], izh: ['搖鈴', '床鈴', '繪本'] },
+    other:   { ja: 'その他', zh: '其他', id: 'Lainnya', iid: [], c: '#9AA3AE', ija: [], izh: [] },
   };
   const catOf = e => COST_CATS[e.cat] ? e.cat : 'other';
-  const catName = k => (COST_CATS[k] || COST_CATS.other)[LANG === 'zh' ? 'zh' : 'ja'];
-  const catItems = k => (COST_CATS[k] || COST_CATS.other)[LANG === 'zh' ? 'izh' : 'ija'];
+  const catName = k => (COST_CATS[k] || COST_CATS.other)[LANG];
+  const catItems = k => (COST_CATS[k] || COST_CATS.other)['i' + LANG];
   const yen = n => `¥${fmtG(Math.round(n))}`;
   const costAmount = e => (Number(e.price) || 0) * (Number(e.qty) || 1);
   // The usual "to buy" starters, offered under the list until they have been added once.
@@ -2293,40 +2315,40 @@ The original language's field must be the note unchanged. Keep emoji, line break
     const want = S.expenses.filter(e => e.status === 'want').sort((a, b) => a.at - b.at);
     const row = e => `<button type="button" class="cost-row" data-cost="${esc(e.id)}"><i class="dot" style="background:${COST_CATS[catOf(e)].c}"></i>
       <span class="cn"><b>${esc(e.name)}</b><small>${catName(catOf(e))}${Number(e.qty) > 1 ? ` ・ ${yen(e.price)} × ${e.qty}` : ''}${e.note ? ` ・ ${esc(e.note)}` : ''}</small></span>
-      ${Number(e.price) > 0 ? `<b class="ca num">${yen(costAmount(e))}</b>` : `<span class="ca unset">${L('金額未定', '金額未定')}</span>`}</button>`;
+      ${Number(e.price) > 0 ? `<b class="ca num">${yen(costAmount(e))}</b>` : `<span class="ca unset">${L('金額未定', '金額未定', 'Harga belum diisi')}</span>`}</button>`;
 
     let h = `<div class="cost-head">
       <div class="memo-daynav">
-        <button type="button" class="icon-btn" data-cmonth="1" aria-label="${L('前の月', '上個月')}">‹</button>
-        <b>${md.getFullYear()}${L('年', '年')}${md.getMonth() + 1}${L('月', '月')}</b>
-        <button type="button" class="icon-btn" data-cmonth="-1" aria-label="${L('次の月', '下個月')}" ${isThisMonth ? 'disabled' : ''}>›</button>
+        <button type="button" class="icon-btn" data-cmonth="1" aria-label="${L('前の月', '上個月', 'Bulan sebelumnya')}">‹</button>
+        <b>${monthTitle(md.getFullYear(), md.getMonth())}</b>
+        <button type="button" class="icon-btn" data-cmonth="-1" aria-label="${L('次の月', '下個月', 'Bulan berikutnya')}" ${isThisMonth ? 'disabled' : ''}>›</button>
       </div>
-      <div class="cost-total"><span>${L('この月にかかった費用', '本月花費')}</span><b class="num">${yen(total)}</b><small class="num">${L('これまでの合計', '累計')} ${yen(all)}</small></div>
-      ${byCat.length ? `<div class="cost-bar" role="img" aria-label="${L('カテゴリ別の内訳', '各類別比例')}">${byCat.map(([k, v]) => `<i style="flex:${v} 0 0;background:${COST_CATS[k].c}"></i>`).join('')}</div>
+      <div class="cost-total"><span>${L('この月にかかった費用', '本月花費', 'Pengeluaran bulan ini')}</span><b class="num">${yen(total)}</b><small class="num">${L('これまでの合計', '累計', 'Total sejauh ini')} ${yen(all)}</small></div>
+      ${byCat.length ? `<div class="cost-bar" role="img" aria-label="${L('カテゴリ別の内訳', '各類別比例', 'Rincian per kategori')}">${byCat.map(([k, v]) => `<i style="flex:${v} 0 0;background:${COST_CATS[k].c}"></i>`).join('')}</div>
         <ul class="cost-cats">${byCat.map(([k, v]) => `<li><i style="background:${COST_CATS[k].c}"></i><span>${catName(k)}</span><b class="num">${yen(v)}</b><small class="num">${Math.round(v / total * 100)}%</small></li>`).join('')}</ul>` : ''}
     </div>
     <div class="cost-tools">
-      <div class="seg" role="group" aria-label="${L('表示', '顯示')}">
-        <button type="button" data-cview="bought" aria-pressed="${S.costView === 'bought'}">${L('買ったもの', '已購買')}<small class="num">${inMonth.length}</small></button>
-        <button type="button" data-cview="want" aria-pressed="${S.costView === 'want'}">${L('買うものリスト', '待買清單')}<small class="num">${want.length}</small></button>
+      <div class="seg" role="group" aria-label="${L('表示', '顯示', 'Tampilan')}">
+        <button type="button" data-cview="bought" aria-pressed="${S.costView === 'bought'}">${L('買ったもの', '已購買', 'Sudah dibeli')}<small class="num">${inMonth.length}</small></button>
+        <button type="button" data-cview="want" aria-pressed="${S.costView === 'want'}">${L('買うものリスト', '待買清單', 'Daftar belanja')}<small class="num">${want.length}</small></button>
       </div>
-      <button type="button" class="btn solid" data-act="cost-add">＋ ${L('追加', '新增')}</button>
+      <button type="button" class="btn solid" data-act="cost-add">＋ ${L('追加', '新增', 'Tambah')}</button>
     </div>`;
     if (S.costView === 'bought') {
-      if (!inMonth.length) h += `<p class="empty-note">${L('この月に買ったものはまだありません。「＋ 追加」から記録できます。', '本月還沒有購買紀錄，可以從「＋ 新增」記錄。')}</p>`;
+      if (!inMonth.length) h += `<p class="empty-note">${L('この月に買ったものはまだありません。「＋ 追加」から記録できます。', '本月還沒有購買紀錄，可以從「＋ 新增」記錄。', 'Belum ada pembelian bulan ini. Catat lewat "+ Tambah".')}</p>`;
       const groups = new Map();
       inMonth.forEach(e => { const k = startOfDay(e.at); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(e); });
       h += [...groups].map(([k, list]) => `<div class="cost-day"><h4>${dayLabel(k)}<span class="num">${yen(list.reduce((s, e) => s + costAmount(e), 0))}</span></h4>
         <ul class="cost-list">${list.map(e => `<li>${row(e)}</li>`).join('')}</ul></div>`).join('');
     } else {
-      h += `<p class="hint">${L('必要なものを並べておき、買ったら ✓ を押すと「買ったもの」に移ります（その日の支出になります）。', '先把需要的東西列出來，買了之後按 ✓ 就會移到「已購買」（記為當天的支出）。')}</p>`;
+      h += `<p class="hint">${L('必要なものを並べておき、買ったら ✓ を押すと「買ったもの」に移ります（その日の支出になります）。', '先把需要的東西列出來，買了之後按 ✓ 就會移到「已購買」（記為當天的支出）。', 'Catat barang yang dibutuhkan; setelah dibeli tekan ✓ untuk memindahkannya ke "Sudah dibeli" (jadi pengeluaran hari itu).')}</p>`;
       h += want.length
-        ? `<ul class="cost-list want">${want.map(e => `<li><button type="button" class="cost-check" data-cbuy="${esc(e.id)}" aria-label="${L(`${esc(e.name)}を買った`, `已買${esc(e.name)}`)}">✓</button>${row(e)}</li>`).join('')}</ul>
-          <p class="cost-sum num">${L('予定の合計', '預估合計')} ${yen(want.reduce((s, e) => s + costAmount(e), 0))}</p>`
-        : `<p class="empty-note">${L('買うものリストは空です。', '待買清單是空的。')}</p>`;
+        ? `<ul class="cost-list want">${want.map(e => `<li><button type="button" class="cost-check" data-cbuy="${esc(e.id)}" aria-label="${L(`${esc(e.name)}を買った`, `已買${esc(e.name)}`, `Sudah beli ${esc(e.name)}`)}">✓</button>${row(e)}</li>`).join('')}</ul>
+          <p class="cost-sum num">${L('予定の合計', '預估合計', 'Total rencana')} ${yen(want.reduce((s, e) => s + costAmount(e), 0))}</p>`
+        : `<p class="empty-note">${L('買うものリストは空です。', '待買清單是空的。', 'Daftar belanja kosong.')}</p>`;
       const names = new Set(S.expenses.map(e => e.name));
       const starters = COST_STARTERS.map(([k, i]) => [k, catItems(k)[i]]).filter(([, n]) => n && !names.has(n));
-      if (starters.length) h += `<div class="cost-presets"><span class="lbl">${L('よく使うものから追加', '從常用品新增')}</span>
+      if (starters.length) h += `<div class="cost-presets"><span class="lbl">${L('よく使うものから追加', '從常用品新增', 'Tambah dari barang umum')}</span>
         <div class="chips">${starters.map(([k, n]) => `<button type="button" data-cpreset="${k}|${esc(n)}"><i style="background:${COST_CATS[k].c}"></i>${esc(n)}</button>`).join('')}</div></div>`;
     }
     return h;
@@ -2349,7 +2371,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     if (v('c-date') !== undefined) F.date = v('c-date');
     if (v('c-note') !== undefined) F.note = v('c-note');
   }
-  const costTotalText = F => Number(F.price) > 0 ? L(`合計 ${yen(F.price * (F.qty || 1))}`, `合計 ${yen(F.price * (F.qty || 1))}`) : '';
+  const costTotalText = F => Number(F.price) > 0 ? L(`合計 ${yen(F.price * (F.qty || 1))}`, `合計 ${yen(F.price * (F.qty || 1))}`, `Total ${yen(F.price * (F.qty || 1))}`) : '';
   function renderCostForm() {
     const F = S.form, root = $('#sheet-root');
     const past = [...new Set(S.expenses.filter(e => catOf(e) === F.cat).map(e => e.name))];
@@ -2358,25 +2380,25 @@ The original language's field must be the note unchanged. Keep emoji, line break
     // so the form only ever grows downward instead of jumping up and down.
     const keep = $('#sheet') ? $('#sheet').scrollTop : 0;
     root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet fixed" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${F.editing ? L('修正：費用', '修改：費用') : L('費用を追加', '新增費用')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
-      <div class="field"><span class="lbl">${L('状態', '狀態')}</span>${chipsHTML('cstatus', { bought: L('買った', '已購買'), want: L('買う予定（リスト）', '待買（清單）') }, F.status)}</div>
-      <div class="field"><span class="lbl">${L('カテゴリ', '類別')}</span><div class="chips cat-chips" role="group">${Object.keys(COST_CATS).map(k => `<button type="button" data-ccat="${k}" aria-pressed="${F.cat === k}"><i style="background:${COST_CATS[k].c}"></i>${catName(k)}</button>`).join('')}</div></div>
-      <div class="field"><label for="c-name">${L('品名', '品名')}</label><input type="text" id="c-name" maxlength="40" value="${esc(F.name)}" autocomplete="off" placeholder="${esc(catItems(F.cat)[0] || L('品名', '品名'))}">
+      <div class="sheet-head"><h2>${F.editing ? L('修正：費用', '修改：費用', 'Ubah: pengeluaran') : L('費用を追加', '新增費用', 'Tambah pengeluaran')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
+      <div class="field"><span class="lbl">${L('状態', '狀態', 'Status')}</span>${chipsHTML('cstatus', { bought: L('買った', '已購買', 'Sudah beli'), want: L('買う予定（リスト）', '待買（清單）', 'Akan beli (daftar)') }, F.status)}</div>
+      <div class="field"><span class="lbl">${L('カテゴリ', '類別', 'Kategori')}</span><div class="chips cat-chips" role="group">${Object.keys(COST_CATS).map(k => `<button type="button" data-ccat="${k}" aria-pressed="${F.cat === k}"><i style="background:${COST_CATS[k].c}"></i>${catName(k)}</button>`).join('')}</div></div>
+      <div class="field"><label for="c-name">${L('品名', '品名', 'Nama barang')}</label><input type="text" id="c-name" maxlength="40" value="${esc(F.name)}" autocomplete="off" placeholder="${esc(catItems(F.cat)[0] || L('品名', '品名', 'Nama barang'))}">
         ${sugg.length ? `<div class="chips small">${sugg.map(n => `<button type="button" data-cname="${esc(n)}" aria-pressed="${F.name === n}">${esc(n)}</button>`).join('')}</div>` : ''}</div>
       <div class="two-col">
-        <div class="field"><label for="c-price">${L('金額（1つあたり・円）', '金額（單價・日圓）')}</label><input type="number" inputmode="numeric" id="c-price" min="0" max="10000000" step="1" value="${esc(F.price)}" placeholder="${F.status === 'want' ? L('わかれば', '知道的話') : '0'}"></div>
-        <div class="field"><label for="c-qty">${L('数量', '數量')}</label><div class="stepper qty"><button type="button" data-cstep="-1">−</button><input type="number" inputmode="numeric" id="c-qty" min="1" max="999" value="${esc(F.qty)}"><button type="button" data-cstep="1">+</button></div></div>
+        <div class="field"><label for="c-price">${L('金額（1つあたり・円）', '金額（單價・日圓）', 'Harga (per buah, yen)')}</label><input type="number" inputmode="numeric" id="c-price" min="0" max="10000000" step="1" value="${esc(F.price)}" placeholder="${F.status === 'want' ? L('わかれば', '知道的話', 'jika tahu') : '0'}"></div>
+        <div class="field"><label for="c-qty">${L('数量', '數量', 'Jumlah')}</label><div class="stepper qty"><button type="button" data-cstep="-1">−</button><input type="number" inputmode="numeric" id="c-qty" min="1" max="999" value="${esc(F.qty)}"><button type="button" data-cstep="1">+</button></div></div>
       </div>
       <p class="hint num" id="c-total">${costTotalText(F)}</p>
-      ${F.status === 'bought' ? `<div class="field"><label for="c-date">${L('買った日', '購買日期')}</label><input type="date" id="c-date" value="${esc(F.date)}" max="${dayKey(Date.now())}"></div>` : ''}
-      <div class="field"><label for="c-note">${L('メモ（任意）', '備註（選填）')}</label><input type="text" id="c-note" maxlength="100" value="${esc(F.note)}" placeholder="${L('お店、サイズなど', '店家、尺寸等')}"></div>
+      ${F.status === 'bought' ? `<div class="field"><label for="c-date">${L('買った日', '購買日期', 'Tanggal beli')}</label><input type="date" id="c-date" value="${esc(F.date)}" max="${dayKey(Date.now())}"></div>` : ''}
+      <div class="field"><label for="c-note">${L('メモ（任意）', '備註（選填）', 'Memo (opsional)')}</label><input type="text" id="c-note" maxlength="100" value="${esc(F.note)}" placeholder="${L('お店、サイズなど', '店家、尺寸等', 'Toko, ukuran, dll.')}"></div>
       <div class="sheet-actions">
         ${F.editing ? (F.confirmDelete
-          ? `<button type="button" class="btn danger" data-act="delete-yes">${L('本当に削除する', '確定刪除')}</button><button type="button" class="btn ghost" data-act="delete-no">${L('やめる', '不刪除')}</button>`
-          : `<button type="button" class="btn danger" data-act="delete">${L('削除', '刪除')}</button>`) : ''}
+          ? `<button type="button" class="btn danger" data-act="delete-yes">${L('本当に削除する', '確定刪除', 'Ya, hapus')}</button><button type="button" class="btn ghost" data-act="delete-no">${L('やめる', '不刪除', 'Batal')}</button>`
+          : `<button type="button" class="btn danger" data-act="delete">${L('削除', '刪除', 'Hapus')}</button>`) : ''}
         <span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
-        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消', 'Batal')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存', 'Simpan')}</button>
       </div>
     </form></div>`;
     $('#sheet').scrollTop = keep;
@@ -2384,16 +2406,16 @@ The original language's field must be the note unchanged. Keep emoji, line break
   async function submitCost() {
     readCost();
     const F = S.form, now = Date.now(), name = (F.name || '').trim();
-    if (!name) return toast(L('品名を入れてください。', '請輸入品名。'));
+    if (!name) return toast(L('品名を入れてください。', '請輸入品名。', 'Masukkan nama barang.'));
     const price = F.price === '' ? (F.status === 'want' ? 0 : NaN) : Number(F.price);
-    if (!(price >= 0 && price <= 10000000)) return toast(L('金額を入れてください（円）。', '請輸入金額（日圓）。'));
+    if (!(price >= 0 && price <= 10000000)) return toast(L('金額を入れてください（円）。', '請輸入金額（日圓）。', 'Masukkan harga (yen).'));
     const qty = Math.round(Number(F.qty) || 0);
-    if (!(qty >= 1 && qty <= 999)) return toast(L('数量は1〜999で入れてください。', '數量請輸入1〜999。'));
+    if (!(qty >= 1 && qty <= 999)) return toast(L('数量は1〜999で入れてください。', '數量請輸入1〜999。', 'Jumlah harus 1–999.'));
     let at;
     if (F.status === 'bought') {
-      if (!F.date) return toast(L('買った日を入れてください。', '請輸入購買日期。'));
+      if (!F.date) return toast(L('買った日を入れてください。', '請輸入購買日期。', 'Masukkan tanggal beli.'));
       at = keyDay(F.date) + 12 * HOUR;   // midday, so the day never shifts
-      if (startOfDay(at) > startOfDay(now)) return toast(L('未来の日付は記録できません。', '無法記錄未來的日期。'));
+      if (startOfDay(at) > startOfDay(now)) return toast(L('未来の日付は記録できません。', '無法記錄未來的日期。', 'Tanggal di masa depan tidak bisa dicatat.'));
     } else at = F.editing && F.at ? F.at : now;
     const data = { cat: F.cat, name, price: Math.round(price), qty, status: F.status, at, note: (F.note || '').trim(), updatedAt: now };
     const editingId = F.editing || null, before = editingId ? S.expenses.find(e => e.id === editingId) : null;
@@ -2403,8 +2425,8 @@ The original language's field must be the note unchanged. Keep emoji, line break
       S.costView = data.status;
       if (data.status === 'bought') S.costMonth = monthStart(at);
       renderNote();
-      toast(editingId ? L(`「${name}」を修正しました`, `已修改「${name}」`) : data.status === 'want' ? L(`「${name}」をリストに追加しました`, `已把「${name}」加入清單`) : L(`「${name}」${yen(price * qty)} を記録しました`, `已記錄「${name}」${yen(price * qty)}`), {
-        label: L('取り消す', '復原'),
+      toast(editingId ? L(`「${name}」を修正しました`, `已修改「${name}」`, `"${name}" diubah`) : data.status === 'want' ? L(`「${name}」をリストに追加しました`, `已把「${name}」加入清單`, `"${name}" ditambahkan ke daftar`) : L(`「${name}」${yen(price * qty)} を記録しました`, `已記錄「${name}」${yen(price * qty)}`, `"${name}" ${yen(price * qty)} dicatat`), {
+        label: L('取り消す', '復原', 'Urungkan'),
         fn: () => { if (before) { const { id: _drop, ...prev } = before; saveDoc('expenses', id, prev); } else deleteDoc('expenses', id); },
       });
     } catch (e) { toast(errMsg(e)); }
@@ -2415,7 +2437,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     if (!(Number(e.price) > 0)) { openCost(e); S.form.status = 'bought'; return renderCostForm(); }
     const { id: _drop, ...prev } = e, now = Date.now();
     saveDoc('expenses', id, { ...prev, status: 'bought', at: startOfDay(now) + 12 * HOUR, updatedAt: now });
-    toast(L(`「${e.name}」を買ったものに移しました`, `已把「${e.name}」移到已購買`), { label: L('取り消す', '復原'), fn: () => saveDoc('expenses', id, prev) });
+    toast(L(`「${e.name}」を買ったものに移しました`, `已把「${e.name}」移到已購買`, `"${e.name}" dipindah ke sudah dibeli`), { label: L('取り消す', '復原', 'Urungkan'), fn: () => saveDoc('expenses', id, prev) });
   }
 
   // ---------- form ----------
@@ -2466,53 +2488,53 @@ The original language's field must be the note unchanged. Keep emoji, line break
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
-      body += `<div class="field"><span class="lbl">${L('種類', '種類')}</span>${chipsHTML('kind', KIND, F.kind)}</div>`;
+      body += `<div class="field"><span class="lbl">${L('種類', '種類', 'Jenis')}</span>${chipsHTML('kind', KIND, F.kind)}</div>`;
       if (F.kind === 'breast') {
-        body += `<div class="field"><label for="f-min">${L('授乳した時間（分）', '餵奶時間（分鐘）')}</label>
+        body += `<div class="field"><label for="f-min">${L('授乳した時間（分）', '餵奶時間（分鐘）', 'Lama menyusu (menit)')}</label>
           <div class="stepper"><button type="button" data-step="min:-5">−5</button><input type="number" inputmode="numeric" id="f-min" min="1" max="90" value="${esc(F.min)}"><button type="button" data-step="min:5">+5</button></div></div>`;
       } else {
         const rangeTxt = `${b.minMl === b.maxMl ? b.minMl : `${b.minMl}〜${b.maxMl}`}mL`;
-        body += `<div class="field"><label for="f-ml">${L('量（mL）', '奶量（mL）')}</label>
+        body += `<div class="field"><label for="f-ml">${L('量（mL）', '奶量（mL）', 'Jumlah (mL)')}</label>
           <div class="stepper"><button type="button" data-step="ml:-10">−10</button><select class="mlsel" id="f-ml">${mlOptions(F.ml)}</select><button type="button" data-step="ml:10">+10</button></div>
-          <p class="hint">${L(`前回 ${lastMl(F.baby)}mL ・ ${esc(b.name)}の目安 ${rangeTxt}・${b.intervalH}時間ごと`, `上次 ${lastMl(F.baby)}mL ・ ${esc(b.name)}的參考量 ${rangeTxt}・每${b.intervalH}小時`)}</p></div>`;
+          <p class="hint">${L(`前回 ${lastMl(F.baby)}mL ・ ${esc(b.name)}の目安 ${rangeTxt}・${b.intervalH}時間ごと`, `上次 ${lastMl(F.baby)}mL ・ ${esc(b.name)}的參考量 ${rangeTxt}・每${b.intervalH}小時`, `Sebelumnya ${lastMl(F.baby)}mL · takaran ${esc(b.name)} ${rangeTxt} · tiap ${b.intervalH} jam`)}</p></div>`;
       }
     } else if (F.type === 'poo') {
-      body += `<div class="field"><span class="lbl">${L('色', '顏色')}</span>${chipsHTML('color', POO_COLOR, F.color)}
-        ${F.color === 'pale' ? `<p class="caution">${L('白っぽい・クリーム色の便は、母子手帳の便色カードと見比べてください。近い色が続くときは早めに小児科へ相談を。', '偏白或奶油色的便便，請與兒童健康手冊中的嬰兒大便辨識卡比對。若持續出現相近顏色，請盡早諮詢小兒科。')}</p>` : ''}</div>
-        <div class="field"><span class="lbl">${L('量', '量')}</span>${chipsHTML('amount', POO_AMT, F.amount)}</div>`;
-      if (!F.editing) body += `<label class="check"><input type="checkbox" id="f-withpee" ${F.withPee ? 'checked' : ''}> ${L('おしっこも一緒に記録する', '同時記錄尿尿')}</label>`;
+      body += `<div class="field"><span class="lbl">${L('色', '顏色', 'Warna')}</span>${chipsHTML('color', POO_COLOR, F.color)}
+        ${F.color === 'pale' ? `<p class="caution">${L('白っぽい・クリーム色の便は、母子手帳の便色カードと見比べてください。近い色が続くときは早めに小児科へ相談を。', '偏白或奶油色的便便，請與兒童健康手冊中的嬰兒大便辨識卡比對。若持續出現相近顏色，請盡早諮詢小兒科。', 'Untuk BAB putih/krem, bandingkan dengan kartu warna feses di buku KIA. Jika terus berlanjut, segera konsultasi ke dokter anak.')}</p>` : ''}</div>
+        <div class="field"><span class="lbl">${L('量', '量', 'Jumlah')}</span>${chipsHTML('amount', POO_AMT, F.amount)}</div>`;
+      if (!F.editing) body += `<label class="check"><input type="checkbox" id="f-withpee" ${F.withPee ? 'checked' : ''}> ${L('おしっこも一緒に記録する', '同時記錄尿尿', 'Catat pipis sekaligus')}</label>`;
     } else if (F.type === 'weight') {
       const w = weightsOf(F.baby).find(l => l.id !== F.editing);
-      body += `<div class="field"><label for="f-g">${L('体重（g）', '體重（g）')}</label>
+      body += `<div class="field"><label for="f-g">${L('体重（g）', '體重（g）', 'Berat (g)')}</label>
         <div class="stepper"><button type="button" data-step="grams:-10">−10</button><input type="number" inputmode="numeric" id="f-g" min="500" max="15000" value="${esc(F.grams)}"><button type="button" data-step="grams:10">+10</button></div>
-        ${w ? `<p class="hint">${L('前回', '上次')}：${fmtG(w.grams)}g（${new Date(w.at).getMonth() + 1}/${new Date(w.at).getDate()}）</p>` : ''}</div>`;
-      if (!F.editing) body += `<details class="more-fields" ${F.height || F.head ? 'open' : ''}><summary>${L('身長・頭囲も記録する（健診などで測ったとき）', '同時記錄身長・頭圍（健檢時測量）')}</summary>${measureFields(F)}</details>`;
+        ${w ? `<p class="hint">${L('前回', '上次', 'Sebelumnya')}：${fmtG(w.grams)}g（${new Date(w.at).getMonth() + 1}/${new Date(w.at).getDate()}）</p>` : ''}</div>`;
+      if (!F.editing) body += `<details class="more-fields" ${F.height || F.head ? 'open' : ''}><summary>${L('身長・頭囲も記録する（健診などで測ったとき）', '同時記錄身長・頭圍（健檢時測量）', 'Catat juga tinggi & lingkar kepala (saat diukur di pemeriksaan)')}</summary>${measureFields(F)}</details>`;
     } else if (F.type === 'measure') {
       body += measureFields(F);
     } else if (F.type === 'temp') {
       const t = Number(F.temp) || 36.8, lv = tempLevel(t), ageDays = baby(F.baby).birthAt ? dayAge(baby(F.baby).birthAt) : null;
       const opts = []; for (let v = 35.0; v <= 41.05; v += 0.1) opts.push(Math.round(v * 10) / 10);
-      body += `<div class="field"><label for="f-temp">${L('体温（℃）', '體溫（℃）')}</label>
+      body += `<div class="field"><label for="f-temp">${L('体温（℃）', '體溫（℃）', 'Suhu (℃)')}</label>
           <div class="stepper"><button type="button" data-step="temp:-0.1">−0.1</button><select class="mlsel temp-sel ${lv}" id="f-temp">${opts.map(v => `<option value="${v}" ${Math.abs(v - t) < 0.01 ? 'selected' : ''}>${v.toFixed(1)} ℃</option>`).join('')}</select><button type="button" data-step="temp:0.1">+0.1</button></div>
-          ${lv === 'hot' && ageDays !== null && ageDays < 91 ? `<p class="caution">${L('生後3か月未満で38℃以上の発熱は、夜間でも早めに小児科へ相談してください（#8000 こども医療電話相談）。', '未滿3個月的寶寶發燒38℃以上，即使是夜間也請盡早諮詢小兒科。')}</p>` : ''}</div>
-        <div class="field"><span class="lbl">${L('体調（あてはまるものを選択）', '身體狀況（可複選）')}</span>
+          ${lv === 'hot' && ageDays !== null && ageDays < 91 ? `<p class="caution">${L('生後3か月未満で38℃以上の発熱は、夜間でも早めに小児科へ相談してください（#8000 こども医療電話相談）。', '未滿3個月的寶寶發燒38℃以上，即使是夜間也請盡早諮詢小兒科。', 'Demam 38℃ atau lebih pada bayi di bawah 3 bulan: segera hubungi dokter anak, walau malam hari (#8000 di Jepang).')}</p>` : ''}</div>
+        <div class="field"><span class="lbl">${L('体調（あてはまるものを選択）', '身體狀況（可複選）', 'Kondisi (pilih yang sesuai)')}</span>
           <div class="chips">${Object.entries(SYMPTOMS).map(([k, label]) => `<button type="button" data-sym="${k}" aria-pressed="${(F.sym || []).includes(k)}">${esc(label)}</button>`).join('')}</div></div>`;
     }
-    const title = (F.editing ? L('修正：', '修改：') : '') + TYPE_LABEL[F.type];
+    const title = (F.editing ? L('修正：', '修改：', 'Ubah: ') : '') + TYPE_LABEL[F.type];
     root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${title}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
-      <div class="field"><span class="lbl">${L('だれ', '誰')}</span><div class="chips who" role="group">${BABY_IDS.map(id => `<button type="button" data-who="${id}" data-baby="${id}" aria-pressed="${F.baby === id}">${esc(baby(id).name)}</button>`).join('')}</div></div>
+      <div class="sheet-head"><h2>${title}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
+      <div class="field"><span class="lbl">${L('だれ', '誰', 'Siapa')}</span><div class="chips who" role="group">${BABY_IDS.map(id => `<button type="button" data-who="${id}" data-baby="${id}" aria-pressed="${F.baby === id}">${esc(baby(id).name)}</button>`).join('')}</div></div>
       ${body}
-      <div class="field"><span class="lbl">${L('時刻', '時間')}</span>${tpHTML('f', F.at, true)}</div>
+      <div class="field"><span class="lbl">${L('時刻', '時間', 'Waktu')}</span>${tpHTML('f', F.at, true)}</div>
       ${F.type === 'milk' ? `<p class="next-preview num" id="f-next" aria-live="polite">${nextPreview()}</p>` : ''}
-      <div class="field"><label for="f-note">${L('メモ（任意）', '備註（選填）')}</label><input type="text" id="f-note" maxlength="200" value="${esc(F.note)}" placeholder="${L('吐き戻し、飲みムラなど', '吐奶、沒喝完等')}"></div>
+      <div class="field"><label for="f-note">${L('メモ（任意）', '備註（選填）', 'Memo (opsional)')}</label><input type="text" id="f-note" maxlength="200" value="${esc(F.note)}" placeholder="${L('吐き戻し、飲みムラなど', '吐奶、沒喝完等', 'Gumoh, minum tidak habis, dll.')}"></div>
       <div class="sheet-actions">
         ${F.editing ? (F.confirmDelete
-          ? `<button type="button" class="btn danger" data-act="delete-yes">${L('本当に削除する', '確定刪除')}</button><button type="button" class="btn ghost" data-act="delete-no">${L('やめる', '不刪除')}</button>`
-          : `<button type="button" class="btn danger" data-act="delete">${L('削除', '刪除')}</button>`) : ''}
+          ? `<button type="button" class="btn danger" data-act="delete-yes">${L('本当に削除する', '確定刪除', 'Ya, hapus')}</button><button type="button" class="btn ghost" data-act="delete-no">${L('やめる', '不刪除', 'Batal')}</button>`
+          : `<button type="button" class="btn danger" data-act="delete">${L('削除', '刪除', 'Hapus')}</button>`) : ''}
         <span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
-        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消', 'Batal')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存', 'Simpan')}</button>
       </div>
     </form></div>`;
   }
@@ -2520,43 +2542,43 @@ The original language's field must be the note unchanged. Keep emoji, line break
   function measureFields(F) {
     const last = measuresOf(F.baby).find(l => l.id !== F.editing && (l.height || l.head));
     return `<div class="two-col">
-      <div class="field"><label for="f-h">${L('身長（cm）', '身長（cm）')}</label><input type="number" inputmode="decimal" step="0.1" min="30" max="120" id="f-h" value="${esc(F.height ?? '')}"></div>
-      <div class="field"><label for="f-hc">${L('頭囲（cm）', '頭圍（cm）')}</label><input type="number" inputmode="decimal" step="0.1" min="25" max="60" id="f-hc" value="${esc(F.head ?? '')}"></div>
-    </div>${last ? `<p class="hint">${L('前回', '上次')}：${describe(last)}（${new Date(last.at).getMonth() + 1}/${new Date(last.at).getDate()}）</p>` : ''}`;
+      <div class="field"><label for="f-h">${L('身長（cm）', '身長（cm）', 'Tinggi (cm)')}</label><input type="number" inputmode="decimal" step="0.1" min="30" max="120" id="f-h" value="${esc(F.height ?? '')}"></div>
+      <div class="field"><label for="f-hc">${L('頭囲（cm）', '頭圍（cm）', 'Lingkar kepala (cm)')}</label><input type="number" inputmode="decimal" step="0.1" min="25" max="60" id="f-hc" value="${esc(F.head ?? '')}"></div>
+    </div>${last ? `<p class="hint">${L('前回', '上次', 'Sebelumnya')}：${describe(last)}（${new Date(last.at).getMonth() + 1}/${new Date(last.at).getDate()}）</p>` : ''}`;
   }
 
   function nextPreview() {
     const F = S.form, b = baby(F.baby), n = F.at + b.intervalH * HOUR;
-    const tag = startOfDay(n) > startOfDay(F.at) ? L('翌日 ', '隔天 ') : '';
+    const tag = startOfDay(n) > startOfDay(F.at) ? L('翌日 ', '隔天 ', 'besok ') : '';
     return L(`次の授乳は ${tag}<b>${fmtT(n)}</b>（${b.intervalH}時間後）。アラームがオンならこの時刻に鳴ります。`,
-      `下次餵奶是 ${tag}<b>${fmtT(n)}</b>（${b.intervalH}小時後）。提醒開啟時會在這個時間響起。`);
+      `下次餵奶是 ${tag}<b>${fmtT(n)}</b>（${b.intervalH}小時後）。提醒開啟時會在這個時間響起。`, `Minum berikutnya ${tag}<b>${fmtT(n)}</b> (${b.intervalH} jam lagi). Jika alarm aktif, akan berbunyi pada jam ini.`);
   }
 
   async function submitForm() {
     readForm();
     const F = S.form; if (!F) return;
     const now = Date.now();
-    if (!F.at || F.at > now + FUTURE_OK) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
+    if (!F.at || F.at > now + FUTURE_OK) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。', 'Periksa jamnya (waktu yang akan datang tidak bisa dicatat).'));
     const data = { baby: F.baby, type: F.type, at: F.at, note: (F.note || '').trim(), updatedAt: now };
     if (F.type === 'milk') {
       data.kind = F.kind;
-      if (F.kind === 'breast') { if (!(F.min >= 1 && F.min <= 90)) return toast(L('授乳時間は1〜90分で入力してください。', '餵奶時間請輸入1〜90分鐘。')); data.min = F.min; }
-      else { if (!(F.ml >= 1 && F.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。')); data.ml = F.ml; }
+      if (F.kind === 'breast') { if (!(F.min >= 1 && F.min <= 90)) return toast(L('授乳時間は1〜90分で入力してください。', '餵奶時間請輸入1〜90分鐘。', 'Lama menyusu harus 1–90 menit.')); data.min = F.min; }
+      else { if (!(F.ml >= 1 && F.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。', 'Jumlah harus 1–300 mL.')); data.ml = F.ml; }
     } else if (F.type === 'poo') {
       data.color = F.color; data.amount = F.amount;
     } else if (F.type === 'weight') {
-      if (!(F.grams >= 500 && F.grams <= 15000)) return toast(L('体重は500〜15,000gで入力してください。', '體重請輸入500〜15,000g。'));
+      if (!(F.grams >= 500 && F.grams <= 15000)) return toast(L('体重は500〜15,000gで入力してください。', '體重請輸入500〜15,000g。', 'Berat harus 500–15.000 g.'));
       data.grams = F.grams;
     } else if (F.type === 'temp') {
-      if (!(F.temp >= 34 && F.temp <= 42)) return toast(L('体温を確認してください。', '請確認體溫。'));
+      if (!(F.temp >= 34 && F.temp <= 42)) return toast(L('体温を確認してください。', '請確認體溫。', 'Periksa suhunya.'));
       data.temp = Math.round(F.temp * 10) / 10; data.sym = F.sym || [];
     }
     // Height / head circumference: the measure form, or the optional fields inside the weight form.
     let measure = null;
     if (F.type === 'measure' || (F.type === 'weight' && !F.editing && (F.height || F.head))) {
-      if (F.height !== '' && F.height != null && !(F.height >= 30 && F.height <= 120)) return toast(L('身長は30〜120cmで入力してください。', '身長請輸入30〜120cm。'));
-      if (F.head !== '' && F.head != null && !(F.head >= 25 && F.head <= 60)) return toast(L('頭囲は25〜60cmで入力してください。', '頭圍請輸入25〜60cm。'));
-      if (!F.height && !F.head) { if (F.type === 'measure') return toast(L('身長か頭囲を入力してください。', '請輸入身長或頭圍。')); }
+      if (F.height !== '' && F.height != null && !(F.height >= 30 && F.height <= 120)) return toast(L('身長は30〜120cmで入力してください。', '身長請輸入30〜120cm。', 'Tinggi harus 30–120 cm.'));
+      if (F.head !== '' && F.head != null && !(F.head >= 25 && F.head <= 60)) return toast(L('頭囲は25〜60cmで入力してください。', '頭圍請輸入25〜60cm。', 'Lingkar kepala harus 25–60 cm.'));
+      if (!F.height && !F.head) { if (F.type === 'measure') return toast(L('身長か頭囲を入力してください。', '請輸入身長或頭圍。', 'Isi tinggi atau lingkar kepala.')); }
       else measure = { baby: F.baby, type: 'measure', at: F.at, note: F.type === 'measure' ? data.note : '', updatedAt: now, ...(F.height ? { height: F.height } : {}), ...(F.head ? { head: F.head } : {}) };
       if (F.type === 'measure') Object.assign(data, measure);
     }
@@ -2564,7 +2586,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     const isLatestMilk = F.type === 'milk' && (!prevLast || prevLast.id === F.editing || F.at >= prevLast.at);
     const editingId = F.editing || null;
     const before = editingId ? S.logs.find(l => l.id === editingId) : null;
-    const btn = $('#f-save'); if (btn) { btn.disabled = true; btn.textContent = L('保存中…', '儲存中…'); }
+    const btn = $('#f-save'); if (btn) { btn.disabled = true; btn.textContent = L('保存中…', '儲存中…', 'Menyimpan…'); }
     try {
       const savedIds = [await saveLog(editingId, data)];
       if (F.type === 'poo' && !editingId && F.withPee) savedIds.push(await saveLog(null, { baby: F.baby, type: 'pee', at: F.at, note: '', updatedAt: now }));
@@ -2577,15 +2599,15 @@ The original language's field must be the note unchanged. Keep emoji, line break
       const nb = baby(data.baby);
       // "取り消す" puts things back: a new record is deleted, an edited one gets its old values.
       const undo = editingId
-        ? () => { if (!before) return; const { id: _drop, ...prev } = before; saveLog(editingId, prev).then(() => toast(L('修正を取り消しました', '已復原修改'))); }
-        : () => { savedIds.forEach(id => deleteLog(id)); toast(L('記録を取り消しました', '已取消這筆紀錄')); };
-      const verb = editingId ? L('修正しました', '修改') : L('記録しました', '記錄');
+        ? () => { if (!before) return; const { id: _drop, ...prev } = before; saveLog(editingId, prev).then(() => toast(L('修正を取り消しました', '已復原修改', 'Perubahan dibatalkan'))); }
+        : () => { savedIds.forEach(id => deleteLog(id)); toast(L('記録を取り消しました', '已取消這筆紀錄', 'Catatan dibatalkan')); };
+      const verb = editingId ? L('修正しました', '修改', 'diubah') : L('記録しました', '記錄', 'dicatat');
       const nextT = fmtT(data.at + nb.intervalH * HOUR);
       toast(isLatestMilk
-        ? L(`${nb.name}の授乳を${verb}。次は ${nextT} です`, `已${verb}${nb.name}的餵奶。下次是 ${nextT}`)
-        : L(`${nb.name}の${TYPE_LABEL[data.type]}を${verb}`, `已${verb}${nb.name}的${TYPE_LABEL[data.type]}`), { label: L('取り消す', '復原'), fn: undo });
+        ? L(`${nb.name}の授乳を${verb}。次は ${nextT} です`, `已${verb}${nb.name}的餵奶。下次是 ${nextT}`, `Minum susu ${nb.name} ${verb}. Berikutnya ${nextT}`)
+        : L(`${nb.name}の${TYPE_LABEL[data.type]}を${verb}`, `已${verb}${nb.name}的${TYPE_LABEL[data.type]}`, `${TYPE_LABEL[data.type]} ${nb.name} ${verb}`), { label: L('取り消す', '復原', 'Urungkan'), fn: undo });
     } catch (e) {
-      if (btn) { btn.disabled = false; btn.textContent = L('保存', '儲存'); }
+      if (btn) { btn.disabled = false; btn.textContent = L('保存', '儲存', 'Simpan'); }
       toast(errMsg(e));
     }
   }
@@ -2599,32 +2621,32 @@ The original language's field must be the note unchanged. Keep emoji, line break
   function renderSettings() {
     const only = S.form.only, ids = only ? [only] : BABY_IDS;
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${only ? L(`${esc(baby(only).name)}の授乳間隔と量`, `${esc(baby(only).name)}的餵奶間隔與量`) : L('設定', '設定')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
-      ${only ? '' : `<a class="btn help-link" href="help.html">${L('使い方（仕様解説）を見る', '查看使用說明')}</a>
-        <button type="button" class="btn" data-act="birth">${L('出生時の記録（生年月日・在胎週数・出生体重）', '出生紀錄（出生日期・出生週數・出生體重）')}</button>
-        <div class="settings-block"><h3>言語 / 語言</h3>${langSwitchHTML()}<p class="hint">${L('この端末だけの設定です。', '只會套用在此裝置。')}</p></div>
+      <div class="sheet-head"><h2>${only ? L(`${esc(baby(only).name)}の授乳間隔と量`, `${esc(baby(only).name)}的餵奶間隔與量`, `Jeda & takaran ${esc(baby(only).name)}`) : L('設定', '設定', 'Pengaturan')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
+      ${only ? '' : `<a class="btn help-link" href="help.html">${L('使い方（仕様解説）を見る', '查看使用說明', 'Lihat cara pakai')}</a>
+        <button type="button" class="btn" data-act="birth">${L('出生時の記録（生年月日・在胎週数・出生体重）', '出生紀錄（出生日期・出生週數・出生體重）', 'Data kelahiran (tanggal lahir, usia kehamilan, berat lahir)')}</button>
+        <div class="settings-block"><h3>言語 / 語言</h3>${langSwitchHTML()}<p class="hint">${L('この端末だけの設定です。', '只會套用在此裝置。', 'Pengaturan khusus perangkat ini.')}</p></div>
         <div class="settings-block" id="alarm-block">${alarmBlockHTML()}</div>
         <div class="settings-block">
-          <div class="field"><label for="s-lead">${L('お知らせのタイミング（アラームと iPhone タイマー共通・この端末）', '提醒時間（提醒與 iPhone 計時器共用・此裝置）')}</label>
-            <select id="s-lead">${[0, 5, 10, 15, 20, 25, 30, 45, 60].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? L(`予定の${m}分前`, `預定前${m}分鐘`) : L('予定時刻ちょうど', '預定時間準時')}</option>`).join('')}</select></div>
-          ${IS_IOS ? `<div class="field"><span class="lbl">${L('iPhone のタイマー（この端末）', 'iPhone 計時器（此裝置）')}</span>
-            <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> ${L('授乳を記録したら、iPhone のタイマーも自動でセットする', '記錄餵奶時，自動設定 iPhone 計時器')}</label>
-            <button type="button" class="btn ghost" data-act="shortcut-help">${L('ショートカットの作り方を見る', '查看捷徑製作方法')}</button></div>` : ''}
+          <div class="field"><label for="s-lead">${L('お知らせのタイミング（アラームと iPhone タイマー共通・この端末）', '提醒時間（提醒與 iPhone 計時器共用・此裝置）', 'Waktu pemberitahuan (alarm & timer iPhone, perangkat ini)')}</label>
+            <select id="s-lead">${[0, 5, 10, 15, 20, 25, 30, 45, 60].map(m => `<option value="${m}" ${S.alarm.lead === m ? 'selected' : ''}>${m ? L(`予定の${m}分前`, `預定前${m}分鐘`, `${m} mnt sebelum jadwal`) : L('予定時刻ちょうど', '預定時間準時', 'Tepat pada jadwal')}</option>`).join('')}</select></div>
+          ${IS_IOS ? `<div class="field"><span class="lbl">${L('iPhone のタイマー（この端末）', 'iPhone 計時器（此裝置）', 'Timer iPhone (perangkat ini)')}</span>
+            <label class="check"><input type="checkbox" id="s-iosauto" ${lsGet('futago-ios-auto', false) ? 'checked' : ''}> ${L('授乳を記録したら、iPhone のタイマーも自動でセットする', '記錄餵奶時，自動設定 iPhone 計時器', 'Pasang timer iPhone otomatis setelah mencatat minum')}</label>
+            <button type="button" class="btn ghost" data-act="shortcut-help">${L('ショートカットの作り方を見る', '查看捷徑製作方法', 'Lihat cara membuat Pintasan')}</button></div>` : ''}
         </div>`}
       ${ids.map(id => { const b = baby(id); return `<div class="settings-baby">
-        <h3>${id === 'ane' ? L('姉', '姊姊') : L('妹', '妹妹')}</h3>
-        <div class="field wide"><span class="lbl">${L('アイコンの写真', '頭像照片')}</span>
-          <div class="row">${avatarHTML(id, 'lg', true)}<button type="button" class="btn ghost" data-photo="${id}">${b.photo ? L('写真を変更', '更換照片') : L('写真を選ぶ', '選擇照片')}</button></div></div>
-        <div class="field wide"><label for="s-${id}-name">${L('呼び名', '稱呼')}</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
-        <div class="field wide"><label for="s-${id}-int">${L('授乳の間隔（何時間ごと）', '餵奶間隔（每幾小時）')}</label>
-          <div class="chips" role="group">${INTERVAL_CHOICES.map(h => `<button type="button" data-int="${id}:${h}" aria-pressed="${b.intervalH === h}">${h}${L('時間', '小時')}</button>`).join('')}</div>
+        <h3>${id === 'ane' ? L('姉', '姊姊', 'Kakak') : L('妹', '妹妹', 'Adik')}</h3>
+        <div class="field wide"><span class="lbl">${L('アイコンの写真', '頭像照片', 'Foto ikon')}</span>
+          <div class="row">${avatarHTML(id, 'lg', true)}<button type="button" class="btn ghost" data-photo="${id}">${b.photo ? L('写真を変更', '更換照片', 'Ganti foto') : L('写真を選ぶ', '選擇照片', 'Pilih foto')}</button></div></div>
+        <div class="field wide"><label for="s-${id}-name">${L('呼び名', '稱呼', 'Nama panggilan')}</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
+        <div class="field wide"><label for="s-${id}-int">${L('授乳の間隔（何時間ごと）', '餵奶間隔（每幾小時）', 'Jeda minum (tiap berapa jam)')}</label>
+          <div class="chips" role="group">${INTERVAL_CHOICES.map(h => `<button type="button" data-int="${id}:${h}" aria-pressed="${b.intervalH === h}">${h}${L('時間', '小時', ' jam')}</button>`).join('')}</div>
           <input type="number" inputmode="decimal" step="0.25" min="1" max="8" id="s-${id}-int" value="${b.intervalH}">
-          <p class="hint">${L('次の授乳時刻とアラームは、最後の授乳からこの間隔で計算します。15分単位（例：2.75）でも入力できます。', '下次餵奶時間與提醒，會依最後一次餵奶加上這個間隔計算。也可以用15分鐘為單位輸入（例：2.75）。')}</p></div>
-        <div class="field"><label for="s-${id}-min">${L('量の目安 下限（mL）', '參考量 下限（mL）')}</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-min" value="${b.minMl}"></div>
-        <div class="field"><label for="s-${id}-max">${L('上限（mL）', '上限（mL）')}</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-max" value="${b.maxMl}"></div>
+          <p class="hint">${L('次の授乳時刻とアラームは、最後の授乳からこの間隔で計算します。15分単位（例：2.75）でも入力できます。', '下次餵奶時間與提醒，會依最後一次餵奶加上這個間隔計算。也可以用15分鐘為單位輸入（例：2.75）。', 'Jadwal minum & alarm dihitung dari minum terakhir dengan jeda ini. Bisa per 15 menit (contoh: 2.75).')}</p></div>
+        <div class="field"><label for="s-${id}-min">${L('量の目安 下限（mL）', '參考量 下限（mL）', 'Takaran minimum (mL)')}</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-min" value="${b.minMl}"></div>
+        <div class="field"><label for="s-${id}-max">${L('上限（mL）', '上限（mL）', 'Maksimum (mL)')}</label><input type="number" inputmode="numeric" min="5" max="300" id="s-${id}-max" value="${b.maxMl}"></div>
       </div>`; }).join('')}
-      <p class="hint">${L('間隔や量の目安は、医師・助産師の指示に合わせて変更してください。', '間隔與參考量請依醫師或助產師的指示調整。')}</p>
-      <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button><button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button></div>
+      <p class="hint">${L('間隔や量の目安は、医師・助産師の指示に合わせて変更してください。', '間隔與參考量請依醫師或助產師的指示調整。', 'Sesuaikan jeda & takaran dengan anjuran dokter/bidan.')}</p>
+      <div class="sheet-actions"><span class="spacer"></span><button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消', 'Batal')}</button><button type="submit" class="btn solid" id="f-save">${L('保存', '儲存', 'Simpan')}</button></div>
     </form></div>`;
   }
   async function submitSettings() {
@@ -2634,17 +2656,17 @@ The original language's field must be the note unchanged. Keep emoji, line break
       for (const id of (S.form.only ? [S.form.only] : BABY_IDS)) {
         let name = $(`#s-${id}-name`).value.trim() || DEFAULTS[id].name;
         // Keep the shared default stored as 姉/妹 so each device shows it in its own language.
-        if (name === ZH_DEFAULT_NAME[id]) name = DEFAULTS[id].name;
+        if (isDefaultName(id, name)) name = DEFAULTS[id].name;
         const intervalH = Number($(`#s-${id}-int`).value);
         let minMl = Number($(`#s-${id}-min`).value), maxMl = Number($(`#s-${id}-max`).value);
-        if (!(intervalH >= 1 && intervalH <= 8)) return toast(L('授乳の間隔は1〜8時間で入力してください。', '餵奶間隔請輸入1〜8小時。'));
-        if (!(minMl >= 5 && maxMl >= 5 && minMl <= 300 && maxMl <= 300)) return toast(L('量の目安は5〜300mLで入力してください。', '參考量請輸入5〜300mL。'));
+        if (!(intervalH >= 1 && intervalH <= 8)) return toast(L('授乳の間隔は1〜8時間で入力してください。', '餵奶間隔請輸入1〜8小時。', 'Jeda minum harus 1–8 jam.'));
+        if (!(minMl >= 5 && maxMl >= 5 && minMl <= 300 && maxMl <= 300)) return toast(L('量の目安は5〜300mLで入力してください。', '參考量請輸入5〜300mL。', 'Takaran harus 5–300 mL.'));
         if (minMl > maxMl) [minMl, maxMl] = [maxMl, minMl];
         const next = { name, intervalH, minMl, maxMl };
         const cur = { ...DEFAULTS[id], ...(S.babies[id] || {}) };
         if (cur.name !== name || cur.intervalH !== intervalH || cur.minMl !== minMl || cur.maxMl !== maxMl) await saveBaby(id, next);
       }
-      S.form = null; renderForm(); render(); toast(L('設定を保存しました', '已儲存設定'));
+      S.form = null; renderForm(); render(); toast(L('設定を保存しました', '已儲存設定', 'Pengaturan disimpan'));
     } catch (e) { toast(errMsg(e)); }
   }
 
@@ -2685,25 +2707,25 @@ The original language's field must be the note unchanged. Keep emoji, line break
     const F = S.form;
     F.rows.sort((a, b) => a.at - b.at);
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
-      <div class="sheet-head"><h2>${L('あとからまとめて記録', '事後補記餵奶')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
-      <p class="hint">${L('最後の記録から今までの予定時刻を入れてあります。実際に飲んだ時刻と量に直し、飲まなかった行はチェックを外してください。', '已填入從最後一筆紀錄到現在的預定時間。請改成實際餵奶的時間與奶量，沒有餵的請取消勾選。')}</p>
-      <div class="field"><span class="lbl">${L('種類', '種類')}</span>${chipsHTML('bkind', { formula: KIND.formula, expressed: KIND.expressed }, F.kind)}</div>
+      <div class="sheet-head"><h2>${L('あとからまとめて記録', '事後補記餵奶', 'Catat sekaligus belakangan')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
+      <p class="hint">${L('最後の記録から今までの予定時刻を入れてあります。実際に飲んだ時刻と量に直し、飲まなかった行はチェックを外してください。', '已填入從最後一筆紀錄到現在的預定時間。請改成實際餵奶的時間與奶量，沒有餵的請取消勾選。', 'Jadwal dari catatan terakhir sampai sekarang sudah diisi. Sesuaikan dengan jam & jumlah sebenarnya, lalu hapus centang baris yang tidak diminum.')}</p>
+      <div class="field"><span class="lbl">${L('種類', '種類', 'Jenis')}</span>${chipsHTML('bkind', { formula: KIND.formula, expressed: KIND.expressed }, F.kind)}</div>
       <div>
-        <div class="brow head" aria-hidden="true"><span></span><span>${L('だれ', '誰')}</span><span>${L('時刻', '時間')}</span><span>mL</span><span></span></div>
+        <div class="brow head" aria-hidden="true"><span></span><span>${L('だれ', '誰', 'Siapa')}</span><span>${L('時刻', '時間', 'Waktu')}</span><span>mL</span><span></span></div>
         ${F.rows.map(r => `<div class="brow${r.on ? '' : ' off'}">
-          <input type="checkbox" class="bon" id="b-on-${r.key}" ${r.on ? 'checked' : ''} aria-label="${L('この行を記録する', '記錄這一筆')}">
-          <button type="button" class="chip ${r.baby}" data-bbaby="${r.key}" aria-label="${L('子を切り替え', '切換寶寶')}">${esc(baby(r.baby).name)}</button>
+          <input type="checkbox" class="bon" id="b-on-${r.key}" ${r.on ? 'checked' : ''} aria-label="${L('この行を記録する', '記錄這一筆', 'Catat baris ini')}">
+          <button type="button" class="chip ${r.baby}" data-bbaby="${r.key}" aria-label="${L('子を切り替え', '切換寶寶', 'Ganti anak')}">${esc(baby(r.baby).name)}</button>
           <div class="bt"><button type="button" class="tbtn" data-bopen="${r.key}" aria-expanded="${F.open === r.key}">${tpLabel(r.at)}</button></div>
           <select class="mlsel" id="b-ml-${r.key}" aria-label="mL">${mlOptions(r.ml, true)}</select>
-          <button type="button" class="bdel" data-bdel="${r.key}" aria-label="${L('この行を消す', '刪除這一列')}">×</button>
+          <button type="button" class="bdel" data-bdel="${r.key}" aria-label="${L('この行を消す', '刪除這一列', 'Hapus baris ini')}">×</button>
           ${F.open === r.key ? `<div class="brow-tp">${tpHTML('b:' + r.key, r.at, true)}</div>` : ''}
-          ${r.near ? `<span class="bnear">${L('すでに記録がある時刻と近いです。二重に記録しないようご注意ください', '和已記錄的時間很接近，請注意不要重複記錄')}</span>` : ''}
+          ${r.near ? `<span class="bnear">${L('すでに記録がある時刻と近いです。二重に記録しないようご注意ください', '和已記錄的時間很接近，請注意不要重複記錄', 'Dekat dengan catatan yang sudah ada. Hati-hati jangan tercatat dua kali')}</span>` : ''}
         </div>`).join('')}
       </div>
-      <div class="badd">${BABY_IDS.map(id => `<button type="button" class="btn ghost" data-badd="${id}">${L(`＋ ${esc(baby(id).name)}の行を追加`, `＋ 新增${esc(baby(id).name)}的一列`)}</button>`).join('')}</div>
+      <div class="badd">${BABY_IDS.map(id => `<button type="button" class="btn ghost" data-badd="${id}">${L(`＋ ${esc(baby(id).name)}の行を追加`, `＋ 新增${esc(baby(id).name)}的一列`, `+ Tambah baris ${esc(baby(id).name)}`)}</button>`).join('')}</div>
       <div class="sheet-actions"><span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
-        <button type="submit" class="btn solid" id="f-save">${L(`${F.rows.filter(r => r.on).length}件を記録`, `記錄${F.rows.filter(r => r.on).length}筆`)}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消', 'Batal')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L(`${F.rows.filter(r => r.on).length}件を記録`, `記錄${F.rows.filter(r => r.on).length}筆`, `Catat ${F.rows.filter(r => r.on).length} baris`)}</button>
       </div>
     </form></div>`;
   }
@@ -2715,10 +2737,10 @@ The original language's field must be the note unchanged. Keep emoji, line break
   async function submitBatch() {
     readBatch();
     const F = S.form, now = Date.now(), rows = F.rows.filter(r => r.on);
-    if (!rows.length) return toast(L('記録する行がありません。', '沒有要記錄的項目。'));
+    if (!rows.length) return toast(L('記録する行がありません。', '沒有要記錄的項目。', 'Tidak ada baris untuk dicatat.'));
     for (const r of rows) {
-      if (!(r.ml >= 1 && r.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。'));
-      if (!r.at || r.at > now + FUTURE_OK) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。'));
+      if (!(r.ml >= 1 && r.ml <= 300)) return toast(L('量は1〜300mLで入力してください。', '奶量請輸入1〜300mL。', 'Jumlah harus 1–300 mL.'));
+      if (!r.at || r.at > now + FUTURE_OK) return toast(L('時刻を確認してください（未来の時刻は記録できません）。', '請確認時間（無法記錄未來的時間）。', 'Periksa jamnya (waktu yang akan datang tidak bisa dicatat).'));
     }
     const ids = [];
     try {
@@ -2727,9 +2749,9 @@ The original language's field must be the note unchanged. Keep emoji, line break
       }
     } catch (e) { return toast(errMsg(e)); }
     S.form = null; renderForm();
-    toast(L(`${ids.length}件の授乳を記録しました`, `已記錄${ids.length}筆餵奶`), {
-      label: L('取り消す', '復原'),
-      fn: () => { ids.forEach(id => deleteLog(id)); toast(L('まとめて記録した分を取り消しました', '已取消這次補記的紀錄')); },
+    toast(L(`${ids.length}件の授乳を記録しました`, `已記錄${ids.length}筆餵奶`, `${ids.length} kali minum dicatat`), {
+      label: L('取り消す', '復原', 'Urungkan'),
+      fn: () => { ids.forEach(id => deleteLog(id)); toast(L('まとめて記録した分を取り消しました', '已取消這次補記的紀錄', 'Catatan sekaligus dibatalkan')); },
     });
   }
 
@@ -2747,13 +2769,13 @@ The original language's field must be the note unchanged. Keep emoji, line break
   }
   function startIphoneTimer(at) {
     const { min, early } = iphoneTimerMinutes(at);
-    if (min <= 0) return toast(L('次のミルクの時刻はもう過ぎています。', '下次餵奶時間已經過了。'));
-    if (!early && S.alarm.lead) toast(L(`${S.alarm.lead}分前はもう過ぎているので、予定時刻までの${min}分でセットします`, `已經過了預定前${S.alarm.lead}分鐘，改設定到預定時間的${min}分鐘`));
+    if (min <= 0) return toast(L('次のミルクの時刻はもう過ぎています。', '下次餵奶時間已經過了。', 'Jam susu berikutnya sudah lewat.'));
+    if (!early && S.alarm.lead) toast(L(`${S.alarm.lead}分前はもう過ぎているので、予定時刻までの${min}分でセットします`, `已經過了預定前${S.alarm.lead}分鐘，改設定到預定時間的${min}分鐘`, `${S.alarm.lead} menit sebelum jadwal sudah lewat, jadi timer dipasang ${min} menit sampai jadwal`));
     location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(SHORTCUT_NAME)}&input=text&text=${min}`;
   }
   function setIphoneTimer(id) {
     const n = nextAt(id);
-    if (!n) return toast(L('先に授乳を記録してください。次のミルクまでの時間でタイマーをセットします。', '請先記錄餵奶，才能依下次餵奶時間設定計時器。'));
+    if (!n) return toast(L('先に授乳を記録してください。次のミルクまでの時間でタイマーをセットします。', '請先記錄餵奶，才能依下次餵奶時間設定計時器。', 'Catat minum dulu. Timer akan dipasang sampai jadwal susu berikutnya.'));
     if (!lsGet('futago-shortcut-ready', false)) return openShortcutHelp(id);
     startIphoneTimer(n);
   }
@@ -2763,10 +2785,10 @@ The original language's field must be the note unchanged. Keep emoji, line break
   }
   function renderShortcutHelp() {
     const id = S.form.baby;
-    const copyBtn = `<button type="button" class="fix-last" data-act="copy-shortcut">${L('コピー', '複製')}</button>`;
-    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-label="${L('iPhone のタイマー連携', 'iPhone 計時器連動')}">
-      <div class="sheet-head"><h2>${L('iPhone のタイマー連携', 'iPhone 計時器連動')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
-      <p class="hint">${L('最初に1回だけ、iPhone の「ショートカット」アプリでタイマー用のショートカットを作ります（2分ほど）。', '第一次使用時，請在 iPhone 的「捷徑」App 建立一個計時器用的捷徑（約2分鐘）。')}</p>
+    const copyBtn = `<button type="button" class="fix-last" data-act="copy-shortcut">${L('コピー', '複製', 'Salin')}</button>`;
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet" role="dialog" aria-label="${L('iPhone のタイマー連携', 'iPhone 計時器連動', 'Hubungkan timer iPhone')}">
+      <div class="sheet-head"><h2>${L('iPhone のタイマー連携', 'iPhone 計時器連動', 'Hubungkan timer iPhone')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
+      <p class="hint">${L('最初に1回だけ、iPhone の「ショートカット」アプリでタイマー用のショートカットを作ります（2分ほど）。', '第一次使用時，請在 iPhone 的「捷徑」App 建立一個計時器用的捷徑（約2分鐘）。', 'Sekali di awal, buat pintasan timer di aplikasi "Pintasan" (Shortcuts) iPhone (sekitar 2 menit).')}</p>
       <ol class="steps">${L(`
         <li>「ショートカット」アプリを開き、右上の <b>＋</b> で新しいショートカットを作ります。</li>
         <li>名前を <code>${SHORTCUT_NAME}</code> ${copyBtn} にします（一字一句このとおりに）。</li>
@@ -2777,12 +2799,12 @@ The original language's field must be the note unchanged. Keep emoji, line break
         <li>把名稱設為 <code>${SHORTCUT_NAME}</code> ${copyBtn}（請完全照這樣輸入，可以點「複製」後貼上）。</li>
         <li>點「加入動作」，搜尋 <b>計時器</b>，加入 <b>「開始計時器」</b>。</li>
         <li>點「30 分鐘」的數字部分，選擇變數 <b>「捷徑輸入」</b>，單位保持 <b>分鐘</b>。</li>
-        <li>點右上角的「完成」儲存。</li>`)}
+        <li>點右上角的「完成」儲存。</li>`, `<li>Buka aplikasi Pintasan (Shortcuts), lalu buat pintasan baru dengan <b>+</b> di kanan atas.</li><li>Beri nama <code>${SHORTCUT_NAME}</code> ${copyBtn} (persis sama).</li><li>Di "Tambah Tindakan", cari <b>timer</b> lalu tambahkan <b>"Mulai Timer"</b>.</li><li>Ketuk angka "30 menit", pilih variabel <b>"Input Pintasan"</b>. Satuannya tetap <b>menit</b>.</li><li>Simpan dengan "Selesai" di kanan atas.</li>`)}
       </ol>
-      <p class="hint">${L('初回は「"ショートカット"で開きますか？」などの確認が出るので、「開く」「許可」を選んでください。ショートカットはご夫婦それぞれの iPhone で作る必要があります。', '第一次執行時會出現「要用"捷徑"打開嗎？」等確認，請選「打開」「允許」。兩個人的 iPhone 都需要各自建立這個捷徑。')}</p>
+      <p class="hint">${L('初回は「"ショートカット"で開きますか？」などの確認が出るので、「開く」「許可」を選んでください。ショートカットはご夫婦それぞれの iPhone で作る必要があります。', '第一次執行時會出現「要用"捷徑"打開嗎？」等確認，請選「打開」「允許」。兩個人的 iPhone 都需要各自建立這個捷徑。', 'Pertama kali akan muncul konfirmasi seperti "Buka di Pintasan?"; pilih "Buka"/"Izinkan". Pintasan perlu dibuat di setiap iPhone.')}</p>
       <div class="sheet-actions"><span class="spacer"></span>
-        <button type="button" class="btn ghost" data-act="close">${L('あとで', '稍後')}</button>
-        <button type="button" class="btn solid" data-act="shortcut-ready">${id ? L('作った・タイマーをセット', '建好了・設定計時器') : L('作った', '建好了')}</button>
+        <button type="button" class="btn ghost" data-act="close">${L('あとで', '稍後', 'Nanti')}</button>
+        <button type="button" class="btn solid" data-act="shortcut-ready">${id ? L('作った・タイマーをセット', '建好了・設定計時器', 'Sudah dibuat · pasang timer') : L('作った', '建好了', 'Sudah dibuat')}</button>
       </div>
     </div></div>`;
   }
@@ -2836,7 +2858,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
       if (d.act === 'delete-yes') {
         const e = S.expenses.find(x => x.id === S.form.editing);
         deleteDoc('expenses', S.form.editing); S.form = null; renderForm();
-        if (e) { const { id, ...prev } = e; toast(L(`「${e.name}」を削除しました`, `已刪除「${e.name}」`), { label: L('取り消す', '復原'), fn: () => saveDoc('expenses', id, prev) }); }
+        if (e) { const { id, ...prev } = e; toast(L(`「${e.name}」を削除しました`, `已刪除「${e.name}」`, `"${e.name}" dihapus`), { label: L('取り消す', '復原', 'Urungkan'), fn: () => saveDoc('expenses', id, prev) }); }
         return;
       }
     }
@@ -2850,7 +2872,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     }
     if (d.rxopen) { S.rxOpen = S.rxOpen === d.rxopen ? null : d.rxopen; return renderNote(); }
     if (d.rx) { const i = d.rx.indexOf('|'); return toggleRx(d.rx.slice(0, i), d.rx.slice(i + 1)); }
-    if (d.orig) { S.showOrig[d.orig] = !S.showOrig[d.orig]; return renderNote(); }
+    if (d.mview) { const i = d.mview.indexOf('|'); S.memoView[d.mview.slice(0, i)] = d.mview.slice(i + 1); return renderNote(); }
     // calendar
     if (d.cald) { S.form.sel = Number(d.cald); return renderCal(); }
     if (d.calm) { S.form.month = monthStart(S.form.month, Number(d.calm)); return renderCal(); }
@@ -2883,7 +2905,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
       case 'memo-del-yes': {
         const m = S.memos.find(x => x.id === S.memoEdit);
         S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false;
-        if (m) { const { id, ...prev } = m; deleteDoc('memos', id); toast(L('メモを削除しました', '已刪除筆記'), { label: L('取り消す', '復原'), fn: () => saveDoc('memos', id, prev) }); }
+        if (m) { const { id, ...prev } = m; deleteDoc('memos', id); toast(L('メモを削除しました', '已刪除筆記', 'Memo dihapus'), { label: L('取り消す', '復原', 'Urungkan'), fn: () => saveDoc('memos', id, prev) }); }
         return renderNote(true);
       }
       case 'cost-add': return openCost(null);
@@ -2945,10 +2967,10 @@ The original language's field must be the note unchanged. Keep emoji, line break
       case 'alarm-toggle':
         // Turning on is one tap; turning off goes through 設定 so a sleepy tap can't silence it.
         if (S.alarm.active) return openSettings();
-        alarmOn(true); toast(L('アラームをオンにしました。この画面を開いたままにしてください', '已開啟提醒。請保持此畫面開啟')); return;
+        alarmOn(true); toast(L('アラームをオンにしました。この画面を開いたままにしてください', '已開啟提醒。請保持此畫面開啟', 'Alarm diaktifkan. Biarkan layar ini tetap terbuka')); return;
       case 'copy-shortcut':
         try {
-          navigator.clipboard.writeText(SHORTCUT_NAME).then(() => toast(L('コピーしました', '已複製')), () => toast(SHORTCUT_NAME));
+          navigator.clipboard.writeText(SHORTCUT_NAME).then(() => toast(L('コピーしました', '已複製', 'Disalin')), () => toast(SHORTCUT_NAME));
         } catch { toast(SHORTCUT_NAME); }
         return;
       case 'alarm-off': return alarmOff();
@@ -2972,7 +2994,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
       case 'birth': return openBirth();
       case 'photo-remove': {
         const id = S.form.baby; saveBaby(id, { photo: null });
-        S.form = null; renderForm(); toast(L('写真を外しました', '已移除照片')); return;
+        S.form = null; renderForm(); toast(L('写真を外しました', '已移除照片', 'Foto dihapus')); return;
       }
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
@@ -2981,7 +3003,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
       case 'delete-no': readForm(); S.form.confirmDelete = false; return renderForm();
       case 'delete-yes': {
         const id = S.form.editing;
-        deleteLog(id).then(() => { S.form = null; renderForm(); toast(L('記録を削除しました', '已刪除紀錄')); }).catch(err => toast(errMsg(err)));
+        deleteLog(id).then(() => { S.form = null; renderForm(); toast(L('記録を削除しました', '已刪除紀錄', 'Catatan dihapus')); }).catch(err => toast(errMsg(err)));
         return;
       }
     }

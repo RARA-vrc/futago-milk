@@ -69,9 +69,10 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
 <div class="page">
   <div class="bar">
     <a href="./" id="back">← アプリに戻る</a>
-    <div class="seg" role="group" aria-label="言語 / 語言">
+    <div class="seg" role="group" aria-label="言語 / 語言 / Bahasa">
       <button type="button" data-lang="ja" aria-pressed="true">日本語</button>
       <button type="button" data-lang="zh" aria-pressed="false">繁體中文</button>
+      <button type="button" data-lang="id" aria-pressed="false">Bahasa Indonesia</button>
     </div>
   </div>
 
@@ -496,6 +497,115 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     </ul>
     <p class="foot">雙胞胎餵奶紀錄 ・ 餵奶間隔與奶量請依醫師或助產師的指示設定。</p>
   </article>
+
+  <!-- ===================== Bahasa Indonesia ===================== -->
+  <article data-lang-block="id" hidden>
+    <h1>Cara pakai Catatan Susu Si Kembar</h1>
+    <p class="lead">Aplikasi untuk mencatat minum susu, pipis, BAB, dan berat badan si kembar, serta mengingatkan jadwal minum berikutnya. Catatan dibagikan ke akun Google yang terdaftar.</p>
+
+    <nav class="toc" aria-label="Daftar isi"><ol>
+      <li><a href="#id-screens">Tampilan</a></li>
+      <li><a href="#id-milk">Mencatat minum susu</a></li>
+      <li><a href="#id-other">Pipis, BAB, berat, suhu</a></li>
+      <li><a href="#id-batch">Catat sekaligus belakangan</a></li>
+      <li><a href="#id-fix">Mengubah atau menghapus catatan</a></li>
+      <li><a href="#id-next">Jadwal berikutnya dan alarm</a></li>
+      <li><a href="#id-plan">Jadwal</a></li>
+      <li><a href="#id-trend">Grafik</a></li>
+      <li><a href="#id-cal">Kalender</a></li>
+      <li><a href="#id-note">Memo dan pengeluaran</a></li>
+      <li><a href="#id-settings">Pengaturan dan bahasa</a></li>
+      <li><a href="#id-trouble">Jika ada masalah</a></li>
+    </ol></nav>
+
+    <h2 id="id-screens">Tampilan</h2>
+    <p>Ganti tampilan dengan 5 tab di bawah layar (di komputer: di atas).</p>
+    <div class="tw"><table>
+      <tr><th>Tab</th><th>Isi</th></tr>
+      <tr><td><span class="ui">Kini</span></td><td>Jadwal minum berikutnya, minum terakhir, dan total hari ini untuk Kakak dan Adik. Mencatat dimulai dari sini.</td></tr>
+      <tr><td><span class="ui">Jadwal</span></td><td>Jadwal minum keduanya berdampingan. Bisa juga menghitung dari jam minum tertentu.</td></tr>
+      <tr><td><span class="ui">Catatan</span></td><td>Semua catatan per hari. Ketuk untuk mengubah atau menghapus.</td></tr>
+      <tr><td><span class="ui">Grafik</span></td><td>Jumlah susu, pipis, dan BAB per hari/bulan, serta berat badan dan pertumbuhan.</td></tr>
+      <tr><td><span class="ui">Memo</span></td><td>Memo harian (Today's Special Memo) dan pengeluaran (susu, popok, pakaian, dll.).</td></tr>
+    </table></div>
+    <p><span class="ui">Alarm</span> di kanan atas menyalakan/mematikan alarm; <span class="ui">Pengaturan</span> untuk pengaturan lain, termasuk bahasa.</p>
+
+    <h2 id="id-milk">Mencatat minum susu</h2>
+    <ol>
+      <li>Di tab <span class="ui">Kini</span>, tekan <span class="ui">Catat minum susu</span> pada kartu Kakak atau Adik.</li>
+      <li>Pilih <b>jenis</b>: Susu formula / ASI perah / ASI langsung.</li>
+      <li>Pilih <b>jumlah</b> dari daftar per 10 mL (dimulai dari jumlah terakhir anak itu), atau pakai <span class="ui">−10</span> <span class="ui">+10</span>. Untuk ASI langsung, isi lamanya (menit).</li>
+      <li>Pilih <b>jam</b> dengan <span class="ui">−1 jam</span> <span class="ui">+1 jam</span> dan <span class="ui">:00</span> <span class="ui">:15</span> <span class="ui">:30</span> <span class="ui">:45</span>. <span class="ui">Kini</span> = 15 menit terdekat dari sekarang.</li>
+      <li>Tekan <span class="ui">Simpan</span>. Jadwal minum berikutnya dihitung otomatis.</li>
+    </ol>
+    <p>Setelah menyimpan, tombol <span class="ui">Urungkan</span> muncul di bawah sekitar 8 detik untuk membatalkan jika salah.</p>
+
+    <h2 id="id-other">Pipis, BAB, berat, suhu</h2>
+    <ul>
+      <li><b>Pipis</b>: pilih jam lalu simpan.</li>
+      <li><b>BAB</b>: pilih warna dan jumlah. Centang "Catat pipis sekaligus" untuk mencatat pipis juga.</li>
+      <li><b>Suhu</b>: atur dengan <span class="ui">−0.1</span> <span class="ui">+0.1</span>, pilih kondisi yang sesuai (pilek, batuk, muntah, dll.).</li>
+      <li><b>Berat badan</b>: isi dalam gram.</li>
+    </ul>
+    <p class="note">Jika BAB berwarna putih/krem, atau bayi di bawah 3 bulan demam 38℃ ke atas, segera beri tahu Mama/Papa dan hubungi dokter anak.</p>
+
+    <h2 id="id-batch">Catat sekaligus belakangan</h2>
+    <p>Tekan <span class="ui">Catat sekaligus belakangan</span> untuk mencatat beberapa kali minum yang terlewat (misalnya malam hari). Jadwal dari catatan terakhir sampai sekarang sudah diisi; sesuaikan jam dan jumlahnya, lalu hapus centang baris yang tidak diminum.</p>
+
+    <h2 id="id-fix">Mengubah atau menghapus catatan</h2>
+    <p>Di tab <span class="ui">Catatan</span>, ketuk baris yang ingin diubah. Ubah isinya lalu <span class="ui">Simpan</span>, atau tekan <span class="ui">Hapus</span>.</p>
+
+    <h2 id="id-next">Jadwal berikutnya dan alarm</h2>
+    <ul>
+      <li>Kartu di tab <span class="ui">Kini</span> menampilkan jam minum berikutnya dan sisa waktunya (minum terakhir + jeda masing-masing anak).</li>
+      <li>Jika <span class="ui">Alarm</span> aktif, akan ada bunyi dan getar saat jadwal tiba. Alarm hanya berbunyi selama layar aplikasi terbuka.</li>
+    </ul>
+
+    <h2 id="id-plan">Jadwal</h2>
+    <p>Tab <span class="ui">Jadwal</span> menampilkan minum 12 jam terakhir dan jadwal 24 jam ke depan untuk keduanya. Dengan "Hitung dari jam minum tertentu", Anda bisa melihat jadwal jika minum pada jam tertentu (tidak dicatat).</p>
+
+    <h2 id="id-trend">Grafik</h2>
+    <ul>
+      <li>Pilih <span class="ui">Kakak</span> / <span class="ui">Adik</span> / <span class="ui">Berdua</span> di bagian atas.</li>
+      <li>Pada tampilan harian per anak, satu batang = total sehari, dibagi per kali minum. Geser ke samping untuk hari sebelumnya; ketuk batang untuk melihat rinciannya.</li>
+      <li>Di bawahnya ada grafik berat, tinggi, dan lingkar kepala dibandingkan kurva pertumbuhan.</li>
+    </ul>
+
+    <h2 id="id-cal">Kalender</h2>
+    <ul>
+      <li>Tekan <span class="ui">📅 Lihat lewat kalender</span> di tab <span class="ui">Catatan</span>, atau tanggal di memo.</li>
+      <li>Hari yang ada memonya diberi titik berwarna. Ketuk tanggal untuk melihat total hari itu dan memonya.</li>
+      <li><span class="ui">Lihat catatan hari itu</span> menampilkan hanya hari itu di tab Catatan; <span class="ui">Kembali ke terbaru</span> untuk kembali.</li>
+    </ul>
+
+    <h2 id="id-note">Memo dan pengeluaran</h2>
+    <h3>Today's Special Memo</h3>
+    <ol>
+      <li>Pilih siapa yang menulis: <span class="ui">Kakak</span> <span class="ui">Adik</span> <span class="ui">Mama</span> <span class="ui">Papa</span>.</li>
+      <li>Tulis bebas, lalu tekan <span class="ui">Tempel memo</span>.</li>
+      <li>Memo <b>diterjemahkan otomatis</b> (Jepang, Mandarin Taiwan, Indonesia) dengan Gemini dari Google. Di bawah memo ada tombol 🌐 untuk melihat bahasa asli atau bahasa lain.</li>
+      <li>Ketuk <span class="ui">☺︎＋</span> untuk memberi reaksi emoji. Ketuk lagi untuk membatalkan.</li>
+    </ol>
+    <h3>Pengeluaran</h3>
+    <ul>
+      <li>Atas: total pengeluaran bulan ini dan rincian per kategori.</li>
+      <li><span class="ui">+ Tambah</span>: pilih status (sudah beli / akan beli), kategori, nama barang, harga (yen), jumlah, tanggal beli.</li>
+      <li><span class="ui">Daftar belanja</span>: catat barang yang dibutuhkan; setelah dibeli tekan <span class="ui">✓</span>.</li>
+    </ul>
+
+    <h2 id="id-settings">Pengaturan dan bahasa</h2>
+    <ul>
+      <li>Bahasa dipilih per perangkat di <span class="ui">Pengaturan</span>: 日本語 / 繁體中文 / Bahasa Indonesia.</li>
+      <li>Jeda minum dan takaran sebaiknya hanya diubah oleh Mama/Papa sesuai anjuran dokter/bidan.</li>
+    </ul>
+
+    <h2 id="id-trouble">Jika ada masalah</h2>
+    <ul>
+      <li><b>"Akun ini tidak punya akses"</b>: akun Google Anda belum didaftarkan. Minta Mama/Papa untuk menambahkannya.</li>
+      <li><b>Alarm tidak berbunyi</b>: pastikan "Alarm aktif" di kanan atas, layar tetap terbuka, dan mode senyap ponsel mati.</li>
+    </ul>
+    <p class="foot">Catatan Susu Si Kembar ・ Jeda dan takaran minum mengikuti anjuran dokter atau bidan.</p>
+  </article>
 </div>
 
 <script>
@@ -503,14 +613,14 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
   // Shares the app's per-device language choice (same origin, same localStorage key).
   const get = () => { try { return JSON.parse(localStorage.getItem('futago-lang')); } catch { return null; } };
   const set = v => { try { localStorage.setItem('futago-lang', JSON.stringify(v)); } catch {} };
-  let lang = ['ja', 'zh'].includes(get()) ? get() : (/^zh/i.test(navigator.language || '') ? 'zh' : 'ja');
-  if (location.hash === '#zh' || location.hash === '#ja') lang = location.hash.slice(1);
+  let lang = ['ja', 'zh', 'id'].includes(get()) ? get() : (/^zh/i.test(navigator.language || '') ? 'zh' : /^(id|ms)/i.test(navigator.language || '') ? 'id' : 'ja');
+  if (['#zh', '#ja', '#id'].includes(location.hash)) lang = location.hash.slice(1);
   function apply() {
-    document.documentElement.lang = lang === 'zh' ? 'zh-Hant-TW' : 'ja';
-    document.title = lang === 'zh' ? '雙胞胎餵奶紀錄 使用說明' : 'ふたごミルク帳の使い方';
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant-TW' : lang;
+    document.title = { zh: '雙胞胎餵奶紀錄 使用說明', id: 'Cara pakai Catatan Susu Si Kembar' }[lang] || 'ふたごミルク帳の使い方';
     document.querySelectorAll('[data-lang-block]').forEach(el => { el.hidden = el.dataset.langBlock !== lang; });
     document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
-    document.getElementById('back').textContent = lang === 'zh' ? '← 回到 App' : '← アプリに戻る';
+    document.getElementById('back').textContent = { zh: '← 回到 App', id: '← Kembali ke aplikasi' }[lang] || '← アプリに戻る';
   }
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-lang]'); if (!b) return;
