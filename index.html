@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>ふたごミルク帳</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#F2F4F7" media="(prefers-color-scheme: light)">
@@ -62,6 +62,10 @@ body { margin: 0; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
+/* This is an app, not a document: quick repeated taps (time buttons, ±10) must never zoom the page.
+   touch-action stops iOS double-tap zoom; 16px+ fields stop Safari's zoom-on-focus. */
+html, body, button, a, input, select, label { touch-action: manipulation; }
+input, select, textarea { font-size: max(16px, 1em); }
 :focus-visible { outline: 3px solid color-mix(in srgb, var(--imo) 60%, transparent); outline-offset: 2px; }
 .num { font-variant-numeric: tabular-nums; }
 
