@@ -214,6 +214,8 @@ input, select, textarea { font-size: max(16px, 1em); }
 .wrow .down { color: var(--danger); font-weight: 700; }
 .foot { color: var(--muted); font-size: .8rem; text-align: center; }
 .foot p { margin: 2px 0; }
+.foot .recaptcha-note { font-size: .68rem; opacity: .8; margin-top: 8px; }
+.foot .recaptcha-note a { color: inherit; }
 
 /* sheet (record form) */
 .overlay { position: fixed; inset: 0; background: var(--scrim); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
@@ -443,6 +445,8 @@ input, select, textarea { font-size: max(16px, 1em); }
 .chips.small button { min-height: 32px; padding: 0 10px; font-size: .8rem; }
 .cat-chips button i, .cost-presets button i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
 .sheet.fixed { height: 88vh; height: 88dvh; }
+/* App Check's reCAPTCHA badge would sit on the tab bar; the required notice is in the footer instead. */
+.grecaptcha-badge { visibility: hidden; }
 .stepper.qty { grid-template-columns: 44px 1fr 44px; gap: 6px; }
 .stepper.qty input { font-size: 1.2rem !important; }
 .cost-head { display: flex; flex-direction: column; gap: 12px; }
@@ -710,6 +714,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     <p><a class="linklike" href="help.html" data-zh="使用說明">使い方（仕様解説）</a></p>
     <p id="mode-note">読み込み中…</p>
     <p id="account" hidden></p>
+    <p class="recaptcha-note">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" rel="noopener">Terms of Service</a> apply.</p>
   </footer>
 </div>
 

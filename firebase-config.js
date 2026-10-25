@@ -13,3 +13,6 @@ window.FIREBASE_CONFIG = {
   messagingSenderId: "976185106234",
   appId: "1:976185106234:web:c4f07ba1e1ccfab2d8fa03"
 };
+
+// メモ翻訳（Firebase AI Logic）用の App Check：reCAPTCHA v3 のサイトキー（公開用。秘密鍵は Firebase 側だけに登録）。
+window.APPCHECK_SITE_KEY = "6LdmiQAuAAAAAJBXcb7NfWGS_cv-nhqmz7mRXvbp";
