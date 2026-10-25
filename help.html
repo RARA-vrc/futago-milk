@@ -93,19 +93,21 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li><a href="#ja-trend">推移（グラフ）</a></li>
       <li><a href="#ja-growth">出生時の記録・成長曲線・発達の目安</a></li>
       <li><a href="#ja-photo">アイコンの写真</a></li>
+      <li><a href="#ja-note">ノート（今日のメモ・費用）</a></li>
       <li><a href="#ja-settings">設定</a></li>
       <li><a href="#ja-data">データと共有</a></li>
       <li><a href="#ja-trouble">困ったとき</a></li>
     </ol></nav>
 
     <h2 id="ja-screens">画面の構成</h2>
-    <p>画面下（パソコンでは上）の4つのタブで切り替えます。</p>
+    <p>画面下（パソコンでは上）の5つのタブで切り替えます。</p>
     <div class="tw"><table>
       <tr><th>タブ</th><th>できること</th></tr>
       <tr><td><span class="ui">いま</span></td><td>姉・妹それぞれの次の授乳時刻、前回の授乳、今日の合計。ここから記録します。</td></tr>
       <tr><td><span class="ui">時刻表</span></td><td>ふたりの授乳時刻を左右に並べた一覧。仮の時刻での計算もできます。</td></tr>
       <tr><td><span class="ui">記録</span></td><td>すべての記録を日ごとに一覧。タップで修正・削除。</td></tr>
       <tr><td><span class="ui">推移</span></td><td>ミルク量・おしっこ・うんちの日ごと／月ごとのグラフと、体重・身長・頭囲の推移。</td></tr>
+      <tr><td><span class="ui">ノート</span></td><td>その日のメモ（Today's Special Memo）と、ミルク・オムツ・衣類などの費用。</td></tr>
     </table></div>
     <p>右上の <span class="ui">アラーム</span> はアラームのオン・オフ、<span class="ui">設定</span> は各種設定です。</p>
 
@@ -230,6 +232,23 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li>写真は小さく切り抜いてから、記録と同じデータベースに保存されます。見られるのは登録したふたりだけで、GitHub（アプリの公開コード）には置かれません。</li>
     </ul>
 
+    <h2 id="ja-note">ノート（今日のメモ・費用）</h2>
+    <p><span class="ui">ノート</span> タブの上で <span class="ui">今日のメモ</span> と <span class="ui">費用</span> を切り替えます。</p>
+    <h3>Today's Special Memo</h3>
+    <ol>
+      <li><span class="ui">姉</span> <span class="ui">妹</span> <span class="ui">ママ</span> <span class="ui">パパ</span> から、だれのメモかを選びます（この端末で最後に選んだ人を覚えます）。</li>
+      <li>ノートに自由に書いて <span class="ui">メモを貼る</span>。その日のページに、書いた人の色の付せんとして並びます。</li>
+      <li><span class="ui">‹</span> <span class="ui">›</span> で前後の日へ。前の日を開いて書けば、その日のメモになります。下の「メモのある日」から、書いた日にすぐ移れます。</li>
+      <li>付せんの <span class="ui">書き直す・削除</span> で、上のノートに戻して直したり、削除したりできます。</li>
+    </ol>
+    <h3>費用</h3>
+    <ul>
+      <li>上に、その月にかかった費用の合計とカテゴリ別の内訳（ミルク・オムツ・おしりふき・衣類・授乳用品・お風呂・ケア・医療・薬・ベビー用品・おもちゃ・その他）が出ます。<span class="ui">‹</span> <span class="ui">›</span> で月を切り替えます。</li>
+      <li><span class="ui">＋ 追加</span>：状態（<b>買った</b>／<b>買う予定</b>）、カテゴリ、品名、1つあたりの金額（円）、数量、買った日を入れます。品名はよく使う候補から選べ、前に買ったことのある品名は前回の金額が入ります。</li>
+      <li><span class="ui">買うものリスト</span>：必要なものを並べておけます。下の「よく使うものから追加」で定番品をすぐ足せます。買ったら <span class="ui">✓</span> を押すと、その日の「買ったもの」に移ります（金額が未定のときは入力画面が開きます）。</li>
+      <li>行をタップすると修正・削除できます。</li>
+    </ul>
+
     <h2 id="ja-settings">設定</h2>
     <div class="tw"><table>
       <tr><th>項目</th><th>内容</th><th>保存先</th></tr>
@@ -276,19 +295,21 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li><a href="#zh-trend">趨勢（圖表）</a></li>
       <li><a href="#zh-growth">出生紀錄・生長曲線・發展參考</a></li>
       <li><a href="#zh-photo">頭像照片</a></li>
+      <li><a href="#zh-note">筆記（今日筆記・費用）</a></li>
       <li><a href="#zh-settings">設定</a></li>
       <li><a href="#zh-data">資料與共享</a></li>
       <li><a href="#zh-trouble">疑難排解</a></li>
     </ol></nav>
 
     <h2 id="zh-screens">畫面說明</h2>
-    <p>用畫面下方（電腦版在上方）的4個分頁切換。</p>
+    <p>用畫面下方（電腦版在上方）的5個分頁切換。</p>
     <div class="tw"><table>
       <tr><th>分頁</th><th>功能</th></tr>
       <tr><td><span class="ui">現在</span></td><td>姊姊、妹妹各自的下次餵奶時間、上次餵奶、今天的合計。從這裡記錄。</td></tr>
       <tr><td><span class="ui">時刻表</span></td><td>左右並排顯示兩人的餵奶時間，也可以用假設的時間來計算。</td></tr>
       <tr><td><span class="ui">紀錄</span></td><td>依日期列出所有紀錄，點一下可以修改或刪除。</td></tr>
       <tr><td><span class="ui">趨勢</span></td><td>奶量、尿尿、便便的每日／每月圖表，以及體重・身長・頭圍的變化。</td></tr>
+      <tr><td><span class="ui">筆記</span></td><td>當天的筆記（Today's Special Memo），以及奶粉、尿布、衣物等費用。</td></tr>
     </table></div>
     <p>右上角的 <span class="ui">提醒</span> 用來開關提醒，<span class="ui">設定</span> 是各種設定。</p>
 
@@ -411,6 +432,23 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
       <li>點 <span class="ui">現在</span> 分頁卡片上的圓形頭像，或從 <span class="ui">設定</span> → <span class="ui">頭像照片</span> 選擇照片。</li>
       <li>調整放大與位置後儲存。點 <span class="ui">移除照片</span> 會恢復成文字頭像。</li>
       <li>照片會縮小裁切後，存在與紀錄相同的資料庫。只有登記的兩人能看到，不會放到 GitHub（App 的公開程式碼）。</li>
+    </ul>
+
+    <h2 id="zh-note">筆記（今日筆記・費用）</h2>
+    <p>在 <span class="ui">筆記</span> 分頁上方切換 <span class="ui">今日筆記</span> 和 <span class="ui">費用</span>。</p>
+    <h3>Today's Special Memo</h3>
+    <ol>
+      <li>從 <span class="ui">姊姊</span> <span class="ui">妹妹</span> <span class="ui">媽媽</span> <span class="ui">爸爸</span> 選擇是誰的筆記（會記住此裝置最後選的人）。</li>
+      <li>在筆記本上自由書寫，點 <span class="ui">貼上筆記</span>。會以書寫者顏色的便條紙貼在當天的頁面上。</li>
+      <li>用 <span class="ui">‹</span> <span class="ui">›</span> 切換前後一天。打開之前的日子書寫，就會成為那天的筆記。也可以從下方「有筆記的日子」直接跳到那天。</li>
+      <li>點便條紙上的 <span class="ui">修改・刪除</span>，可以回到上方筆記本修改或刪除。</li>
+    </ol>
+    <h3>費用</h3>
+    <ul>
+      <li>上方顯示該月的花費合計，以及各類別的比例（奶粉・尿布・濕紙巾・衣物・哺乳用品・洗澡・護理・醫療・藥品・嬰兒用品・玩具・其他）。用 <span class="ui">‹</span> <span class="ui">›</span> 切換月份。</li>
+      <li><span class="ui">＋ 新增</span>：輸入狀態（<b>已購買</b>／<b>待買</b>）、類別、品名、單價（日圓）、數量、購買日期。品名可以從常用候選中選擇，以前買過的品名會自動帶入上次的金額。</li>
+      <li><span class="ui">待買清單</span>：可以先列出需要的東西。用下方「從常用品新增」可以快速加入常見用品。買了之後按 <span class="ui">✓</span>，就會移到當天的「已購買」（金額未定時會打開輸入畫面）。</li>
+      <li>點一列可以修改或刪除。</li>
     </ul>
 
     <h2 id="zh-settings">設定</h2>

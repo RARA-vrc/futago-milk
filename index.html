@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="ミルク帳">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+TC:wght@400;700&family=Klee+One:wght@600&family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
 <style>
 /* Layout: two side-by-side baby cards (stacked on phones) → timeline → weight chart. Large tap targets for night use. */
 :root {
@@ -92,7 +92,7 @@ input, select, textarea { font-size: max(16px, 1em); }
 .pill.on { border-color: color-mix(in srgb, var(--imo) 45%, transparent); background: var(--imo-soft); color: var(--imo); }
 
 /* tabs: a bottom bar on phones, a segmented row on wide screens */
-.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
 .tabs button { border: none; background: transparent; color: var(--muted); font-family: var(--f-display); font-weight: 700; font-size: .95rem; min-height: 44px; border-radius: 10px; }
 .tabs button[aria-current="page"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 @media (min-width: 760px) {
@@ -336,6 +336,94 @@ input, select, textarea { font-size: max(16px, 1em); }
 .fc-bar b { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 3px; font-family: var(--f-display); font-size: .74rem; color: var(--ink); white-space: nowrap; }
 .fc-day small { font-size: .68rem; line-height: 1.25; text-align: center; }
 .fc-day.sel small { color: var(--ink); font-weight: 700; }
+
+/* ノート: Today's Special Memo on lined notepaper (one colour per writer), and the expense book */
+:root { --mama: #CF6B2E; --papa: #4467C4; --paper: #FFFCF2; --paper-line: #EADFC8; --hand: "Klee One", "Zen Maru Gothic", cursive; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --mama: #F2A06B; --papa: #93AAF0; --paper: #24211C; --paper-line: #3A342A; }
+}
+:root[data-theme="dark"] { --mama: #F2A06B; --papa: #93AAF0; --paper: #24211C; --paper-line: #3A342A; }
+:root[lang^="zh"] { --hand: "LXGW WenKai TC", "Noto Sans TC", cursive; }
+.w-ane { --mc: var(--ane); --c: var(--ane); }
+.w-imouto { --mc: var(--imo); --c: var(--imo); }
+.w-mama { --mc: var(--mama); --c: var(--mama); }
+.w-papa { --mc: var(--papa); --c: var(--papa); }
+.memo-book { display: flex; flex-direction: column; gap: 16px; }
+.memo-title { text-align: center; }
+.memo-title h3 { display: inline; margin: 0 6px; font-family: var(--hand); font-size: 1.5rem; padding: 0 4px; background: linear-gradient(transparent 60%, color-mix(in srgb, var(--mama) 26%, transparent) 60%); }
+.memo-star { color: var(--mama); font-size: .95rem; }
+.memo-star.b { color: var(--papa); }
+.memo-title p { margin: 6px 0 0; font-size: .8rem; color: var(--muted); }
+.memo-daynav { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.memo-daynav b { font-family: var(--f-display); min-width: 9.5em; text-align: center; }
+.memo-daynav .icon-btn { min-width: 44px; font-size: 1.15rem; line-height: 1; }
+.memo-daynav .icon-btn[data-mday="today"] { font-size: .85rem; min-width: 0; }
+.memo-daynav .icon-btn[disabled] { opacity: .3; cursor: default; }
+.paper { position: relative; background: var(--paper); border-radius: 6px 6px 16px 16px; border-top: 5px solid var(--mc); padding: 22px 14px 12px; box-shadow: 0 1px 0 var(--line), 0 8px 18px rgba(0,0,0,.08); }
+.paper:focus-within { box-shadow: 0 0 0 2px color-mix(in srgb, var(--mc) 45%, transparent), 0 8px 18px rgba(0,0,0,.08); }
+.tape { position: absolute; top: -12px; left: 50%; width: 92px; height: 24px; transform: translateX(-50%) rotate(-3deg); background: color-mix(in srgb, var(--mc) 32%, transparent); border-inline: 2px dotted rgba(255,255,255,.55); pointer-events: none; }
+.memo-who { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+.memo-who button { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1.5px dashed var(--line); background: transparent; border-radius: 14px; padding: 6px 2px 4px; font-family: var(--hand); font-size: .9rem; color: var(--muted); min-width: 0; }
+.memo-who button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.memo-who .avatar { margin: 0; width: 32px; height: 32px; border: 2px solid var(--c); }
+.memo-who button[aria-pressed="true"] { border-style: solid; border-color: var(--c); color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); font-weight: 600; }
+#memo-text { display: block; width: 100%; min-height: 150px; resize: vertical; border: none; outline: none; color: var(--ink); font-family: var(--hand); font-size: 17px; line-height: 30px; padding: 0 4px 0 36px;
+  background: linear-gradient(to right, transparent 26px, color-mix(in srgb, var(--mc) 40%, transparent) 26px 27px, transparent 27px),
+    repeating-linear-gradient(to bottom, transparent 0 29px, var(--paper-line) 29px 30px);
+  background-attachment: local; }
+#memo-text::placeholder { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+.memo-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.memo-actions .spacer { flex: 1; }
+.memo-save { background: var(--mc); border-color: var(--mc); color: var(--surface); border-radius: 99px; font-family: var(--hand); font-size: 1rem; padding: 0 22px; }
+.memo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 26px 16px; padding-top: 12px; }
+.memo-note { position: relative; background: var(--paper); border-left: 5px solid var(--mc); border-radius: 4px 4px 14px 4px; padding: 20px 14px 6px 14px; box-shadow: 0 1px 0 var(--line), 0 8px 16px rgba(0,0,0,.09); }
+.memo-note.t0 { transform: rotate(-1.1deg); } .memo-note.t1 { transform: rotate(.8deg); } .memo-note.t2 { transform: rotate(-.4deg); }
+.memo-note .tape { width: 70px; height: 20px; top: -10px; transform: translateX(-50%) rotate(2deg); }
+.memo-note.t1 .tape { transform: translateX(-50%) rotate(-4deg); }
+.memo-note.editing { outline: 2px dashed var(--mc); outline-offset: 4px; }
+.memo-note header { display: flex; align-items: center; gap: 2px; font-family: var(--hand); }
+.memo-note header b { color: var(--mc); font-size: 1.02rem; }
+.memo-note header .avatar { border: 2px solid var(--mc); }
+.memo-note time { margin-left: auto; font-size: .78rem; color: var(--muted); font-family: var(--f-body); }
+.memo-note p { margin: 8px 0 0; font-family: var(--hand); font-size: 1.04rem; line-height: 28px; white-space: pre-wrap; overflow-wrap: anywhere;
+  background: repeating-linear-gradient(to bottom, transparent 0 27px, var(--paper-line) 27px 28px); }
+.memo-edit { display: block; margin: 2px 0 0 auto; border: none; background: transparent; color: var(--muted); font-size: .76rem; text-decoration: underline; min-height: 34px; padding: 0 2px; }
+.memo-empty { text-align: center; color: var(--muted); font-family: var(--hand); font-size: 1rem; margin: 4px 0; }
+.memo-days, .cost-presets { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.memo-days .lbl, .cost-presets .lbl { font-size: .8rem; color: var(--muted); font-weight: 700; }
+.memo-days .chips button small { margin-left: 5px; font-size: .72rem; opacity: .7; }
+.field input[type="date"] { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; min-height: 46px; padding: 0 12px; width: 100%; min-width: 0; }
+.chips.small button { min-height: 32px; padding: 0 10px; font-size: .8rem; }
+.cat-chips button i, .cost-presets button i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.stepper.qty { grid-template-columns: 44px 1fr 44px; gap: 6px; }
+.stepper.qty input { font-size: 1.2rem !important; }
+.cost-head { display: flex; flex-direction: column; gap: 12px; }
+.cost-total { display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+.cost-total span { font-size: .8rem; color: var(--muted); font-weight: 700; }
+.cost-total b { font-family: var(--f-display); font-size: 2.1rem; margin: 2px 0; }
+.cost-total small { color: var(--muted); font-size: .78rem; }
+.cost-bar { display: flex; gap: 2px; height: 14px; border-radius: 99px; overflow: hidden; background: var(--surface-2); }
+.cost-bar i { min-width: 4px; }
+.cost-cats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+.cost-cats li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 2.6em; align-items: center; gap: 6px; font-size: .85rem; }
+.cost-cats li i { width: 10px; height: 10px; border-radius: 3px; }
+.cost-cats li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cost-cats li small { color: var(--muted); font-size: .72rem; text-align: right; }
+@media (max-width: 480px) { .cost-cats { grid-template-columns: 1fr; } }
+.cost-tools { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin: 18px 0 8px; }
+.cost-tools .seg small { margin-left: 4px; font-size: .72rem; opacity: .7; }
+.cost-day h4 { display: flex; justify-content: space-between; margin: 14px 0 6px; font-size: .82rem; color: var(--muted); }
+.cost-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.cost-list li { display: flex; gap: 6px; }
+.cost-row { flex: 1; min-width: 0; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 8px 12px; min-height: 54px; }
+.cost-row .dot { width: 10px; height: 10px; border-radius: 50%; }
+.cost-row .cn { min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+.cost-row .cn b, .cost-row .cn small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cost-row .cn small { color: var(--muted); font-size: .75rem; }
+.cost-row .ca { font-family: var(--f-display); font-size: 1.02rem; }
+.cost-row .ca.unset { font-family: var(--f-body); color: var(--muted); font-size: .78rem; }
+.cost-check { flex: none; width: 54px; border: 1.5px dashed color-mix(in srgb, var(--imo) 55%, transparent); background: transparent; border-radius: 12px; font-size: 1.25rem; font-weight: 700; color: var(--imo); }
+.cost-sum { text-align: right; font-size: .85rem; color: var(--muted); margin: 8px 2px 0; }
 .tday { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
 .tday-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: .85rem; }
 .tday-head b { font-family: var(--f-display); }
@@ -497,6 +585,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     <button type="button" data-tab="plan" data-zh="時刻表">時刻表</button>
     <button type="button" data-tab="log" data-zh="紀錄">記録</button>
     <button type="button" data-tab="weight" data-zh="趨勢">推移</button>
+    <button type="button" data-tab="note" data-zh="筆記">ノート</button>
   </nav>
 
   <section class="babies view" data-view="now" id="babies" aria-label="赤ちゃんごとの状況" data-zh-aria="寶寶狀況"></section>
@@ -553,6 +642,17 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       <h2 id="dev-title" data-zh="發展參考">発達の目安</h2>
     </div>
     <div id="dev"></div>
+  </section>
+
+  <section class="panel view" data-view="note" aria-labelledby="note-title">
+    <div class="panel-head">
+      <h2 id="note-title" data-zh="筆記">ノート</h2>
+      <div class="seg" id="note-mode" role="group" aria-label="表示する内容" data-zh-aria="顯示內容">
+        <button type="button" data-nmode="memo" data-zh="今日筆記">今日のメモ</button>
+        <button type="button" data-nmode="cost" data-zh="費用">費用</button>
+      </div>
+    </div>
+    <div id="note"></div>
   </section>
 
   <footer class="foot">
@@ -691,7 +791,12 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     // Growth chart x-axis: actual age by default so the birth weight sits at the start of the curve;
     // corrected age is one tap away for preterm babies. (Milestones always use corrected age.)
     corrected: lsGet('futago-corrected2', false) === true,
-    gMetric: ['weight', 'height', 'head'].includes(lsGet('futago-gmetric', 'weight')) ? lsGet('futago-gmetric', 'weight') : 'weight', tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    gMetric: ['weight', 'height', 'head'].includes(lsGet('futago-gmetric', 'weight')) ? lsGet('futago-gmetric', 'weight') : 'weight', tab: ['now', 'plan', 'log', 'weight', 'note'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    // ノート tab: daily memos (by 姉・妹・ママ・パパ) and baby expenses; each in its own collection.
+    memos: [], expenses: [],
+    noteMode: lsGet('futago-note-mode', 'memo') === 'cost' ? 'cost' : 'memo',
+    memoDay: null, memoWho: lsGet('futago-memo-who', 'mama'), memoDraft: '', memoEdit: null, memoConfirmDel: false,
+    costMonth: null, costView: 'bought',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -710,6 +815,8 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function fromLocal() {
     S.babies = S.local.babies || {};
     setLogs(Object.entries(S.local.logs || {}).map(([id, v]) => ({ ...v, id })));
+    S.memos = Object.entries(S.local.memos || {}).map(([id, v]) => ({ ...v, id }));
+    S.expenses = Object.entries(S.local.expenses || {}).map(([id, v]) => ({ ...v, id }));
   }
   function mergeDb() {
     const m = new Map();
@@ -723,7 +830,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   // (only the two family Google accounts); the page itself just signs in with Google.
   // Without a Firebase config the page falls back to this browser's localStorage.
   let unsubs = [];
-  function stopSubs() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; S.dbRecent = []; S.dbWeights = []; }
+  function stopSubs() { unsubs.forEach(u => { try { u(); } catch {} }); unsubs = []; S.dbRecent = []; S.dbWeights = []; S.memos = []; S.expenses = []; }
   async function init() {
     const cfg = window.FIREBASE_CONFIG;
     if (!cfg || !cfg.apiKey || !window.firebase) { S.mode = 'local'; fromLocal(); render(); return; }
@@ -752,6 +859,15 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     unsubs.push(fs.collection('logs').where('type', '==', 'weight').onSnapshot(s => {
       S.dbWeights = s.docs.map(d => ({ ...d.data(), id: d.id })); mergeDb(); render();
     }, onErr));
+    // The notebook collections never lock the family out of the feeding records: a refusal here only
+    // means their rules are missing, so it is logged instead of switching to the "not allowed" screen.
+    const noteErr = name => e => { if (e && e.code === 'permission-denied') console.warn(`${name}: permission denied (check firestore.rules)`); else onErr(e); };
+    unsubs.push(fs.collection('memos').orderBy('at', 'desc').limit(500).onSnapshot(s => {
+      S.memos = s.docs.map(d => ({ ...d.data(), id: d.id })); renderNote();
+    }, noteErr('memos')));
+    unsubs.push(fs.collection('expenses').orderBy('at', 'desc').limit(1000).onSnapshot(s => {
+      S.expenses = s.docs.map(d => ({ ...d.data(), id: d.id })); renderNote();
+    }, noteErr('expenses')));
   }
   function signIn() {
     const p = new firebase.auth.GoogleAuthProvider();
@@ -791,6 +907,21 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   async function deleteLog(id) {
     if (S.mode === 'db') bg(S.db.collection('logs').doc(id).delete());
     else { delete S.local.logs[id]; lsSet(LS_DATA, S.local); fromLocal(); render(); }
+  }
+  // Memos and expenses: same write-behind behaviour as saveLog, one collection (or local map) each.
+  async function saveDoc(col, id, data) {
+    if (S.mode === 'db') {
+      const c = S.db.collection(col), ref = id ? c.doc(id) : c.doc();
+      bg(ref.set(data));
+      return ref.id;
+    }
+    const key = id || newId();
+    S.local[col] = { ...(S.local[col] || {}), [key]: data }; lsSet(LS_DATA, S.local); fromLocal(); renderNote();
+    return key;
+  }
+  async function deleteDoc(col, id) {
+    if (S.mode === 'db') bg(S.db.collection(col).doc(id).delete());
+    else { delete (S.local[col] || {})[id]; lsSet(LS_DATA, S.local); fromLocal(); renderNote(); }
   }
   // Merges into the twin's settings doc, so saving names never wipes birth data or milestones.
   // A milestone value of null removes that milestone.
@@ -886,7 +1017,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   // ---------- render ----------
   function render() {
-    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderTrend(); renderBirthInfo(); renderChart(); renderWeights(); renderDev(); renderAlarmBar(); renderModeNote(); tick();
+    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderTrend(); renderBirthInfo(); renderChart(); renderWeights(); renderDev(); renderNote(); renderAlarmBar(); renderModeNote(); tick();
   }
   function renderNames() {
     document.querySelectorAll('#filter [data-name]').forEach(b => { b.textContent = baby(b.dataset.name).name; });
@@ -1817,6 +1948,240 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   }
   setInterval(tick, 1000);
 
+  // ---------- notebook: Today's Special Memo and expenses ----------
+  // Memos are filed under a calendar day ("YYYY-MM-DD", local time) and signed by 姉・妹・ママ・パパ.
+  const dayKey = ms => { const d = new Date(ms); return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`; };
+  const keyDay = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).getTime(); };
+  const MEMO_WHO = ['ane', 'imouto', 'mama', 'papa'];
+  const memoWho = w => MEMO_WHO.includes(w) ? w : 'mama';
+  const whoName = w => w === 'mama' ? L('ママ', '媽媽') : w === 'papa' ? L('パパ', '爸爸') : baby(w).name;
+  const whoIcon = w => BABY_IDS.includes(w) ? avatarHTML(w, 'sm') : `<span class="avatar sm ph" aria-hidden="true">${w === 'mama' ? L('マ', '媽') : L('パ', '爸')}</span>`;
+
+  // Data snapshots only redraw the notes below the composer, so typing is never interrupted.
+  let noteKey = '';
+  function renderNote(force) {
+    const el = $('#note'); if (!el) return;
+    document.querySelectorAll('#note-mode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nmode === S.noteMode)));
+    if (S.mode === 'loading') { noteKey = ''; el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
+    if (S.noteMode === 'cost') { noteKey = ''; el.innerHTML = costHTML(); return; }
+    const today = dayKey(Date.now());
+    if (!S.memoDay || S.memoDay > today) S.memoDay = today;
+    const key = [LANG, today, S.memoDay, S.memoWho, S.memoEdit || '', S.memoConfirmDel, ...MEMO_WHO.map(whoName)].join('|');
+    if (force || key !== noteKey || !$('#memo-body')) {
+      noteKey = key;
+      el.innerHTML = `<div class="memo-book">${memoTopHTML(today)}<div id="memo-body"></div></div>`;
+    }
+    $('#memo-body').innerHTML = memoBodyHTML();
+  }
+  function memoTopHTML(today) {
+    const isToday = S.memoDay === today, editing = S.memoEdit && S.memos.find(m => m.id === S.memoEdit);
+    return `<header class="memo-title"><span class="memo-star" aria-hidden="true">✦</span><h3>Today's Special Memo</h3><span class="memo-star b" aria-hidden="true">✦</span>
+        <p>${L('その日のできごとを、だれでも自由に書いて残せます。', '當天發生的事，誰都可以自由寫下來保存。')}</p></header>
+      <div class="memo-daynav">
+        <button type="button" class="icon-btn" data-mday="-1" aria-label="${L('前の日', '前一天')}">‹</button>
+        <b>${dayLabel(keyDay(S.memoDay))}</b>
+        <button type="button" class="icon-btn" data-mday="1" aria-label="${L('次の日', '後一天')}" ${isToday ? 'disabled' : ''}>›</button>
+        ${isToday ? '' : `<button type="button" class="icon-btn" data-mday="today">${L('今日', '今天')}</button>`}
+      </div>
+      <div class="memo-compose paper w-${S.memoWho}" id="memo-compose">
+        <span class="tape" aria-hidden="true"></span>
+        <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${whoIcon(w)}<span>${esc(whoName(w))}</span></button>`).join('')}</div>
+        <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記')}" placeholder="${L('はじめて笑った、よく飲んだ、ママおつかれさま…など', '第一次笑了、喝得很好、媽媽辛苦了…等等')}">${esc(S.memoDraft)}</textarea>
+        <div class="memo-actions">
+          ${editing ? (S.memoConfirmDel
+            ? `<button type="button" class="btn danger" data-act="memo-del-yes">${L('本当に削除する', '確定刪除')}</button><button type="button" class="btn ghost" data-act="memo-del-no">${L('やめる', '不刪除')}</button>`
+            : `<button type="button" class="btn danger" data-act="memo-del">${L('削除', '刪除')}</button>`) : ''}
+          <span class="spacer"></span>
+          ${editing ? `<button type="button" class="btn ghost" data-act="memo-cancel">${L('キャンセル', '取消')}</button>` : ''}
+          <button type="button" class="btn memo-save" data-act="memo-save">${editing ? L('書き直す', '更新') : L('メモを貼る', '貼上筆記')}</button>
+        </div>
+      </div>`;
+  }
+  function memoBodyHTML() {
+    const list = S.memos.filter(m => m.day === S.memoDay).sort((a, b) => a.at - b.at);
+    let h = list.length
+      ? `<div class="memo-list">${list.map((m, i) => `<article class="memo-note w-${memoWho(m.who)} t${i % 3}${m.id === S.memoEdit ? ' editing' : ''}">
+          <span class="tape" aria-hidden="true"></span>
+          <header>${whoIcon(memoWho(m.who))}<b>${esc(whoName(memoWho(m.who)))}</b>${dayKey(m.at) === m.day ? `<time>${fmtT(m.at)}</time>` : ''}</header>
+          <p>${esc(m.text)}</p>
+          <button type="button" class="memo-edit" data-memo="${esc(m.id)}">${L('書き直す・削除', '修改・刪除')}</button>
+        </article>`).join('')}</div>`
+      : `<p class="memo-empty">${L('この日のメモはまだありません。', '這天還沒有筆記。')}</p>`;
+    const days = [...new Set(S.memos.map(m => m.day))].sort().reverse().slice(0, 40);
+    if (days.length) h += `<div class="memo-days"><span class="lbl">${L('メモのある日', '有筆記的日子')}</span>
+      <div class="chips">${days.map(k => { const d = new Date(keyDay(k)); return `<button type="button" data-mjump="${k}" aria-pressed="${k === S.memoDay}">${d.getMonth() + 1}/${d.getDate()}<small>${S.memos.filter(m => m.day === k).length}</small></button>`; }).join('')}</div></div>`;
+    return h;
+  }
+  function memoSave() {
+    const text = ($('#memo-text') || {}).value?.trim() || '';
+    if (!text) return toast(L('メモを書いてください。', '請先寫筆記。'));
+    const edit = S.memoEdit && S.memos.find(m => m.id === S.memoEdit), now = Date.now();
+    const data = { day: edit ? edit.day : S.memoDay, who: S.memoWho, text, at: edit ? edit.at : now, updatedAt: now };
+    const before = edit ? (({ id: _drop, ...rest }) => rest)(edit) : null;
+    saveDoc('memos', edit ? edit.id : null, data).then(id => {
+      S.memoDraft = ''; S.memoEdit = null; S.memoConfirmDel = false; renderNote(true);
+      toast(edit ? L('メモを書き直しました', '已更新筆記') : L('メモを貼りました', '已貼上筆記'), {
+        label: L('取り消す', '復原'),
+        fn: () => edit ? saveDoc('memos', id, before) : deleteDoc('memos', id),
+      });
+    }).catch(e => toast(errMsg(e)));
+  }
+
+  // Expenses: things bought (counted in the month's total) and a list of things still to buy.
+  const COST_CATS = {
+    milk:    { ja: 'ミルク', zh: '奶粉', c: '#E0963A', ija: ['粉ミルク', '液体ミルク', 'キューブミルク'], izh: ['奶粉', '液態奶', '方塊奶粉'] },
+    diaper:  { ja: 'オムツ', zh: '尿布', c: '#4A8AD6', ija: ['新生児用オムツ', 'Sサイズオムツ', 'おむつ用ゴミ袋'], izh: ['新生兒尿布', 'S號尿布', '尿布垃圾袋'] },
+    wipes:   { ja: 'おしりふき', zh: '濕紙巾', c: '#3FAE9B', ija: ['おしりふき', '手口ふき'], izh: ['屁屁濕紙巾', '手口濕紙巾'] },
+    clothes: { ja: '衣類', zh: '衣物', c: '#D9628A', ija: ['短肌着', 'コンビ肌着', 'ロンパース', 'カバーオール', 'スタイ', '靴下'], izh: ['短版紗布衣', '長版紗布衣', '連身衣', '包屁衣', '圍兜', '襪子'] },
+    feeding: { ja: '授乳用品', zh: '哺乳用品', c: '#9479D2', ija: ['哺乳びん', '乳首', '消毒グッズ', 'ミルクケース', '授乳クッション'], izh: ['奶瓶', '奶嘴頭', '消毒用品', '奶粉分裝盒', '哺乳枕'] },
+    bath:    { ja: 'お風呂・ケア', zh: '洗澡・護理', c: '#38A3C8', ija: ['ベビーソープ', '保湿クリーム', 'ガーゼ', '綿棒', '爪切り', 'ベビーバス'], izh: ['嬰兒沐浴乳', '保濕乳霜', '紗布巾', '棉花棒', '指甲剪', '嬰兒澡盆'] },
+    medical: { ja: '医療・薬', zh: '醫療・藥品', c: '#D45750', ija: ['体温計', '鼻水吸引器', '受診', '薬'], izh: ['體溫計', '吸鼻器', '看診', '藥品'] },
+    gear:    { ja: 'ベビー用品', zh: '嬰兒用品', c: '#7D8C9B', ija: ['ベビーカー', '抱っこひも', 'チャイルドシート', 'ベビーベッド', 'バウンサー'], izh: ['嬰兒推車', '揹巾', '汽車安全座椅', '嬰兒床', '安撫搖椅'] },
+    toy:     { ja: 'おもちゃ', zh: '玩具', c: '#C49A1E', ija: ['ガラガラ', 'メリー', '絵本'], izh: ['搖鈴', '床鈴', '繪本'] },
+    other:   { ja: 'その他', zh: '其他', c: '#9AA3AE', ija: [], izh: [] },
+  };
+  const catOf = e => COST_CATS[e.cat] ? e.cat : 'other';
+  const catName = k => (COST_CATS[k] || COST_CATS.other)[LANG === 'zh' ? 'zh' : 'ja'];
+  const catItems = k => (COST_CATS[k] || COST_CATS.other)[LANG === 'zh' ? 'izh' : 'ija'];
+  const yen = n => `¥${fmtG(Math.round(n))}`;
+  const costAmount = e => (Number(e.price) || 0) * (Number(e.qty) || 1);
+  // The usual "to buy" starters, offered under the list until they have been added once.
+  const COST_STARTERS = [['milk', 0], ['diaper', 0], ['wipes', 0], ['clothes', 0], ['clothes', 1], ['feeding', 0], ['feeding', 1], ['bath', 0], ['bath', 1], ['bath', 2], ['medical', 0], ['medical', 1]];
+  // The last price paid for an item of the same name, to prefill the next purchase.
+  const lastCost = name => S.expenses.filter(e => e.name === name && Number(e.price) > 0).sort((a, b) => b.at - a.at)[0];
+
+  function costHTML() {
+    const now = Date.now();
+    if (!S.costMonth) S.costMonth = monthStart(now);
+    const mEnd = monthStart(S.costMonth, -1), md = new Date(S.costMonth), isThisMonth = S.costMonth === monthStart(now);
+    const bought = S.expenses.filter(e => e.status !== 'want');
+    const inMonth = bought.filter(e => e.at >= S.costMonth && e.at < mEnd).sort((a, b) => b.at - a.at);
+    const total = inMonth.reduce((s, e) => s + costAmount(e), 0), all = bought.reduce((s, e) => s + costAmount(e), 0);
+    const byCat = Object.keys(COST_CATS).map(k => [k, inMonth.filter(e => catOf(e) === k).reduce((s, e) => s + costAmount(e), 0)]).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    const want = S.expenses.filter(e => e.status === 'want').sort((a, b) => a.at - b.at);
+    const row = e => `<button type="button" class="cost-row" data-cost="${esc(e.id)}"><i class="dot" style="background:${COST_CATS[catOf(e)].c}"></i>
+      <span class="cn"><b>${esc(e.name)}</b><small>${catName(catOf(e))}${Number(e.qty) > 1 ? ` ・ ${yen(e.price)} × ${e.qty}` : ''}${e.note ? ` ・ ${esc(e.note)}` : ''}</small></span>
+      ${Number(e.price) > 0 ? `<b class="ca num">${yen(costAmount(e))}</b>` : `<span class="ca unset">${L('金額未定', '金額未定')}</span>`}</button>`;
+
+    let h = `<div class="cost-head">
+      <div class="memo-daynav">
+        <button type="button" class="icon-btn" data-cmonth="1" aria-label="${L('前の月', '上個月')}">‹</button>
+        <b>${md.getFullYear()}${L('年', '年')}${md.getMonth() + 1}${L('月', '月')}</b>
+        <button type="button" class="icon-btn" data-cmonth="-1" aria-label="${L('次の月', '下個月')}" ${isThisMonth ? 'disabled' : ''}>›</button>
+      </div>
+      <div class="cost-total"><span>${L('この月にかかった費用', '本月花費')}</span><b class="num">${yen(total)}</b><small class="num">${L('これまでの合計', '累計')} ${yen(all)}</small></div>
+      ${byCat.length ? `<div class="cost-bar" role="img" aria-label="${L('カテゴリ別の内訳', '各類別比例')}">${byCat.map(([k, v]) => `<i style="flex:${v} 0 0;background:${COST_CATS[k].c}"></i>`).join('')}</div>
+        <ul class="cost-cats">${byCat.map(([k, v]) => `<li><i style="background:${COST_CATS[k].c}"></i><span>${catName(k)}</span><b class="num">${yen(v)}</b><small class="num">${Math.round(v / total * 100)}%</small></li>`).join('')}</ul>` : ''}
+    </div>
+    <div class="cost-tools">
+      <div class="seg" role="group" aria-label="${L('表示', '顯示')}">
+        <button type="button" data-cview="bought" aria-pressed="${S.costView === 'bought'}">${L('買ったもの', '已購買')}<small class="num">${inMonth.length}</small></button>
+        <button type="button" data-cview="want" aria-pressed="${S.costView === 'want'}">${L('買うものリスト', '待買清單')}<small class="num">${want.length}</small></button>
+      </div>
+      <button type="button" class="btn solid" data-act="cost-add">＋ ${L('追加', '新增')}</button>
+    </div>`;
+    if (S.costView === 'bought') {
+      if (!inMonth.length) h += `<p class="empty-note">${L('この月に買ったものはまだありません。「＋ 追加」から記録できます。', '本月還沒有購買紀錄，可以從「＋ 新增」記錄。')}</p>`;
+      const groups = new Map();
+      inMonth.forEach(e => { const k = startOfDay(e.at); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(e); });
+      h += [...groups].map(([k, list]) => `<div class="cost-day"><h4>${dayLabel(k)}<span class="num">${yen(list.reduce((s, e) => s + costAmount(e), 0))}</span></h4>
+        <ul class="cost-list">${list.map(e => `<li>${row(e)}</li>`).join('')}</ul></div>`).join('');
+    } else {
+      h += `<p class="hint">${L('必要なものを並べておき、買ったら ✓ を押すと「買ったもの」に移ります（その日の支出になります）。', '先把需要的東西列出來，買了之後按 ✓ 就會移到「已購買」（記為當天的支出）。')}</p>`;
+      h += want.length
+        ? `<ul class="cost-list want">${want.map(e => `<li><button type="button" class="cost-check" data-cbuy="${esc(e.id)}" aria-label="${L(`${esc(e.name)}を買った`, `已買${esc(e.name)}`)}">✓</button>${row(e)}</li>`).join('')}</ul>
+          <p class="cost-sum num">${L('予定の合計', '預估合計')} ${yen(want.reduce((s, e) => s + costAmount(e), 0))}</p>`
+        : `<p class="empty-note">${L('買うものリストは空です。', '待買清單是空的。')}</p>`;
+      const names = new Set(S.expenses.map(e => e.name));
+      const starters = COST_STARTERS.map(([k, i]) => [k, catItems(k)[i]]).filter(([, n]) => n && !names.has(n));
+      if (starters.length) h += `<div class="cost-presets"><span class="lbl">${L('よく使うものから追加', '從常用品新增')}</span>
+        <div class="chips">${starters.map(([k, n]) => `<button type="button" data-cpreset="${k}|${esc(n)}"><i style="background:${COST_CATS[k].c}"></i>${esc(n)}</button>`).join('')}</div></div>`;
+    }
+    return h;
+  }
+
+  function openCost(e, preset) {
+    S.form = e
+      ? { type: 'cost', editing: e.id, status: e.status === 'want' ? 'want' : 'bought', cat: catOf(e), name: e.name || '', price: Number(e.price) > 0 ? Number(e.price) : '', qty: Number(e.qty) || 1, date: dayKey(e.status === 'want' ? Date.now() : e.at), note: e.note || '', at: e.at }
+      : { type: 'cost', status: S.costView === 'want' ? 'want' : 'bought', cat: 'milk', name: '', price: '', qty: 1, date: dayKey(Date.now()), note: '', ...preset };
+    if (!e && S.form.name) { const p = lastCost(S.form.name); if (p) S.form.price = Number(p.price); }
+    S.form.confirmDelete = false;
+    renderCostForm();
+  }
+  function readCost() {
+    const F = S.form; if (!F || F.type !== 'cost') return;
+    const v = id => { const el = document.getElementById(id); return el ? el.value : undefined; };
+    if (v('c-name') !== undefined) F.name = v('c-name');
+    if (v('c-price') !== undefined) F.price = v('c-price') === '' ? '' : Number(v('c-price'));
+    if (v('c-qty') !== undefined) F.qty = Number(v('c-qty')) || 1;
+    if (v('c-date') !== undefined) F.date = v('c-date');
+    if (v('c-note') !== undefined) F.note = v('c-note');
+  }
+  const costTotalText = F => Number(F.price) > 0 ? L(`合計 ${yen(F.price * (F.qty || 1))}`, `合計 ${yen(F.price * (F.qty || 1))}`) : '';
+  function renderCostForm() {
+    const F = S.form, root = $('#sheet-root');
+    const past = [...new Set(S.expenses.filter(e => catOf(e) === F.cat).map(e => e.name))];
+    const sugg = [...new Set([...catItems(F.cat), ...past])].slice(0, 12);
+    root.innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+      <div class="sheet-head"><h2>${F.editing ? L('修正：費用', '修改：費用') : L('費用を追加', '新增費用')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <div class="field"><span class="lbl">${L('状態', '狀態')}</span>${chipsHTML('cstatus', { bought: L('買った', '已購買'), want: L('買う予定（リスト）', '待買（清單）') }, F.status)}</div>
+      <div class="field"><span class="lbl">${L('カテゴリ', '類別')}</span><div class="chips cat-chips" role="group">${Object.keys(COST_CATS).map(k => `<button type="button" data-ccat="${k}" aria-pressed="${F.cat === k}"><i style="background:${COST_CATS[k].c}"></i>${catName(k)}</button>`).join('')}</div></div>
+      <div class="field"><label for="c-name">${L('品名', '品名')}</label><input type="text" id="c-name" maxlength="40" value="${esc(F.name)}" autocomplete="off" placeholder="${esc(catItems(F.cat)[0] || L('品名', '品名'))}">
+        ${sugg.length ? `<div class="chips small">${sugg.map(n => `<button type="button" data-cname="${esc(n)}" aria-pressed="${F.name === n}">${esc(n)}</button>`).join('')}</div>` : ''}</div>
+      <div class="two-col">
+        <div class="field"><label for="c-price">${L('金額（1つあたり・円）', '金額（單價・日圓）')}</label><input type="number" inputmode="numeric" id="c-price" min="0" max="10000000" step="1" value="${esc(F.price)}" placeholder="${F.status === 'want' ? L('わかれば', '知道的話') : '0'}"></div>
+        <div class="field"><label for="c-qty">${L('数量', '數量')}</label><div class="stepper qty"><button type="button" data-cstep="-1">−</button><input type="number" inputmode="numeric" id="c-qty" min="1" max="999" value="${esc(F.qty)}"><button type="button" data-cstep="1">+</button></div></div>
+      </div>
+      <p class="hint num" id="c-total">${costTotalText(F)}</p>
+      ${F.status === 'bought' ? `<div class="field"><label for="c-date">${L('買った日', '購買日期')}</label><input type="date" id="c-date" value="${esc(F.date)}" max="${dayKey(Date.now())}"></div>` : ''}
+      <div class="field"><label for="c-note">${L('メモ（任意）', '備註（選填）')}</label><input type="text" id="c-note" maxlength="100" value="${esc(F.note)}" placeholder="${L('お店、サイズなど', '店家、尺寸等')}"></div>
+      <div class="sheet-actions">
+        ${F.editing ? (F.confirmDelete
+          ? `<button type="button" class="btn danger" data-act="delete-yes">${L('本当に削除する', '確定刪除')}</button><button type="button" class="btn ghost" data-act="delete-no">${L('やめる', '不刪除')}</button>`
+          : `<button type="button" class="btn danger" data-act="delete">${L('削除', '刪除')}</button>`) : ''}
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
+      </div>
+    </form></div>`;
+  }
+  async function submitCost() {
+    readCost();
+    const F = S.form, now = Date.now(), name = (F.name || '').trim();
+    if (!name) return toast(L('品名を入れてください。', '請輸入品名。'));
+    const price = F.price === '' ? (F.status === 'want' ? 0 : NaN) : Number(F.price);
+    if (!(price >= 0 && price <= 10000000)) return toast(L('金額を入れてください（円）。', '請輸入金額（日圓）。'));
+    const qty = Math.round(Number(F.qty) || 0);
+    if (!(qty >= 1 && qty <= 999)) return toast(L('数量は1〜999で入れてください。', '數量請輸入1〜999。'));
+    let at;
+    if (F.status === 'bought') {
+      if (!F.date) return toast(L('買った日を入れてください。', '請輸入購買日期。'));
+      at = keyDay(F.date) + 12 * HOUR;   // midday, so the day never shifts
+      if (startOfDay(at) > startOfDay(now)) return toast(L('未来の日付は記録できません。', '無法記錄未來的日期。'));
+    } else at = F.editing && F.at ? F.at : now;
+    const data = { cat: F.cat, name, price: Math.round(price), qty, status: F.status, at, note: (F.note || '').trim(), updatedAt: now };
+    const editingId = F.editing || null, before = editingId ? S.expenses.find(e => e.id === editingId) : null;
+    try {
+      const id = await saveDoc('expenses', editingId, data);
+      S.form = null; renderForm();
+      S.costView = data.status;
+      if (data.status === 'bought') S.costMonth = monthStart(at);
+      renderNote();
+      toast(editingId ? L(`「${name}」を修正しました`, `已修改「${name}」`) : data.status === 'want' ? L(`「${name}」をリストに追加しました`, `已把「${name}」加入清單`) : L(`「${name}」${yen(price * qty)} を記録しました`, `已記錄「${name}」${yen(price * qty)}`), {
+        label: L('取り消す', '復原'),
+        fn: () => { if (before) { const { id: _drop, ...prev } = before; saveDoc('expenses', id, prev); } else deleteDoc('expenses', id); },
+      });
+    } catch (e) { toast(errMsg(e)); }
+  }
+  // ✓ on the to-buy list: it becomes today's purchase. Without a price yet, the form opens to fill it in.
+  function markBought(id) {
+    const e = S.expenses.find(x => x.id === id); if (!e) return;
+    if (!(Number(e.price) > 0)) { openCost(e); S.form.status = 'bought'; return renderCostForm(); }
+    const { id: _drop, ...prev } = e, now = Date.now();
+    saveDoc('expenses', id, { ...prev, status: 'bought', at: startOfDay(now) + 12 * HOUR, updatedAt: now });
+    toast(L(`「${e.name}」を買ったものに移しました`, `已把「${e.name}」移到已購買`), { label: L('取り消す', '復原'), fn: () => saveDoc('expenses', id, prev) });
+  }
+
   // ---------- form ----------
   function openForm(type, babyId, log) {
     const b = baby(babyId);
@@ -1860,6 +2225,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (F.type === 'batch') return renderBatch();
     if (F.type === 'birth') return renderBirth();
     if (F.type === 'photo') return renderPhoto();
+    if (F.type === 'cost') return renderCostForm();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -2223,6 +2589,54 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       S.simOpen = S.simOpen === id ? null : id;
       renderPlanSim(true); return renderPlan();
     }
+    if (S.form && S.form.type === 'cost') {
+      if (d.cstatus) { readCost(); S.form.status = d.cstatus; return renderCostForm(); }
+      if (d.ccat) { readCost(); S.form.cat = d.ccat; return renderCostForm(); }
+      if (d.cname) { readCost(); S.form.name = d.cname; const p = lastCost(d.cname); if (p && S.form.price === '') S.form.price = Number(p.price); return renderCostForm(); }
+      if (d.cstep) { readCost(); S.form.qty = Math.min(999, Math.max(1, (Number(S.form.qty) || 1) + Number(d.cstep))); return renderCostForm(); }
+      if (d.act === 'delete') { readCost(); S.form.confirmDelete = true; return renderCostForm(); }
+      if (d.act === 'delete-no') { readCost(); S.form.confirmDelete = false; return renderCostForm(); }
+      if (d.act === 'delete-yes') {
+        const e = S.expenses.find(x => x.id === S.form.editing);
+        deleteDoc('expenses', S.form.editing); S.form = null; renderForm();
+        if (e) { const { id, ...prev } = e; toast(L(`「${e.name}」を削除しました`, `已刪除「${e.name}」`), { label: L('取り消す', '復原'), fn: () => saveDoc('expenses', id, prev) }); }
+        return;
+      }
+    }
+    // ノート tab
+    if (d.nmode) { S.noteMode = d.nmode; lsSet('futago-note-mode', d.nmode); return renderNote(true); }
+    if (d.mday) {
+      const today = dayKey(Date.now());
+      S.memoDay = d.mday === 'today' ? today : dayKey(keyDay(S.memoDay) + Number(d.mday) * DAY + 2 * HOUR);
+      if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; }
+      return renderNote(true);
+    }
+    if (d.mjump) { S.memoDay = d.mjump; if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; } return renderNote(true); }
+    if (d.mwho) { S.memoWho = d.mwho; if (!S.memoEdit) lsSet('futago-memo-who', d.mwho); renderNote(true); const ta = $('#memo-text'); if (ta) ta.focus({ preventScroll: true }); return; }
+    if (d.memo) {
+      const m = S.memos.find(x => x.id === d.memo); if (!m) return;
+      S.memoEdit = m.id; S.memoDraft = m.text; S.memoWho = memoWho(m.who); S.memoConfirmDel = false; renderNote(true);
+      const c = $('#memo-compose'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
+    if (d.cmonth) { S.costMonth = monthStart(S.costMonth || Date.now(), Number(d.cmonth)); return renderNote(); }
+    if (d.cview) { S.costView = d.cview; return renderNote(); }
+    if (d.cost) { const e = S.expenses.find(x => x.id === d.cost); if (e) openCost(e); return; }
+    if (d.cbuy) return markBought(d.cbuy);
+    if (d.cpreset) { const [cat, ...n] = d.cpreset.split('|'); return openCost(null, { status: 'want', cat, name: n.join('|') }); }
+    switch (d.act) {
+      case 'memo-save': return memoSave();
+      case 'memo-cancel': S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; return renderNote(true);
+      case 'memo-del': S.memoConfirmDel = true; return renderNote(true);
+      case 'memo-del-no': S.memoConfirmDel = false; return renderNote(true);
+      case 'memo-del-yes': {
+        const m = S.memos.find(x => x.id === S.memoEdit);
+        S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false;
+        if (m) { const { id, ...prev } = m; deleteDoc('memos', id); toast(L('メモを削除しました', '已刪除筆記'), { label: L('取り消す', '復原'), fn: () => saveDoc('memos', id, prev) }); }
+        return renderNote(true);
+      }
+      case 'cost-add': return openCost(null);
+    }
     if (S.form && S.form.type === 'batch') {
       const rows = S.form.rows;
       if (d.bkind) { readBatch(); S.form.kind = d.bkind; return renderBatch(); }
@@ -2350,7 +2764,18 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     else if (S.form && S.form.type === 'batch') submitBatch();
     else if (S.form && S.form.type === 'birth') submitBirth();
     else if (S.form && S.form.type === 'photo') submitPhoto();
+    else if (S.form && S.form.type === 'cost') submitCost();
     else submitForm();
+  });
+  document.addEventListener('input', e => {
+    const id = e.target.id;
+    if (id === 'memo-text') { S.memoDraft = e.target.value; return; }
+    if (S.form && S.form.type === 'cost' && (id === 'c-price' || id === 'c-qty' || id === 'c-name')) {
+      readCost();
+      // A name bought before brings back its last price (only while the price is still empty).
+      if (id === 'c-name' && S.form.price === '') { const p = lastCost(S.form.name.trim()); if (p) { S.form.price = Number(p.price); $('#c-price').value = S.form.price; } }
+      const t = $('#c-total'); if (t) t.textContent = costTotalText(S.form);
+    }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
   $('#open-settings').addEventListener('click', () => openSettings());

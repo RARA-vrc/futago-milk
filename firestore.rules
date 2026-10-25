@@ -32,6 +32,28 @@ service cloud.firestore {
       allow write: if isFamily() && babyId in ['ane', 'imouto'];
     }
 
+    // ノート：今日のメモ（姉・妹・ママ・パパ）
+    match /memos/{memoId} {
+      allow read, delete: if isFamily();
+      allow create, update: if isFamily()
+        && request.resource.data.who in ['ane', 'imouto', 'mama', 'papa']
+        && request.resource.data.day is string
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.at is number;
+    }
+
+    // ノート：費用（買ったもの・買うものリスト）
+    match /expenses/{expenseId} {
+      allow read, delete: if isFamily();
+      allow create, update: if isFamily()
+        && request.resource.data.status in ['bought', 'want']
+        && request.resource.data.name is string
+        && request.resource.data.price is number
+        && request.resource.data.qty is number
+        && request.resource.data.at is number;
+    }
+
     // それ以外はすべて拒否
     match /{document=**} {
       allow read, write: if false;
