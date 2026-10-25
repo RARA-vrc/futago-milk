@@ -313,6 +313,7 @@ input, select, textarea { font-size: max(16px, 1em); }
 .trend-note { font-size: .75rem; color: var(--muted); margin: 8px 0 0; }
 
 .nowrap { white-space: nowrap; }
+.tag-birth { font-size: .68rem; font-weight: 700; border: 1px solid var(--line); border-radius: 99px; padding: 0 6px; margin-left: 4px; }
 /* age on the cards */
 .who-age { display: flex; flex-direction: column; min-width: 0; }
 .who-age .age { color: var(--ink); font-size: .78rem; font-weight: 700; opacity: .8; line-height: 1.35; }
@@ -621,7 +622,9 @@ input, select, textarea { font-size: max(16px, 1em); }
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
     filter: 'all', daysShown: 3, wShown: 8, planStart: {}, simOpen: null,
     trendMode: lsGet('futago-trend', 'day') === 'month' ? 'month' : 'day', history: null, historyLoading: false,
-    corrected: lsGet('futago-corrected', true) !== false, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    // Growth chart x-axis: actual age by default so the birth weight sits at the start of the curve;
+    // corrected age is one tap away for preterm babies. (Milestones always use corrected age.)
+    corrected: lsGet('futago-corrected2', false) === true, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -760,6 +763,11 @@ input, select, textarea { font-size: max(16px, 1em); }
   // ---------- derived ----------
   const lastOf = (id, type) => S.logs.find(l => l.baby === id && l.type === type);
   const weightsOf = id => S.logs.filter(l => l.baby === id && l.type === 'weight');
+  // Recorded weights plus the birth weight (from 出生時の記録) as the oldest entry, newest first.
+  const weightsWithBirth = id => {
+    const b = baby(id), ws = weightsOf(id);
+    return b.birthAt && b.birthWeight ? [...ws, { id: 'birth', birth: true, at: b.birthAt, grams: Number(b.birthWeight) }] : ws;
+  };
   function nextAt(id) { const m = lastOf(id, 'milk'); return m ? m.at + baby(id).intervalH * HOUR : null; }
   function milkText(l) {
     if (l.kind === 'breast') return `${KIND.breast} ${l.min || '?'}${L('分', '分鐘')}`;
@@ -820,7 +828,7 @@ input, select, textarea { font-size: max(16px, 1em); }
   function renderCards() {
     const now = Date.now(), t0 = startOfDay(now);
     $('#babies').innerHTML = BABY_IDS.map(id => {
-      const b = baby(id), ws = weightsOf(id), w = ws[0], prev = ws[1];
+      const b = baby(id), ws = weightsWithBirth(id), w = ws[0], prev = ws[1];
       const st = dayStats(id, t0, t0 + DAY);
       const lastPoo = lastOf(id, 'poo'), lastMilk = lastOf(id, 'milk');
       const range = b.minMl === b.maxMl ? `${b.minMl}mL` : `${b.minMl}〜${b.maxMl}mL`;
@@ -1222,8 +1230,8 @@ input, select, textarea { font-size: max(16px, 1em); }
       <div class="row birth-tools">
         <button type="button" class="fix-last" data-act="birth">${L('出生時の記録を編集', '編輯出生紀錄')}</button>
         ${pre ? `<div class="seg" role="group" aria-label="${L('横軸', '橫軸')}">
-          <button type="button" data-corr="1" aria-pressed="${S.corrected}">${L('修正月齢', '矯正月齡')}</button>
-          <button type="button" data-corr="0" aria-pressed="${!S.corrected}">${L('生後月齢', '實際月齡')}</button></div>` : ''}
+          <button type="button" data-corr="0" aria-pressed="${!S.corrected}">${L('生後月齢', '實際月齡')}</button>
+          <button type="button" data-corr="1" aria-pressed="${S.corrected}">${L('修正月齢', '矯正月齡')}</button></div>` : ''}
       </div>`;
   }
 
@@ -1327,10 +1335,15 @@ input, select, textarea { font-size: max(16px, 1em); }
   function renderWeights() {
     $('#w-add').innerHTML = BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="weight" data-baby="${id}">${L(`${esc(baby(id).name)}の体重を記録`, `記錄${esc(baby(id).name)}的體重`)}</button>`).join('');
     $('#wtable').innerHTML = BABY_IDS.map(id => {
-      const ws = weightsOf(id);
+      const ws = weightsWithBirth(id);
       if (!ws.length) return `<div class="wtable"><h3 class="${id}">${esc(baby(id).name)}</h3><p class="empty-note">${L('まだ記録がありません。', '還沒有紀錄。')}</p></div>`;
       const rows = ws.slice(0, S.wShown).map((w, i) => {
         const prev = ws[i + 1], d = new Date(w.at);
+        if (w.birth) {
+          // The birth row opens 出生時の記録 instead of the weight form.
+          return `<button type="button" class="wrow num" data-act="birth" aria-label="${L('出生時の記録を編集', '編輯出生紀錄')}">
+            <span>${d.getMonth() + 1}/${d.getDate()} <small class="tag-birth">${L('出生時', '出生時')}</small></span><b>${fmtG(w.grams)}g</b><span></span><span></span></button>`;
+        }
         let diff = '', perDay = '';
         if (prev) {
           const g = w.grams - prev.grams, days = (w.at - prev.at) / DAY;
@@ -1942,7 +1955,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.trend) { S.trendMode = d.trend; lsSet('futago-trend', d.trend); return renderTrend(); }
-    if (d.corr !== undefined) { S.corrected = d.corr === '1'; lsSet('futago-corrected', S.corrected); renderBirthInfo(); return renderChart(); }
+    if (d.corr !== undefined) { S.corrected = d.corr === '1'; lsSet('futago-corrected2', S.corrected); renderBirthInfo(); return renderChart(); }
     if (d.ms) {
       // Tap toggles "できた" (dated today) ↔ "まだ" for that twin.
       const [id, key] = d.ms.split(':'), done = baby(id).ms && baby(id).ms[key];
