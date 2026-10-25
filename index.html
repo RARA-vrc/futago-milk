@@ -2154,7 +2154,8 @@ The original language's field must be the note unchanged. Keep emoji, line break
         const base = `https://www.gstatic.com/firebasejs/${FB_MODULAR}/`;
         const [appMod, aiMod, acMod] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-ai.js'), window.APPCHECK_SITE_KEY ? import(base + 'firebase-app-check.js') : null]);
         const app = appMod.initializeApp(window.FIREBASE_CONFIG, 'ai');
-        if (acMod) acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaV3Provider(window.APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
+        // App Check via Fraud Defense (reCAPTCHA Enterprise; the classic v3 provider is deprecated).
+        if (acMod) acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaEnterpriseProvider(window.APPCHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
         aiModel = aiMod.getGenerativeModel(aiMod.getAI(app, { backend: new aiMod.GoogleAIBackend() }), { model: AI_MODEL, generationConfig: { responseMimeType: 'application/json' } });
       } catch (e) { console.warn('memo translation unavailable', e); aiOff = true; }
       return aiModel;
