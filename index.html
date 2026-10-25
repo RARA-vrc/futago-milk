@@ -314,6 +314,22 @@ input, select, textarea { font-size: max(16px, 1em); }
 .tchart-head small { color: var(--muted); font-size: .75rem; }
 .tchart svg { display: block; width: 100%; height: auto; }
 .trend-note { font-size: .75rem; color: var(--muted); margin: 8px 0 0; }
+.tbaby { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin-bottom: 14px; }
+.tbaby button { border: none; background: transparent; border-radius: 10px; min-height: 42px; font-family: var(--f-display); font-weight: 700; font-size: .95rem; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 6px; }
+.tbaby button[aria-pressed="true"] { background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.tbaby button.ane[aria-pressed="true"] { color: var(--ane); box-shadow: inset 0 -3px 0 var(--ane); }
+.tbaby button.imouto[aria-pressed="true"] { color: var(--imo); box-shadow: inset 0 -3px 0 var(--imo); }
+.tbaby button.both[aria-pressed="true"] { color: var(--ink); }
+.tchart [data-tday] { cursor: pointer; }
+.tday { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.tday-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: .85rem; }
+.tday-head b { font-family: var(--f-display); }
+.tday-head span { color: var(--muted); }
+.tday-feeds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tday-feeds span { display: inline-flex; flex-direction: column; align-items: center; min-width: 3.2rem; padding: 4px 6px; border-radius: 9px; background: var(--surface); border: 1px solid var(--line); line-height: 1.2; }
+.tday-feeds small { font-size: .7rem; color: var(--muted); }
+.tday-feeds b { font-family: var(--f-display); font-size: .95rem; }
+.tday-feeds .ane b { color: var(--ane); } .tday-feeds .imouto b { color: var(--imo); }
 
 .nowrap { white-space: nowrap; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -655,6 +671,8 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
     filter: 'all', daysShown: 3, wShown: 8, planStart: {}, simOpen: null,
     trendMode: lsGet('futago-trend', 'day') === 'month' ? 'month' : 'day', history: null, historyLoading: false,
+    // Trend view: one twin at a time (stacked per-feed bars) or both side by side; trendDay = the day whose feeds are listed.
+    trendBaby: ['ane', 'imouto', 'both'].includes(lsGet('futago-trend-baby', 'ane')) ? lsGet('futago-trend-baby', 'ane') : 'ane', trendDay: null,
     // Growth chart x-axis: actual age by default so the birth weight sits at the start of the curve;
     // corrected age is one tap away for preterm babies. (Milestones always use corrected age.)
     corrected: lsGet('futago-corrected2', false) === true,
@@ -1058,17 +1076,21 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     return out;
   }
   const niceStep = max => [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].find(s => max / s <= 4) || 10000;
+  function yGrid(W, pl, pr, top, step, y) {
+    let svg = '';
+    for (let v = 0; v <= top; v += step) {
+      svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v ? 0.6 : 1}"/>`;
+      svg += `<text x="${pl - 4}" y="${y(v) + 3}" text-anchor="end" font-size="9" fill="var(--muted)">${v >= 10000 ? `${v / 1000}k` : fmtG(v)}</text>`;
+    }
+    return svg;
+  }
   // Grouped bars, one colour per twin. The last period is still being counted, so it is drawn faded.
   function barChart(labels, series, unit, partialLast) {
     const W = 360, H = 170, pl = 34, pr = 6, pt = 14, pb = 22;
     const max = Math.max(1, ...series.flatMap(s => s.values)), step = niceStep(max), top = Math.ceil(max / step) * step;
     const n = labels.length, gw = (W - pl - pr) / n, bw = Math.min(14, (gw - 3) / series.length);
     const y = v => pt + (1 - v / top) * (H - pt - pb);
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">`;
-    for (let v = 0; v <= top; v += step) {
-      svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v ? 0.6 : 1}"/>`;
-      svg += `<text x="${pl - 4}" y="${y(v) + 3}" text-anchor="end" font-size="9" fill="var(--muted)">${v >= 10000 ? `${v / 1000}k` : fmtG(v)}</text>`;
-    }
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">` + yGrid(W, pl, pr, top, step, y);
     const every = Math.ceil(n / 7);
     labels.forEach((lab, i) => {
       const gx = pl + i * gw, x0 = gx + (gw - bw * series.length) / 2;
@@ -1081,11 +1103,53 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     });
     return svg + '</svg>';
   }
+  // One twin's daily milk, each bar stacked from that day's feeds (earliest at the bottom) so the size of
+  // every feed shows. Feeds alternate in shade; the amount is printed inside when the piece is tall enough.
+  const feedsOn = (id, k) => S.logs.filter(l => l.baby === id && l.type === 'milk' && l.at >= k && l.at < k + DAY).sort((a, b) => a.at - b.at);
+  function feedChart(id, keys, labels, sel) {
+    const W = 360, H = 200, pl = 34, pr = 6, pt = 16, pb = 22;
+    const feeds = keys.map(k => feedsOn(id, k).filter(l => l.kind !== 'breast' && Number(l.ml) > 0));
+    const totals = feeds.map(f => f.reduce((s, l) => s + Number(l.ml), 0));
+    const max = Math.max(1, ...totals), step = niceStep(max), top = Math.ceil(max / step) * step;
+    const n = keys.length, gw = (W - pl - pr) / n, bw = Math.min(20, gw - 4);
+    const y = v => pt + (1 - v / top) * (H - pt - pb);
+    const color = `var(--${id === 'ane' ? 'ane' : 'imo'})`, every = Math.ceil(n / 7);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img">` + yGrid(W, pl, pr, top, step, y);
+    keys.forEach((k, i) => {
+      const gx = pl + i * gw, x = gx + (gw - bw) / 2;
+      svg += `<g data-tday="${k}">`;
+      // The whole column is the tap target; the chosen day gets a soft band behind its bar.
+      svg += `<rect x="${gx.toFixed(1)}" y="${pt - 12}" width="${gw.toFixed(1)}" height="${H - pb - pt + 12}" rx="4" fill="${k === sel ? 'var(--surface-2)' : 'transparent'}"${k === sel ? ' stroke="var(--line)"' : ''}/>`;
+      let acc = 0;
+      feeds[i].forEach((l, j) => {
+        const v = Number(l.ml), y1 = y(acc + v), h = y(acc) - y1; acc += v;
+        svg += `<rect x="${x.toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0.5, h - 1.5).toFixed(1)}" rx="2" fill="${color}" opacity="${j % 2 ? 0.78 : 1}"><title>${fmtT(l.at)} ${v}mL</title></rect>`;
+        if (h >= 10) svg += `<text x="${(x + bw / 2).toFixed(1)}" y="${(y1 + h / 2 + 2.5).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="var(--surface)" pointer-events="none">${v}</text>`;
+      });
+      if (totals[i]) svg += `<text x="${(gx + gw / 2).toFixed(1)}" y="${(y(totals[i]) - 3).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--ink)" pointer-events="none">${totals[i]}</text>`;
+      if ((n - 1 - i) % every === 0 || k === sel) svg += `<text x="${(gx + gw / 2).toFixed(1)}" y="${H - 7}" text-anchor="middle" font-size="9" fill="${k === sel ? 'var(--ink)' : 'var(--muted)'}" font-weight="${k === sel ? 700 : 400}" pointer-events="none">${labels[i]}</text>`;
+      svg += '</g>';
+    });
+    return svg + '</svg>';
+  }
+  // The feeds of the chosen day, in order, under the chart.
+  function feedDayHTML(id, k) {
+    const all = feedsOn(id, k), ml = all.filter(l => l.kind !== 'breast' && Number(l.ml) > 0);
+    const total = ml.reduce((s, l) => s + Number(l.ml), 0);
+    const sum = all.length
+      ? L(`合計 ${fmtG(total)}mL ・ ${all.length}回${ml.length ? ` ・ 1回平均 ${Math.round(total / ml.length)}mL` : ''}`, `合計 ${fmtG(total)}mL ・ ${all.length}次${ml.length ? ` ・ 每次平均 ${Math.round(total / ml.length)}mL` : ''}`)
+      : L('授乳の記録なし', '沒有餵奶紀錄');
+    return `<div class="tday"><div class="tday-head"><b>${dayLabel(k)}</b><span class="num">${sum}</span></div>
+      ${all.length ? `<div class="tday-feeds num">${all.map(l => `<span class="${id}"><small>${fmtT(l.at)}</small><b>${l.kind === 'breast' ? L('母乳', '親餵') : `${Number(l.ml) || 0}`}</b>${l.kind === 'breast' ? (l.min ? `<small>${l.min}${L('分', '分')}</small>` : '') : '<small>mL</small>'}</span>`).join('')}</div>` : ''}</div>`;
+  }
   function renderTrend() {
     const el = $('#trend'); if (!el) return;
     document.querySelectorAll('#trend-mode button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.trend === S.trendMode)));
     if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…')}</p>`; return; }
     const now = Date.now(), today = startOfDay(now);
+    const who = S.trendBaby, ids = who === 'both' ? BABY_IDS : [who];
+    const tabs = `<div class="tbaby" role="group" aria-label="${L('表示する子', '顯示的寶寶')}">${[...BABY_IDS.map(id => [id, esc(baby(id).name)]), ['both', L('ふたり', '兩人')]].map(([k, lab]) =>
+      `<button type="button" class="${k}" data-tbaby="${k}" aria-pressed="${who === k}">${lab}</button>`).join('')}</div>`;
 
     // At a glance: today so far vs the average of the last 7 full days.
     const byDay = bucketTotals(S.logs, startOfDay);
@@ -1096,9 +1160,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       const t = (byDay.get(today) || {})[id], v = t ? t[f] : 0, a = avgOf(id, f);
       return `<div class="tile"><b class="num">${fmtG(v)}</b>${unit}<small class="num">${L('平均', '平均')} ${fmtG(Math.round(a))}${unit}</small></div>`;
     };
-    let html = `<div class="tiles">
+    let html = tabs + `<div class="tiles">
       <span class="th">${L('今日', '今天')}</span><span class="th">${TYPE_LABEL.milk}</span><span class="th">${TYPE_LABEL.pee}</span><span class="th">${TYPE_LABEL.poo}</span>
-      ${BABY_IDS.map(id => `<span class="who ${id}">${esc(baby(id).name)}</span>${tile(id, 'ml', 'mL')}${tile(id, 'pee', L('回', '次'))}${tile(id, 'poo', L('回', '次'))}`).join('')}
+      ${ids.map(id => `<span class="who ${id}">${esc(baby(id).name)}</span>${tile(id, 'ml', 'mL')}${tile(id, 'pee', L('回', '次'))}${tile(id, 'poo', L('回', '次'))}`).join('')}
     </div>
     <p class="trend-note" style="margin:-8px 0 10px">${L('大きい数字は今日の合計、小さい数字は直近7日間の1日平均です。', '大的數字是今天的合計，小的數字是最近7天的每日平均。')}</p>`;
 
@@ -1120,13 +1184,22 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     if (S.trendMode === 'month') {
       while (keys.length > 2 && !buckets.has(keys[0])) { keys.shift(); labels.shift(); }
     }
+    const per = S.trendMode === 'month' ? L('月合計', '每月合計') : L('1日あたり', '每天');
     const chart = (f, title, unit) => {
-      const series = BABY_IDS.map(id => ({ name: baby(id).name, color: `var(--${id === 'ane' ? 'ane' : 'imo'})`, values: keys.map(k => (buckets.get(k) || {})[id] ? buckets.get(k)[id][f] : 0) }));
-      const per = S.trendMode === 'month' ? L('月合計', '每月合計') : L('1日あたり', '每天');
+      const series = ids.map(id => ({ name: baby(id).name, color: `var(--${id === 'ane' ? 'ane' : 'imo'})`, values: keys.map(k => (buckets.get(k) || {})[id] ? buckets.get(k)[id][f] : 0) }));
       return `<div class="tchart"><div class="tchart-head"><h3>${title}</h3><small>${per}（${unit}）</small></div>${barChart(labels, series, unit, true)}</div>`;
     };
-    html += `<div class="legend">${BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'});height:10px;width:10px;border-radius:3px"></i>${esc(baby(id).name)}</span>`).join('')}</div>`;
-    html += chart('ml', L('ミルク量', '奶量'), 'mL') + chart('pee', TYPE_LABEL.pee, L('回', '次')) + chart('poo', TYPE_LABEL.poo, L('回', '次'));
+    if (who === 'both') {
+      html += `<div class="legend">${BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'});height:10px;width:10px;border-radius:3px"></i>${esc(baby(id).name)}</span>`).join('')}</div>`;
+      html += chart('ml', L('ミルク量', '奶量'), 'mL');
+    } else if (S.trendMode === 'day') {
+      // One twin by day: bars split into each feed, and the tapped day's feeds listed under the chart.
+      if (!keys.includes(S.trendDay)) S.trendDay = today;
+      html += `<div class="tchart"><div class="tchart-head"><h3>${L('ミルク量', '奶量')}</h3><small>${L('1日の合計を1回ずつに分けて表示（mL）', '每日合計，依每次分段顯示（mL）')}</small></div>${feedChart(who, keys, labels, S.trendDay)}</div>`
+        + feedDayHTML(who, S.trendDay)
+        + `<p class="trend-note">${L('棒の1区切りが1回分のミルクです（下から時間順）。棒をタップすると、その日の内訳を表示します。', '長條的每一段是一次的奶量（由下往上依時間順序）。點長條可以看當天的明細。')}</p>`;
+    } else html += chart('ml', L('ミルク量', '奶量'), 'mL');
+    html += chart('pee', TYPE_LABEL.pee, L('回', '次')) + chart('poo', TYPE_LABEL.poo, L('回', '次'));
     html += `<p class="trend-note">${S.trendMode === 'month'
       ? L('薄い棒は今月（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是本月（統計中）。親餵不計入奶量。')
       : L('薄い棒は今日（集計中）です。母乳（直接）の授乳は量に含みません。', '顏色較淡的是今天（統計中）。親餵不計入奶量。')}</p>`;
@@ -2097,6 +2170,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   // ---------- events ----------
   document.addEventListener('click', e => {
+    // A tapped day in the per-feed milk chart (SVG, so not a button) lists that day's feeds below it.
+    const bar = e.target.closest('[data-tday]');
+    if (bar) { S.trendDay = Number(bar.getAttribute('data-tday')); return renderTrend(); }
     const t = e.target.closest('button, [data-act="close-bg"]');
     if (!t) return;
     const d = t.dataset;
@@ -2142,6 +2218,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.trend) { S.trendMode = d.trend; lsSet('futago-trend', d.trend); return renderTrend(); }
+    if (d.tbaby) { S.trendBaby = d.tbaby; lsSet('futago-trend-baby', d.tbaby); return renderTrend(); }
     if (d.photo) return openPhoto(d.photo);
     if (d.gm) { S.gMetric = d.gm; lsSet('futago-gmetric', d.gm); renderWeights(); return renderChart(); }
     if (d.corr !== undefined) { S.corrected = d.corr === '1'; lsSet('futago-corrected2', S.corrected); renderBirthInfo(); return renderChart(); }
