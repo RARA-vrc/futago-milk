@@ -362,6 +362,11 @@ input, select, textarea { font-size: max(16px, 1em); }
 .paper { position: relative; background: var(--paper); border-radius: 6px 6px 16px 16px; border-top: 5px solid var(--mc); padding: 22px 14px 12px; box-shadow: 0 1px 0 var(--line), 0 8px 18px rgba(0,0,0,.08); }
 .paper:focus-within { box-shadow: 0 0 0 2px color-mix(in srgb, var(--mc) 45%, transparent), 0 8px 18px rgba(0,0,0,.08); }
 .tape { position: absolute; top: -12px; left: 50%; width: 92px; height: 24px; transform: translateX(-50%) rotate(-3deg); background: color-mix(in srgb, var(--mc) 32%, transparent); border-inline: 2px dotted rgba(255,255,255,.55); pointer-events: none; }
+/* the two cats peek over the top corners of the memo pad */
+.memo-compose { margin-top: 62px; padding-top: 40px; }
+.memo-cat { position: absolute; width: 100px; height: auto; pointer-events: none; filter: drop-shadow(0 3px 4px rgba(0,0,0,.16)); }
+.memo-cat.l { left: 4px; top: -66px; transform: rotate(-7deg); }
+.memo-cat.r { right: 4px; top: -70px; transform: rotate(6deg); }
 .memo-who { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
 .memo-who button { display: flex; flex-direction: column; align-items: center; gap: 2px; border: 1.5px dashed var(--line); background: transparent; border-radius: 14px; padding: 6px 2px 4px; font-family: var(--hand); font-size: .9rem; color: var(--muted); min-width: 0; }
 .memo-who button span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1984,6 +1989,8 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         ${isToday ? '' : `<button type="button" class="icon-btn" data-mday="today">${L('今日', '今天')}</button>`}
       </div>
       <div class="memo-compose paper w-${S.memoWho}" id="memo-compose">
+        <img class="memo-cat l" src="cat-hachiware.webp" alt="" aria-hidden="true" width="100" height="86">
+        <img class="memo-cat r" src="cat-tabby.webp" alt="" aria-hidden="true" width="100" height="92">
         <span class="tape" aria-hidden="true"></span>
         <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${whoIcon(w)}<span>${esc(whoName(w))}</span></button>`).join('')}</div>
         <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記')}" placeholder="${L('はじめて笑った、よく飲んだ、ママおつかれさま…など', '第一次笑了、喝得很好、媽媽辛苦了…等等')}">${esc(S.memoDraft)}</textarea>
