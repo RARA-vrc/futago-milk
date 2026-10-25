@@ -31,6 +31,8 @@
   --warn: #9A6A12;
   --warn-soft: #FBF0D9;
   --scrim: rgba(20, 26, 38, .45);
+  --band: rgba(35, 128, 138, .10);
+  --band-2: rgba(35, 128, 138, .16);
   --f-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "BIZ UDPGothic", sans-serif;
   --f-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
 }
@@ -39,6 +41,7 @@
     --bg: #0E131B; --surface: #161D28; --surface-2: #1B2431; --ink: #E4E9F0; --muted: #94A0B2; --line: #283244;
     --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F;
     --danger: #FF8A7D; --danger-soft: #3D1C19; --warn: #E8BC62; --warn-soft: #33290F; --scrim: rgba(0,0,0,.6);
+    --band: rgba(93, 194, 201, .10); --band-2: rgba(93, 194, 201, .17);
     color-scheme: dark;
   }
 }
@@ -46,6 +49,7 @@
   --bg: #0E131B; --surface: #161D28; --surface-2: #1B2431; --ink: #E4E9F0; --muted: #94A0B2; --line: #283244;
   --ane: #EE8CA8; --ane-soft: #3A1F29; --imo: #5DC2C9; --imo-soft: #15302F;
   --danger: #FF8A7D; --danger-soft: #3D1C19; --warn: #E8BC62; --warn-soft: #33290F; --scrim: rgba(0,0,0,.6);
+  --band: rgba(93, 194, 201, .10); --band-2: rgba(93, 194, 201, .17);
   color-scheme: dark;
 }
 
@@ -308,6 +312,42 @@ input, select, textarea { font-size: max(16px, 1em); }
 .tchart svg { display: block; width: 100%; height: auto; }
 .trend-note { font-size: .75rem; color: var(--muted); margin: 8px 0 0; }
 
+.nowrap { white-space: nowrap; }
+/* age on the cards */
+.who-age { display: flex; flex-direction: column; min-width: 0; }
+.who-age .age { color: var(--ink); font-size: .78rem; font-weight: 700; opacity: .8; line-height: 1.35; }
+.age-add { align-self: flex-start; border: 1px dashed color-mix(in srgb, var(--c) 60%, transparent); background: transparent; color: var(--c); border-radius: 99px; font-size: .75rem; font-weight: 700; padding: 2px 10px; margin-top: 2px; }
+/* birth info + growth chart */
+.birth-cta { background: var(--surface-2); border: 1px dashed var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.birth-cta p { margin: 0; font-size: .88rem; }
+.birth-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 8px; margin-bottom: 8px; }
+.birth-item { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; font-size: .84rem; line-height: 1.45; min-width: 0; }
+.birth-item b { font-family: var(--f-display); }
+.birth-item.ane b { color: var(--ane); } .birth-item.imouto b { color: var(--imo); }
+.birth-item small { color: var(--muted); }
+.birth-tools { justify-content: space-between; margin-bottom: 6px; }
+.chart-wrap svg { min-width: 0; }
+.growth-where { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 6px 0 0; font-size: .85rem; }
+.growth-where b.ane { color: var(--ane); } .growth-where b.imouto { color: var(--imo); }
+.ga-row { display: flex; align-items: center; gap: 8px; }
+.ga-row select { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; min-height: 46px; padding: 0 10px; min-width: 5.5rem; font-family: var(--f-display); font-weight: 700; }
+.settings-baby h3.ane { color: var(--ane); } .settings-baby h3.imouto { color: var(--imo); }
+/* development milestones */
+.dev-scale { position: relative; height: 16px; margin: 6px 0 2px; font-size: .68rem; color: var(--muted); }
+.dev-scale span { position: absolute; transform: translateX(-50%); }
+.dev-scale em { position: absolute; right: 0; top: 14px; font-style: normal; }
+.dev-row { padding: 10px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.dev-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+.dev-head b { font-family: var(--f-display); }
+.dev-head small { color: var(--muted); font-size: .78rem; }
+.dev-track { position: relative; height: 10px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 99px; }
+.dev-win { position: absolute; top: -1px; bottom: -1px; background: color-mix(in srgb, var(--imo) 45%, transparent); border-radius: 99px; }
+.dev-now { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--danger); }
+.dev-now.imouto { opacity: .7; }
+.dev-done { display: flex; gap: 6px; flex-wrap: wrap; }
+.dev-done .chip { border: 1px solid transparent; padding: 2px 10px; min-height: 32px; opacity: .55; }
+.dev-done .chip[aria-pressed="true"] { opacity: 1; border-color: currentColor; }
+
 /* time picker */
 .tp { display: flex; flex-direction: column; gap: 8px; }
 .tp-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
@@ -442,9 +482,17 @@ input, select, textarea { font-size: max(16px, 1em); }
       <h2 id="w-title" data-zh="體重變化">体重の推移</h2>
       <div class="row" id="w-add"></div>
     </div>
+    <div id="birth-info"></div>
     <div class="legend" id="legend"></div>
     <div class="chart-wrap" id="chart"></div>
     <div class="wtables" id="wtable"></div>
+  </section>
+
+  <section class="panel view" data-view="weight" aria-labelledby="dev-title">
+    <div class="panel-head">
+      <h2 id="dev-title" data-zh="發展參考">発達の目安</h2>
+    </div>
+    <div id="dev"></div>
   </section>
 
   <footer class="foot">
@@ -572,7 +620,8 @@ input, select, textarea { font-size: max(16px, 1em); }
     dbRecent: [], dbWeights: [],
     local: lsGet(LS_DATA, { babies: {}, logs: {} }),
     filter: 'all', daysShown: 3, wShown: 8, planStart: {}, simOpen: null,
-    trendMode: lsGet('futago-trend', 'day') === 'month' ? 'month' : 'day', history: null, historyLoading: false, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
+    trendMode: lsGet('futago-trend', 'day') === 'month' ? 'month' : 'day', history: null, historyLoading: false,
+    corrected: lsGet('futago-corrected', true) !== false, tab: ['now', 'plan', 'log', 'weight'].includes(lsGet('futago-tab', 'now')) ? lsGet('futago-tab', 'now') : 'now',
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -673,9 +722,18 @@ input, select, textarea { font-size: max(16px, 1em); }
     if (S.mode === 'db') bg(S.db.collection('logs').doc(id).delete());
     else { delete S.local.logs[id]; lsSet(LS_DATA, S.local); fromLocal(); render(); }
   }
+  // Merges into the twin's settings doc, so saving names never wipes birth data or milestones.
+  // A milestone value of null removes that milestone.
   async function saveBaby(id, data) {
-    if (S.mode === 'db') bg(S.db.doc('babies/' + id).set(data));
-    else { S.local.babies[id] = data; lsSet(LS_DATA, S.local); fromLocal(); render(); }
+    if (S.mode === 'db') {
+      const body = { ...data };
+      if (body.ms) body.ms = Object.fromEntries(Object.entries(body.ms).map(([k, v]) => [k, v === null ? firebase.firestore.FieldValue.delete() : v]));
+      bg(S.db.doc('babies/' + id).set(body, { merge: true }));
+    } else {
+      const cur = S.local.babies[id] || {}, next = { ...cur, ...data };
+      if (data.ms) { next.ms = { ...(cur.ms || {}) }; for (const [k, v] of Object.entries(data.ms)) { if (v === null) delete next.ms[k]; else next.ms[k] = v; } }
+      S.local.babies[id] = next; lsSet(LS_DATA, S.local); fromLocal(); render();
+    }
   }
 
   function renderGate() {
@@ -745,7 +803,7 @@ input, select, textarea { font-size: max(16px, 1em); }
 
   // ---------- render ----------
   function render() {
-    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderTrend(); renderChart(); renderWeights(); renderAlarmBar(); renderModeNote(); tick();
+    renderGate(); renderNames(); renderCards(); renderPlanSim(); renderPlan(); renderTimeline(); renderTrend(); renderBirthInfo(); renderChart(); renderWeights(); renderDev(); renderAlarmBar(); renderModeNote(); tick();
   }
   function renderNames() {
     document.querySelectorAll('#filter [data-name]').forEach(b => { b.textContent = baby(b.dataset.name).name; });
@@ -776,7 +834,9 @@ input, select, textarea { font-size: max(16px, 1em); }
       // Card reads top to bottom: when is the next feed → what was the last one → record → today's totals.
       return `<article class="card" data-baby="${id}">
         <div class="card-head">
-          <h2>${esc(b.name)}</h2>
+          <div class="who-age"><h2>${esc(b.name)}</h2>${b.birthAt
+            ? `<small class="age">${ageText(id, true)}</small>`
+            : `<button type="button" class="age-add" data-act="birth">${L('＋ 出生日を登録', '＋ 登錄出生日')}</button>`}</div>
           <div class="weight">${wHTML}</div>
         </div>
         <div class="next">
@@ -1021,6 +1081,249 @@ input, select, textarea { font-size: max(16px, 1em); }
     el.innerHTML = html;
   }
 
+  // ---------- birth, age, growth curve and development ----------
+  // Reference data: こども家庭庁「令和5年乳幼児身体発育調査」(2024-12 公表)
+  //   表1 女子の体重 3/10/25/50/75/90/97 パーセンタイル値 (kg) — the twins are girls.
+  //   表9・表10 一般調査による運動・言語機能通過率 (%) by age band "m～m+1か月未満".
+  const DAYS_PER_MONTH = 30.4375, TERM_DAYS = 280, PRETERM_DAYS = 37 * 7;
+  const PCT = [3, 10, 25, 50, 75, 90, 97];
+  // [age in days, ...weight kg]. Month bands are placed at their midpoint (e.g. "1～2月未満" at 1.5 months).
+  const GIRL_WEIGHT = [
+    [0, 2.22, 2.46, 2.70, 2.95, 3.21, 3.44, 3.66], [1, 2.17, 2.37, 2.61, 2.85, 3.09, 3.32, 3.56],
+    [2, 2.12, 2.33, 2.56, 2.80, 3.05, 3.27, 3.49], [3, 2.13, 2.34, 2.57, 2.81, 3.06, 3.28, 3.51],
+    [4, 2.13, 2.35, 2.57, 2.82, 3.07, 3.30, 3.51], [30, 3.05, 3.32, 3.60, 3.91, 4.21, 4.48, 4.74],
+    [1.5, 3.51, 3.81, 4.11, 4.44, 4.77, 5.07, 5.36], [2.5, 4.27, 4.61, 4.95, 5.33, 5.71, 6.06, 6.39],
+    [3.5, 4.90, 5.27, 5.64, 6.06, 6.48, 6.86, 7.24], [4.5, 5.40, 5.79, 6.19, 6.64, 7.10, 7.51, 7.92],
+    [5.5, 5.79, 6.20, 6.63, 7.10, 7.59, 8.03, 8.46], [6.5, 6.10, 6.53, 6.97, 7.47, 7.97, 8.44, 8.90],
+    [7.5, 6.34, 6.78, 7.24, 7.75, 8.28, 8.76, 9.25], [8.5, 6.54, 6.99, 7.46, 7.99, 8.53, 9.03, 9.54],
+    [9.5, 6.70, 7.16, 7.64, 8.19, 8.75, 9.26, 9.79], [10.5, 6.85, 7.32, 7.80, 8.36, 8.94, 9.47, 10.01],
+    [11.5, 6.99, 7.46, 7.96, 8.53, 9.12, 9.66, 10.22], [15, 7.49, 7.98, 8.51, 9.12, 9.76, 10.36, 10.97],
+    [21, 8.50, 9.04, 9.62, 10.30, 11.03, 11.71, 12.43], [27, 9.52, 10.11, 10.74, 11.50, 12.31, 13.10, 13.92],
+  ].map(([a, ...kg], i) => [i < 6 ? a : a * DAYS_PER_MONTH, ...kg.map(v => v * 1000)]);   // rows after the 30-day one are in months
+  // Pass rate (%) by lower bound of the month band.
+  const MILESTONES = [
+    { key: 'neck', ja: '首がすわる', zh: '頸部挺直（抬頭穩定）', rates: { 2: 5.6, 3: 53.7, 4: 93.5, 5: 100 } },
+    { key: 'roll', ja: '寝返り', zh: '翻身', rates: { 2: 1.6, 3: 20.7, 4: 56.9, 5: 89.7, 6: 97.6, 7: 100 } },
+    { key: 'sit', ja: 'ひとりすわり', zh: '獨坐', rates: { 5: 3.2, 6: 30.1, 7: 65.9, 8: 84.4, 9: 91.7, 10: 98.5, 11: 99.3, 12: 100 } },
+    { key: 'crawl', ja: 'はいはい', zh: '爬行', rates: { 5: 6.3, 6: 19.5, 7: 47.6, 8: 67.4, 9: 76.9, 10: 91.0, 11: 99.3, 12: 99.0, 13: 98.7, 14: 100 } },
+    { key: 'pullup', ja: 'つかまり立ち', zh: '扶物站立', rates: { 5: 2.4, 6: 7.3, 7: 31.7, 8: 61.2, 9: 81.3, 10: 88.1, 11: 96.3, 12: 99.0, 13: 98.7, 14: 100 } },
+    { key: 'walk', ja: 'ひとり歩き', zh: '獨立行走', rates: { 8: 2.3, 9: 6.0, 10: 9.0, 11: 30.9, 12: 47.9, 13: 55.3, 14: 83.0, 15: 88.4, 16: 96.9, 17: 95.1, 18: 97.5, 19: 97.8, 20: 98.6, 21: 100 } },
+    { key: 'word', ja: 'ことばを話す（1語以上）', zh: '會說話（1個詞以上）', rates: { 5: 0.8, 6: 0, 7: 1.6, 8: 3.9, 9: 3.0, 10: 10.4, 11: 21.3, 12: 36.5, 13: 51.3, 14: 61.7, 15: 69.6, 16: 80.6, 17: 86.9, 18: 91.1, 19: 92.4, 20: 93.2, 21: 97.1, 22: 98.7, 23: 94.3 } },
+  ].map(m => {
+    const ages = Object.keys(m.rates).map(Number).sort((a, b) => a - b);
+    return { ...m, from: ages.find(a => m.rates[a] >= 50), to: ages.find(a => m.rates[a] >= 90) + 1 };   // "most children" window
+  });
+
+  const hasBirth = id => !!baby(id).birthAt;
+  const gaDaysOf = b => b.gaWeeks ? b.gaWeeks * 7 + (b.gaDays || 0) : null;
+  const isPreterm = b => { const g = gaDaysOf(b); return g !== null && g < PRETERM_DAYS; };
+  // Corrected age counts from the due date (40w0d); used for preterm babies' growth and development.
+  const dueDateOf = b => b.birthAt + (TERM_DAYS - gaDaysOf(b)) * DAY;
+  const ageBase = (b, corrected) => corrected && isPreterm(b) ? dueDateOf(b) : b.birthAt;
+  const dayAge = (from, at = Date.now()) => Math.round((startOfDay(at) - startOfDay(from)) / DAY);   // birth day = 日齢0
+  function monthAge(from, at = Date.now()) {
+    const a = new Date(from), b = new Date(at);
+    let m = (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth();
+    if (b.getDate() < a.getDate()) m--;
+    const anchor = new Date(a.getFullYear(), a.getMonth() + m, a.getDate());
+    return { m, d: dayAge(anchor.getTime(), at) };
+  }
+  function ymdText({ m, d }) {
+    const y = Math.floor(m / 12), mo = m % 12;
+    const parts = [];
+    if (y) parts.push(L(`${y}歳`, `${y}歲`));
+    if (mo || (!y && m)) parts.push(L(`${mo}か月`, `${mo}個月`));
+    parts.push(L(`${d}日`, `${d}天`));
+    return parts.join('');
+  }
+  function ageText(id, short) {
+    const b = baby(id); if (!b.birthAt) return '';
+    const days = dayAge(b.birthAt), ma = monthAge(b.birthAt);
+    // card (short): "生後12日" / "日齢34・1か月3日"; full: "生後1か月3日（日齢34）"
+    let t = short
+      ? (ma.m ? `${L('日齢', '日齡')}${days}・${ymdText(ma)}` : `${L('生後', '出生')}${days}${L('日', '天')}`)
+      : `${L('生後', '出生')}${ymdText(ma)}（${L('日齢', '日齡')}${days}）`;
+    if (isPreterm(b)) {
+      const due = dueDateOf(b), cd = dayAge(due);
+      t += ` ・ <span class="nowrap">${L('修正', '矯正')}` + (cd < 0 ? L(`予定日まで${-cd}日`, `距預產期${-cd}天`) : ymdText(monthAge(due))) + '</span>';
+    }
+    return t;
+  }
+  const gaText = b => b.gaWeeks ? L(`${b.gaWeeks}週${b.gaDays || 0}日`, `${b.gaWeeks}週${b.gaDays || 0}天`) : '';
+
+  // Birth form: date and weeks of gestation are shared by the twins; time, weight and length are per twin.
+  function openBirth() {
+    const a = baby('ane'), b = baby('imouto'), src = a.birthAt ? a : b;
+    const d = src.birthAt ? new Date(src.birthAt) : new Date();
+    S.form = {
+      type: 'birth',
+      date: `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`,
+      gaWeeks: src.gaWeeks || '', gaDays: src.gaDays ?? '',
+      per: Object.fromEntries(BABY_IDS.map(id => {
+        const x = baby(id), t = x.birthAt ? new Date(x.birthAt) : null;
+        return [id, { time: t ? `${p2(t.getHours())}:${p2(t.getMinutes())}` : '', weight: x.birthWeight || '', length: x.birthLength || '' }];
+      })),
+    };
+    renderBirth();
+  }
+  function renderBirth() {
+    const F = S.form;
+    const wk = Array.from({ length: 21 }, (_, i) => 22 + i), dy = [0, 1, 2, 3, 4, 5, 6];
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+      <div class="sheet-head"><h2>${L('出生時の記録', '出生紀錄')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <p class="hint">${L('日齢・月齢の表示、成長曲線、発達の目安に使います。37週未満で生まれた場合は修正月齢も計算します。', '用於顯示日齡・月齡、生長曲線與發展參考。未滿37週出生時，也會計算矯正月齡。')}</p>
+      <div class="field"><label for="b-date">${L('生年月日（ふたり共通）', '出生日期（兩人相同）')}</label><input type="date" id="b-date" value="${esc(F.date)}" max="${toDateInput(Date.now())}"></div>
+      <div class="field"><span class="lbl">${L('在胎週数（ふたり共通）', '出生週數（兩人相同）')}</span>
+        <div class="ga-row">
+          <select id="b-gaw" aria-label="${L('週', '週')}"><option value="">--</option>${wk.map(w => `<option value="${w}" ${Number(F.gaWeeks) === w ? 'selected' : ''}>${w}</option>`).join('')}</select><span>${L('週', '週')}</span>
+          <select id="b-gad" aria-label="${L('日', '天')}">${dy.map(v => `<option value="${v}" ${Number(F.gaDays || 0) === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span>${L('日', '天')}</span>
+        </div>
+        <p class="hint">${L('母子手帳の「出産の状態」に書かれている週数です（例：36週4日）。', '請填寫兒童健康手冊上記載的週數（例：36週4天）。')}</p></div>
+      ${BABY_IDS.map(id => `<div class="settings-baby">
+        <h3 class="${id}">${esc(baby(id).name)}</h3>
+        <div class="field wide"><label for="b-${id}-time">${L('出生時刻', '出生時間')}</label><input type="time" id="b-${id}-time" value="${esc(F.per[id].time)}"></div>
+        <div class="field"><label for="b-${id}-w">${L('出生体重（g）', '出生體重（g）')}</label><input type="number" inputmode="numeric" min="300" max="6000" id="b-${id}-w" value="${esc(F.per[id].weight)}"></div>
+        <div class="field"><label for="b-${id}-l">${L('出生身長（cm・任意）', '出生身長（cm・選填）')}</label><input type="number" inputmode="decimal" step="0.1" min="20" max="65" id="b-${id}-l" value="${esc(F.per[id].length)}"></div>
+      </div>`).join('')}
+      <div class="sheet-actions"><span class="spacer"></span>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
+        <button type="submit" class="btn solid" id="f-save">${L('保存', '儲存')}</button>
+      </div>
+    </form></div>`;
+  }
+  const toDateInput = ms => { const d = new Date(ms); return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`; };
+  async function submitBirth() {
+    const date = $('#b-date').value, gaw = Number($('#b-gaw').value) || null, gad = Number($('#b-gad').value) || 0;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date || '');
+    if (!m) return toast(L('生年月日を入れてください。', '請輸入出生日期。'));
+    for (const id of BABY_IDS) {
+      const tm = /^(\d{1,2}):(\d{2})$/.exec($(`#b-${id}-time`).value || '');
+      const at = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), tm ? Number(tm[1]) : 12, tm ? Number(tm[2]) : 0).getTime();
+      if (at > Date.now() + FUTURE_OK) return toast(L('生年月日・時刻が未来になっています。', '出生日期・時間是未來的時間。'));
+      const w = Number($(`#b-${id}-w`).value) || null, len = Number($(`#b-${id}-l`).value) || null;
+      if (w !== null && !(w >= 300 && w <= 6000)) return toast(L('出生体重は300〜6,000gで入力してください。', '出生體重請輸入300〜6,000g。'));
+      if (len !== null && !(len >= 20 && len <= 65)) return toast(L('出生身長は20〜65cmで入力してください。', '出生身長請輸入20〜65cm。'));
+      await saveBaby(id, { birthAt: at, birthTimeKnown: !!tm, birthWeight: w, birthLength: len, gaWeeks: gaw, gaDays: gaw ? gad : null });
+    }
+    S.form = null; renderForm(); render(); toast(L('出生時の記録を保存しました', '已儲存出生紀錄'));
+  }
+
+  function renderBirthInfo() {
+    const el = $('#birth-info'); if (!el) return;
+    if (!BABY_IDS.some(hasBirth)) {
+      el.innerHTML = `<div class="birth-cta"><p>${L('出生時の記録を入れると、日齢・月齢と成長曲線（全国の発育値）で比べられます。', '輸入出生紀錄後，就能看到日齡・月齡，並與生長曲線（全國發育值）比較。')}</p>
+        <button type="button" class="btn solid" data-act="birth">${L('出生時の記録を入れる', '輸入出生紀錄')}</button></div>`;
+      return;
+    }
+    const pre = BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id)));
+    el.innerHTML = `<div class="birth-row">${BABY_IDS.map(id => { const b = baby(id); return `<div class="birth-item ${id}"><b>${esc(b.name)}</b>
+        <span>${b.birthAt ? `${toDateInput(b.birthAt).replace(/-/g, '/')}${b.birthTimeKnown ? ' ' + fmtT(b.birthAt) : ''}` : '—'}${b.birthWeight ? ` ・ ${fmtG(b.birthWeight)}g` : ''}${b.gaWeeks ? ` ・ ${gaText(b)}` : ''}</span>
+        <small>${ageText(id) || ''}</small></div>`; }).join('')}</div>
+      <div class="row birth-tools">
+        <button type="button" class="fix-last" data-act="birth">${L('出生時の記録を編集', '編輯出生紀錄')}</button>
+        ${pre ? `<div class="seg" role="group" aria-label="${L('横軸', '橫軸')}">
+          <button type="button" data-corr="1" aria-pressed="${S.corrected}">${L('修正月齢', '矯正月齡')}</button>
+          <button type="button" data-corr="0" aria-pressed="${!S.corrected}">${L('生後月齢', '實際月齡')}</button></div>` : ''}
+      </div>`;
+  }
+
+  // Weight against the girls' percentile band (3–97 shaded, 10–90 darker, 50 line), x = age in days.
+  function renderGrowthChart() {
+    const series = BABY_IDS.filter(hasBirth).map(id => {
+      const b = baby(id), base = ageBase(b, S.corrected);
+      const pts = weightsOf(id).map(l => ({ x: (l.at - base) / DAY, g: Number(l.grams) })).filter(p => p.g > 0);
+      if (b.birthWeight) pts.push({ x: (b.birthAt - base) / DAY, g: Number(b.birthWeight), birth: true });
+      return { id, pts: pts.sort((a, c) => a.x - c.x) };
+    });
+    $('#legend').innerHTML = BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'})"></i>${esc(baby(id).name)}</span>`).join('')
+      + `<span><i style="background:var(--band);height:10px"></i>${L('全国の3〜97%の範囲', '全國3〜97%範圍')}</span>`;
+    const all = series.flatMap(s => s.pts);
+    const nowX = Math.max(...BABY_IDS.filter(hasBirth).map(id => (Date.now() - ageBase(baby(id), S.corrected)) / DAY));
+    const x0 = Math.min(0, ...all.map(p => p.x)), x1 = Math.min(730, Math.max(90, nowX + 45, ...all.map(p => p.x + 15)));
+    const W = 360, H = 260, pl = 40, pr = 26, pt = 10, pb = 26;
+    const curve = GIRL_WEIGHT.filter(r => r[0] <= x1 + 200);
+    const inRange = curve.filter(r => r[0] <= x1);
+    const gMax = Math.max(...all.map(p => p.g), ...inRange.map(r => r[7])), gMin = Math.min(...all.map(p => p.g), ...inRange.map(r => r[1]));
+    const step = gMax - gMin > 4000 ? 1000 : 500;
+    const g0 = Math.floor((gMin - 100) / step) * step, g1 = Math.ceil((gMax + 100) / step) * step;
+    const x = d => pl + (d - x0) / (x1 - x0) * (W - pl - pr), y = g => pt + (1 - (g - g0) / (g1 - g0)) * (H - pt - pb);
+    const clip = `<clipPath id="gc"><rect x="${pl}" y="${pt}" width="${W - pl - pr}" height="${H - pt - pb}"/></clipPath>`;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L('体重と成長曲線', '體重與生長曲線')}">${clip}`;
+    for (let g = g0; g <= g1; g += step) {
+      svg += `<line x1="${pl}" x2="${W - pr}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width=".6"/>`;
+      svg += `<text x="${pl - 4}" y="${y(g) + 3}" text-anchor="end" font-size="9" fill="var(--muted)">${(g / 1000).toFixed(1)}kg</text>`;
+    }
+    const band = (lo, hi, fill) => `<path clip-path="url(#gc)" fill="${fill}" d="M${curve.map(r => `${x(r[0]).toFixed(1)},${y(r[lo]).toFixed(1)}`).join('L')}L${curve.slice().reverse().map(r => `${x(r[0]).toFixed(1)},${y(r[hi]).toFixed(1)}`).join('L')}Z"/>`;
+    svg += band(1, 7, 'var(--band)') + band(2, 6, 'var(--band-2)');
+    svg += `<polyline clip-path="url(#gc)" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" points="${curve.map(r => `${x(r[0]).toFixed(1)},${y(r[4]).toFixed(1)}`).join(' ')}"/>`;
+    [[1, '3'], [4, '50'], [7, '97']].forEach(([k, lab]) => {
+      const yy = y(interp(x1, k));
+      if (yy > pt && yy < H - pb) svg += `<text x="${W - pr + 3}" y="${yy + 3}" font-size="8" fill="var(--muted)">${lab}</text>`;
+    });
+    // month ticks
+    const mStep = x1 > 365 ? 3 : x1 > 180 ? 2 : 1;
+    for (let mo = 0; mo * DAYS_PER_MONTH <= x1; mo += mStep) {
+      const xx = x(mo * DAYS_PER_MONTH);
+      svg += `<line x1="${xx}" x2="${xx}" y1="${H - pb}" y2="${H - pb + 3}" stroke="var(--muted)"/><text x="${xx}" y="${H - pb + 13}" text-anchor="middle" font-size="9" fill="var(--muted)">${mo}${L('か月', '月')}</text>`;
+    }
+    svg += `<line x1="${pl}" x2="${W - pr}" y1="${H - pb}" y2="${H - pb}" stroke="var(--muted)"/>`;
+    if (nowX > x0 && nowX < x1) svg += `<line x1="${x(nowX)}" x2="${x(nowX)}" y1="${pt}" y2="${H - pb}" stroke="var(--danger)" stroke-width="1" stroke-dasharray="2 3"/><text x="${x(nowX) + 3}" y="${pt + 8}" font-size="8" fill="var(--danger)">${L('今日', '今天')}</text>`;
+    for (const s of series) {
+      if (!s.pts.length) continue;
+      const col = `var(--${s.id === 'ane' ? 'ane' : 'imo'})`;
+      if (s.pts.length > 1) svg += `<polyline fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" points="${s.pts.map(p => `${x(p.x).toFixed(1)},${y(p.g).toFixed(1)}`).join(' ')}"/>`;
+      s.pts.forEach((p, k) => {
+        const lastPt = k === s.pts.length - 1;
+        svg += `<circle cx="${x(p.x).toFixed(1)}" cy="${y(p.g).toFixed(1)}" r="${lastPt ? 4 : 2.6}" fill="${lastPt ? col : 'var(--surface)'}" stroke="${col}" stroke-width="1.6"><title>${esc(baby(s.id).name)} ${fmtG(p.g)}g${p.birth ? L('（出生時）', '（出生時）') : ''}</title></circle>`;
+      });
+    }
+    svg += '</svg>';
+    // Where the latest weight sits within the national distribution.
+    const where = series.map(s => {
+      const lp = s.pts[s.pts.length - 1]; if (!lp) return '';
+      const vals = PCT.map((_, k) => interp(Math.max(0, lp.x), k + 1));
+      let band = L('3%未満', '低於3%');
+      for (let k = 0; k < PCT.length; k++) if (lp.g >= vals[k]) band = k === PCT.length - 1 ? L('97%以上', '97%以上') : L(`${PCT[k]}〜${PCT[k + 1]}%`, `${PCT[k]}〜${PCT[k + 1]}%`);
+      return `<span><b class="${s.id}">${esc(baby(s.id).name)}</b> ${fmtG(lp.g)}g ・ ${band}</span>`;
+    }).filter(Boolean).join('');
+    $('#chart').innerHTML = svg + `<p class="growth-where">${where}</p>
+      <p class="trend-note">${L(`帯はこども家庭庁「令和5年乳幼児身体発育調査」女子の体重（濃い帯10〜90%、点線50%）。${BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id))) && S.corrected ? '早産のため横軸は修正月齢（予定日=0）です。' : ''}発育は個人差が大きいので、気になるときは健診で相談してください。`,
+        `色帶為日本兒童家庭廳「2023年嬰幼兒身體發育調查」女童體重（深色10〜90%，虛線50%）。${BABY_IDS.some(id => hasBirth(id) && isPreterm(baby(id))) && S.corrected ? '因早產，橫軸為矯正月齡（預產期=0）。' : ''}發育個別差異大，若有疑慮請於健檢時諮詢。`)}</p>`;
+  }
+  // Linear interpolation of a percentile column (1..7) at an age in days.
+  function interp(d, k) {
+    const c = GIRL_WEIGHT;
+    if (d <= c[0][0]) return c[0][k];
+    for (let i = 1; i < c.length; i++) if (d <= c[i][0]) { const [a, b] = [c[i - 1], c[i]]; return a[k] + (b[k] - a[k]) * (d - a[0]) / (b[0] - a[0]); }
+    return c[c.length - 1][k];
+  }
+
+  // Development: each milestone's "most children" window on a 0–24 month track, with today's (corrected) age marked.
+  function renderDev() {
+    const el = $('#dev'); if (!el) return;
+    const ids = BABY_IDS.filter(hasBirth);
+    if (!ids.length) { el.innerHTML = `<p class="empty-note">${L('出生時の記録を入れると、月齢に合わせた発達の目安が表示されます。', '輸入出生紀錄後，會依月齡顯示發展參考。')}</p>`; return; }
+    const ageM = id => { const b = baby(id); return (Date.now() - ageBase(b, true)) / DAY / DAYS_PER_MONTH; };
+    const MAXM = 24, pos = m => `${Math.max(0, Math.min(100, m / MAXM * 100)).toFixed(1)}%`;
+    const mLabel = m => m >= 12 ? L(`1歳${m - 12 ? `${m - 12}か月` : ''}`, `1歲${m - 12 ? `${m - 12}個月` : ''}`) : L(`${m}か月`, `${m}個月`);
+    const rateAt = (ms, m) => { const keys = Object.keys(ms.rates).map(Number).filter(k => k <= Math.floor(m)); return keys.length ? ms.rates[Math.max(...keys)] : 0; };
+    const nowMarks = ids.map(id => `<i class="dev-now ${id}" style="left:${pos(ageM(id))}"></i>`).join('');
+    const ticks = [0, 3, 6, 9, 12, 18, 24].map(m => `<span style="left:${pos(m)}">${m}</span>`).join('');
+    el.innerHTML = `<p class="hint">${L('帯は全国で半数〜9割の子ができるようになる時期です。縦線は今の月齢', '色帶是全國半數〜9成寶寶會做到的時期。直線是目前月齡')}${ids.some(id => isPreterm(baby(id))) ? L('（修正月齢）', '（矯正月齡）') : ''}。${L('できたらボタンで記録できます。', '做到了可以點按鈕記錄。')}</p>
+      <div class="dev-scale">${ticks}<em>${L('か月', '個月')}</em></div>
+      ${MILESTONES.map(ms => {
+        const done = BABY_IDS.map(id => baby(id).ms && baby(id).ms[ms.key]);
+        const a = ageM(ids[0]), r = rateAt(ms, a);
+        const status = a < ms.from - 1 ? L('これから', '之後') : a < ms.from ? L('もうすぐ', '快了') : a < ms.to ? L(`できる子が増える時期（約${Math.round(r)}%）`, `會做的寶寶逐漸增加（約${Math.round(r)}%）`) : L('多くの子ができる時期', '多數寶寶會做到的時期');
+        return `<div class="dev-row">
+          <div class="dev-head"><b>${L(ms.ja, ms.zh)}</b><small>${mLabel(ms.from)}〜${mLabel(ms.to)}${L('ごろ', '左右')} ・ ${status}</small></div>
+          <div class="dev-track"><span class="dev-win" style="left:${pos(ms.from)};width:calc(${pos(ms.to)} - ${pos(ms.from)})"></span>${nowMarks}</div>
+          <div class="dev-done">${BABY_IDS.map((id, k) => `<button type="button" class="chip ${id}" data-ms="${id}:${ms.key}" aria-pressed="${!!done[k]}">${esc(baby(id).name)} ${done[k] ? `${L('できた', '做到了')} ${new Date(done[k]).getMonth() + 1}/${new Date(done[k]).getDate()}` : L('まだ', '還沒')}</button>`).join('')}</div>
+        </div>`;
+      }).join('')}
+      <p class="trend-note">${L('出典：こども家庭庁「令和5年乳幼児身体発育調査」一般調査による乳幼児の運動・言語機能通過率。発達には個人差があります。早産の場合は修正月齢で見ます。気になることは健診や小児科で相談してください。', '資料來源：日本兒童家庭廳「2023年嬰幼兒身體發育調查」運動・語言功能通過率。發展有個別差異，早產兒以矯正月齡來看。若有疑慮請於健檢或小兒科諮詢。')}</p>`;
+  }
+
   function renderWeights() {
     $('#w-add').innerHTML = BABY_IDS.map(id => `<button type="button" class="w-btn ${id}" data-add="weight" data-baby="${id}">${L(`${esc(baby(id).name)}の体重を記録`, `記錄${esc(baby(id).name)}的體重`)}</button>`).join('');
     $('#wtable').innerHTML = BABY_IDS.map(id => {
@@ -1045,6 +1348,7 @@ input, select, textarea { font-size: max(16px, 1em); }
   }
 
   function renderChart() {
+    if (BABY_IDS.some(hasBirth)) return renderGrowthChart();   // with a birth date, weight is drawn against age and the growth curve
     const series = BABY_IDS.map(id => ({ id, pts: weightsOf(id).map(l => ({ t: l.at, g: Number(l.grams) })).filter(p => p.g > 0).sort((a, b) => a.t - b.t) }));
     $('#legend').innerHTML = BABY_IDS.map(id => `<span><i style="background:var(--${id === 'ane' ? 'ane' : 'imo'})"></i>${esc(baby(id).name)}</span>`).join('');
     const all = series.flatMap(s => s.pts);
@@ -1290,6 +1594,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     if (F.type === 'settings') return renderSettings();
     if (F.type === 'shortcut') return renderShortcutHelp();
     if (F.type === 'batch') return renderBatch();
+    if (F.type === 'birth') return renderBirth();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -1396,6 +1701,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
       <div class="sheet-head"><h2>${only ? L(`${esc(baby(only).name)}の授乳間隔と量`, `${esc(baby(only).name)}的餵奶間隔與量`) : L('設定', '設定')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
       ${only ? '' : `<a class="btn help-link" href="help.html">${L('使い方（仕様解説）を見る', '查看使用說明')}</a>
+        <button type="button" class="btn" data-act="birth">${L('出生時の記録（生年月日・在胎週数・出生体重）', '出生紀錄（出生日期・出生週數・出生體重）')}</button>
         <div class="settings-block"><h3>言語 / 語言</h3>${langSwitchHTML()}<p class="hint">${L('この端末だけの設定です。', '只會套用在此裝置。')}</p></div>
         <div class="settings-block" id="alarm-block">${alarmBlockHTML()}</div>
         <div class="settings-block">
@@ -1636,6 +1942,13 @@ input, select, textarea { font-size: max(16px, 1em); }
     }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.trend) { S.trendMode = d.trend; lsSet('futago-trend', d.trend); return renderTrend(); }
+    if (d.corr !== undefined) { S.corrected = d.corr === '1'; lsSet('futago-corrected', S.corrected); renderBirthInfo(); return renderChart(); }
+    if (d.ms) {
+      // Tap toggles "できた" (dated today) ↔ "まだ" for that twin.
+      const [id, key] = d.ms.split(':'), done = baby(id).ms && baby(id).ms[key];
+      saveBaby(id, { ms: { [key]: done ? null : Date.now() } });   // the live snapshot redraws the list
+      return;
+    }
     if (d.int) {
       const [id, h] = d.int.split(':'), input = document.getElementById(`s-${id}-int`);
       if (input) input.value = h;
@@ -1686,6 +1999,7 @@ input, select, textarea { font-size: max(16px, 1em); }
       case 'sim-done': S.simOpen = null; return renderPlanSim(true);
       case 'sim-clear': delete S.planStart[S.simOpen]; S.simOpen = null; renderPlanSim(true); return renderPlan();
       case 'batch': return openBatch();
+      case 'birth': return openBirth();
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
       case 'close': S.form = null; return renderForm();
@@ -1719,6 +2033,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     e.preventDefault();
     if (S.form && S.form.type === 'settings') submitSettings();
     else if (S.form && S.form.type === 'batch') submitBatch();
+    else if (S.form && S.form.type === 'birth') submitBirth();
     else submitForm();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
