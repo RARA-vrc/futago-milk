@@ -313,6 +313,24 @@ input, select, textarea { font-size: max(16px, 1em); }
 .trend-note { font-size: .75rem; color: var(--muted); margin: 8px 0 0; }
 
 .nowrap { white-space: nowrap; }
+/* icon photos */
+.who-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex: none; display: inline-block; vertical-align: middle; background: var(--surface); }
+.avatar.lg { width: 48px; height: 48px; border: 2px solid var(--c, var(--line)); }
+.avatar.sm { width: 26px; height: 26px; margin-right: 6px; }
+.avatar.xl { width: 72px; height: 72px; border: 3px solid rgba(255,255,255,.8); }
+.avatar.ph { display: inline-flex; align-items: center; justify-content: center; font-family: var(--f-display); font-weight: 700; color: var(--c, var(--muted)); background: var(--surface); }
+.avatar-btn { position: relative; border: none; background: transparent; padding: 0; border-radius: 50%; flex: none; }
+.avatar-btn em { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); font-style: normal; font-size: .6rem; font-weight: 700; background: var(--surface); color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 0 5px; white-space: nowrap; }
+.plan-head .ane, .plan-head .imouto { display: flex; flex-wrap: wrap; align-items: center; }
+.plan-head small { width: 100%; }
+.plan-head .ane .avatar.ph { --c: var(--ane); } .plan-head .imouto .avatar.ph { --c: var(--imo); }
+.settings-baby.ane, .settings-baby .avatar { --c: inherit; }
+.ph-stage { display: flex; justify-content: center; padding: 6px 0; }
+.ph-stage canvas, .ph-stage img { width: 192px; height: 192px; border-radius: 50%; object-fit: cover; border: 3px solid var(--line); }
+.ring-item .avatar.xl { align-self: center; }
+input[type="range"] { width: 100%; min-height: 36px; }
+label.btn { display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .tag-birth { font-size: .68rem; font-weight: 700; border: 1px solid var(--line); border-radius: 99px; padding: 0 6px; margin-left: 4px; }
 /* age on the cards */
 .who-age { display: flex; flex-direction: column; min-width: 0; }
@@ -842,9 +860,10 @@ input, select, textarea { font-size: max(16px, 1em); }
       // Card reads top to bottom: when is the next feed → what was the last one → record → today's totals.
       return `<article class="card" data-baby="${id}">
         <div class="card-head">
+          <div class="who-wrap">${avatarHTML(id, 'lg', true)}
           <div class="who-age"><h2>${esc(b.name)}</h2>${b.birthAt
             ? `<small class="age">${ageText(id, true)}</small>`
-            : `<button type="button" class="age-add" data-act="birth">${L('＋ 出生日を登録', '＋ 登錄出生日')}</button>`}</div>
+            : `<button type="button" class="age-add" data-act="birth">${L('＋ 出生日を登録', '＋ 登錄出生日')}</button>`}</div></div>
           <div class="weight">${wHTML}</div>
         </div>
         <div class="next">
@@ -923,7 +942,7 @@ input, select, textarea { font-size: max(16px, 1em); }
       }
       return `<div class="pc ${id} plan">${range}</div>`;
     };
-    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${esc(baby(id).name)}<small>${L(`${baby(id).intervalH}時間ごと`, `每${baby(id).intervalH}小時`)}</small></div>`).join('')}</div>`;
+    let html = `<div class="plan-head"><div></div>${BABY_IDS.map(id => `<div class="${id}">${avatarHTML(id, 'sm')}${esc(baby(id).name)}<small>${L(`${baby(id).intervalH}時間ごと`, `每${baby(id).intervalH}小時`)}</small></div>`).join('')}</div>`;
     let lastDay = null, nowShown = false;
     for (const r of rows) {
       const day = startOfDay(r.at);
@@ -1158,6 +1177,67 @@ input, select, textarea { font-size: max(16px, 1em); }
     return t;
   }
   const gaText = b => b.gaWeeks ? L(`${b.gaWeeks}週${b.gaDays || 0}日`, `${b.gaWeeks}週${b.gaDays || 0}天`) : '';
+
+  // ---------- icon photos ----------
+  // Photos are cropped to a small square JPEG in the browser and stored in the twin's settings doc in
+  // Firestore (readable only by the two family accounts) — never in the public GitHub repository.
+  const PHOTO_PX = 192;
+  function avatarHTML(id, size, editable) {
+    const b = baby(id), cls = `avatar ${size || ''}`;
+    const inner = b.photo ? `<img class="${cls}" src="${b.photo}" alt="">` : `<span class="${cls} ph" aria-hidden="true">${esc((b.name || '').slice(0, 1))}</span>`;
+    if (!editable) return inner;
+    return `<button type="button" class="avatar-btn" data-photo="${id}" aria-label="${L(`${esc(b.name)}の写真を${b.photo ? '変更' : '選ぶ'}`, `${b.photo ? '更換' : '選擇'}${esc(b.name)}的照片`)}">${inner}${b.photo ? '' : `<em>${L('写真', '照片')}</em>`}</button>`;
+  }
+  function openPhoto(id) {
+    S.form = { type: 'photo', baby: id, img: null, zoom: 1, px: 0.5, py: 0.3 };
+    renderPhoto();
+  }
+  function drawPhoto(canvas) {
+    const F = S.form, img = F.img, ctx = canvas.getContext('2d'), size = canvas.width;
+    const w = img.naturalWidth, h = img.naturalHeight, side = Math.min(w, h) / F.zoom;
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+    ctx.drawImage(img, (w - side) * F.px, (h - side) * F.py, side, side, 0, 0, size, size);
+  }
+  function renderPhoto() {
+    const F = S.form, b = baby(F.baby);
+    $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><form class="sheet" id="sheet" novalidate>
+      <div class="sheet-head"><h2>${L(`${esc(b.name)}の写真`, `${esc(b.name)}的照片`)}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉')}</button></div>
+      <div class="ph-stage">${F.img ? `<canvas id="ph-canvas" width="${PHOTO_PX}" height="${PHOTO_PX}"></canvas>` : (b.photo ? `<img src="${b.photo}" alt="">` : `<span class="avatar ph xl">${esc(b.name.slice(0, 1))}</span>`)}</div>
+      <label class="btn" for="ph-file">${F.img || b.photo ? L('別の写真を選ぶ', '選擇其他照片') : L('写真を選ぶ', '選擇照片')}</label>
+      <input type="file" id="ph-file" accept="image/*" hidden>
+      ${F.img ? `<div class="field"><label for="ph-zoom">${L('大きさ', '大小')}</label><input type="range" id="ph-zoom" min="1" max="3" step="0.05" value="${F.zoom}"></div>
+        <div class="field"><label for="ph-x">${L('左右の位置', '左右位置')}</label><input type="range" id="ph-x" min="0" max="1" step="0.01" value="${F.px}"></div>
+        <div class="field"><label for="ph-y">${L('上下の位置', '上下位置')}</label><input type="range" id="ph-y" min="0" max="1" step="0.01" value="${F.py}"></div>` : ''}
+      <p class="hint">${L('写真は小さく切り抜いてから、記録と同じデータベースに保存します（見られるのは登録したふたりだけ。GitHub には置きません）。', '照片會縮小裁切後，存在與紀錄相同的資料庫（只有登記的兩人能看到，不會放到 GitHub）。')}</p>
+      <div class="sheet-actions">
+        ${b.photo ? `<button type="button" class="btn danger" data-act="photo-remove">${L('写真を外す', '移除照片')}</button>` : ''}
+        <span class="spacer"></span>
+        <button type="button" class="btn ghost" data-act="close">${L('キャンセル', '取消')}</button>
+        <button type="submit" class="btn solid" id="f-save" ${F.img ? '' : 'disabled'}>${L('保存', '儲存')}</button>
+      </div>
+    </form></div>`;
+    const c = $('#ph-canvas'); if (c) drawPhoto(c);
+  }
+  document.addEventListener('change', e => {
+    if (e.target.id !== 'ph-file' || !S.form || S.form.type !== 'photo') return;
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => { S.form.img = img; S.form.zoom = 1; S.form.px = 0.5; S.form.py = img.naturalHeight > img.naturalWidth ? 0.3 : 0.5; renderPhoto(); };
+    img.onerror = () => toast(L('この写真は読み込めませんでした。別の写真を選んでください。', '無法讀取這張照片，請選擇其他照片。'));
+    img.src = url;
+  });
+  document.addEventListener('input', e => {
+    if (!S.form || S.form.type !== 'photo' || !S.form.img) return;
+    const k = { 'ph-zoom': 'zoom', 'ph-x': 'px', 'ph-y': 'py' }[e.target.id]; if (!k) return;
+    S.form[k] = Number(e.target.value); drawPhoto($('#ph-canvas'));
+  });
+  async function submitPhoto() {
+    const F = S.form; if (!F.img) return;
+    const c = document.createElement('canvas'); c.width = c.height = PHOTO_PX; drawPhoto(c);
+    const photo = c.toDataURL('image/jpeg', 0.85);
+    await saveBaby(F.baby, { photo });
+    S.form = null; renderForm(); render(); toast(L('写真を保存しました', '已儲存照片'));
+  }
 
   // Birth form: date and weeks of gestation are shared by the twins; time, weight and length are per twin.
   function openBirth() {
@@ -1534,7 +1614,7 @@ input, select, textarea { font-size: max(16px, 1em); }
       const when = now >= n
         ? L(`予定 ${fmtT(n)}（${durText(now - n)}経過）`, `預定 ${fmtT(n)}（已過 ${durText(now - n)}）`)
         : L(`予定 ${fmtT(n)}（あと${durText(n - now)}）`, `預定 ${fmtT(n)}（還有 ${durText(n - now)}）`);
-      return `<div class="ring-item"><h2>${L(`${esc(b.name)}のミルクの時間です`, `${esc(b.name)}的餵奶時間到了`)}</h2>
+      return `<div class="ring-item">${baby(id).photo ? `<img class="avatar xl" src="${baby(id).photo}" alt="">` : ''}<h2>${L(`${esc(b.name)}のミルクの時間です`, `${esc(b.name)}的餵奶時間到了`)}</h2>
         <p class="num">${when}<br>${L('前回', '上次')} ${fmtT(m.at)} ${esc(milkText(m))}</p>
         <div class="row">
           <button type="button" class="primary" data-ring="record" data-baby="${id}">${L('授乳を記録する', '記錄餵奶')}</button>
@@ -1608,6 +1688,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     if (F.type === 'shortcut') return renderShortcutHelp();
     if (F.type === 'batch') return renderBatch();
     if (F.type === 'birth') return renderBirth();
+    if (F.type === 'photo') return renderPhoto();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -1726,6 +1807,8 @@ input, select, textarea { font-size: max(16px, 1em); }
         </div>`}
       ${ids.map(id => { const b = baby(id); return `<div class="settings-baby">
         <h3>${id === 'ane' ? L('姉', '姊姊') : L('妹', '妹妹')}</h3>
+        <div class="field wide"><span class="lbl">${L('アイコンの写真', '頭像照片')}</span>
+          <div class="row">${avatarHTML(id, 'lg', true)}<button type="button" class="btn ghost" data-photo="${id}">${b.photo ? L('写真を変更', '更換照片') : L('写真を選ぶ', '選擇照片')}</button></div></div>
         <div class="field wide"><label for="s-${id}-name">${L('呼び名', '稱呼')}</label><input type="text" id="s-${id}-name" maxlength="12" value="${esc(b.name)}"></div>
         <div class="field wide"><label for="s-${id}-int">${L('授乳の間隔（何時間ごと）', '餵奶間隔（每幾小時）')}</label>
           <div class="chips" role="group">${INTERVAL_CHOICES.map(h => `<button type="button" data-int="${id}:${h}" aria-pressed="${b.intervalH === h}">${h}${L('時間', '小時')}</button>`).join('')}</div>
@@ -1955,6 +2038,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
     if (d.trend) { S.trendMode = d.trend; lsSet('futago-trend', d.trend); return renderTrend(); }
+    if (d.photo) return openPhoto(d.photo);
     if (d.corr !== undefined) { S.corrected = d.corr === '1'; lsSet('futago-corrected2', S.corrected); renderBirthInfo(); return renderChart(); }
     if (d.ms) {
       // Tap toggles "できた" (dated today) ↔ "まだ" for that twin.
@@ -2013,6 +2097,10 @@ input, select, textarea { font-size: max(16px, 1em); }
       case 'sim-clear': delete S.planStart[S.simOpen]; S.simOpen = null; renderPlanSim(true); return renderPlan();
       case 'batch': return openBatch();
       case 'birth': return openBirth();
+      case 'photo-remove': {
+        const id = S.form.baby; saveBaby(id, { photo: null });
+        S.form = null; renderForm(); toast(L('写真を外しました', '已移除照片')); return;
+      }
       case 'more': S.daysShown += 7; return renderTimeline();
       case 'wmore': S.wShown += 20; return renderWeights();
       case 'close': S.form = null; return renderForm();
@@ -2047,6 +2135,7 @@ input, select, textarea { font-size: max(16px, 1em); }
     if (S.form && S.form.type === 'settings') submitSettings();
     else if (S.form && S.form.type === 'batch') submitBatch();
     else if (S.form && S.form.type === 'birth') submitBirth();
+    else if (S.form && S.form.type === 'photo') submitPhoto();
     else submitForm();
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.form) { S.form = null; renderForm(); } });
