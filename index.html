@@ -638,6 +638,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 .gate { position: fixed; inset: 0; z-index: 35; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
 .gate-box { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 28px 22px; display: flex; flex-direction: column; gap: 14px; text-align: center; }
 .gate-box h1 { margin: 0; font-family: var(--f-display); font-size: 1.6rem; }
+.auth-diag { text-align: left; font-size: .8rem; line-height: 1.55; color: var(--warn); background: var(--warn-soft); border-radius: 12px; padding: 10px 12px; }
+.auth-diag p { margin: 0; }
+.auth-diag p + p { margin-top: 6px; color: var(--ink); }
 .gate-box p { margin: 0; color: var(--muted); }
 .gate-box .twin { display: flex; justify-content: center; gap: 8px; }
 .gate-box .twin i { width: 14px; height: 14px; border-radius: 50%; background: var(--ane); }
@@ -940,6 +943,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     S.auth.onAuthStateChanged(u => {
       S.user = u; stopSubs(); S.logs = []; S.babies = {};
       if (!u) { S.mode = 'signin'; render(); return; }
+      lsSet('futago-auth-diag', { ...lsGet('futago-auth-diag', {}), lastOpen: Date.now() });
       S.mode = 'db'; subscribe(); render();
     });
   }
@@ -970,17 +974,65 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       S.expenses = s.docs.map(d => ({ ...d.data(), id: d.id })); renderNote();
     }, noteErr('expenses')));
   }
+  // iOS Safari can lose the sign-in: while Google's popup is in front, Safari hides the app tab and may drop the
+  // write that saves the session, so it only lives in memory and the next visit asks to sign in again.
+  // Once the tab is visible again, check the saved session and save it once more if it is missing.
+  const AUTH_KEY = () => `firebase:authUser:${window.FIREBASE_CONFIG.apiKey}:[DEFAULT]`;
+  function authSaved() {
+    try { if (localStorage.getItem(AUTH_KEY())) return Promise.resolve(true); } catch {}
+    return new Promise(res => {
+      try {
+        const rq = indexedDB.open('firebaseLocalStorageDb');
+        rq.onupgradeneeded = () => rq.transaction.abort();   // never create Firebase's database ourselves
+        rq.onerror = () => res(false);
+        rq.onsuccess = () => {
+          const db = rq.result;
+          try {
+            const g = db.transaction('firebaseLocalStorage', 'readonly').objectStore('firebaseLocalStorage').get(AUTH_KEY());
+            g.onsuccess = () => { res(!!g.result); db.close(); };
+            g.onerror = () => { res(false); db.close(); };
+          } catch { res(false); db.close(); }
+        };
+      } catch { res(false); }
+    });
+  }
+  async function ensureSaved() {
+    if (document.visibilityState !== 'visible') {
+      await new Promise(r => document.addEventListener('visibilitychange', function f() {
+        if (document.visibilityState === 'visible') { document.removeEventListener('visibilitychange', f); r(); }
+      }));
+    }
+    const u = S.auth.currentUser; if (!u) return;
+    let saved = await authSaved();
+    if (!saved) {
+      try { await S.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); await S.auth.updateCurrentUser(u); } catch (e) { console.warn('re-saving sign-in failed', e); }
+      saved = await authSaved();
+    }
+    lsSet('futago-auth-diag', { signedInAt: Date.now(), lastOpen: Date.now(), saved });
+    // Ask the browser to keep this site's data (helps against storage being cleared to save space).
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch {}
+  }
   function signIn() {
     const p = new firebase.auth.GoogleAuthProvider();
     p.setCustomParameters({ prompt: 'select_account' });
-    S.auth.signInWithPopup(p).catch(e => {
+    S.auth.signInWithPopup(p).then(() => ensureSaved()).catch(e => {
       if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) return;
       if (e && e.code === 'auth/popup-blocked') return toast(L('ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。', '彈出視窗被封鎖了，請在瀏覽器設定中允許此網站的彈出視窗。', 'Pop-up diblokir. Izinkan pop-up untuk situs ini di pengaturan browser.'));
       if (e && e.code === 'auth/unauthorized-domain') return toast(L('このURLはまだ Firebase に登録されていません。手順書の「承認済みドメイン」を設定してください。', '此網址尚未在 Firebase 登記，請設定「已授權網域」。', 'URL ini belum terdaftar di Firebase. Atur "domain yang diizinkan" sesuai panduan.'));
       toast(L('ログインできませんでした（', '無法登入（', 'Gagal masuk (') + (e && e.code || L('不明なエラー', '未知錯誤', 'kesalahan tidak diketahui')) + L('）', '）', ')'));
     });
   }
-  function signOut() { S.auth && S.auth.signOut(); }
+  function signOut() { try { localStorage.removeItem('futago-auth-diag'); } catch {} S.auth && S.auth.signOut(); }
+  // On the sign-in screen: if this browser remembers an earlier sign-in, say why it is being asked again.
+  function authDiagHTML() {
+    const d = lsGet('futago-auth-diag', null);
+    if (!d || !d.lastOpen) return '';
+    const when = new Date(d.lastOpen), t = `${when.getMonth() + 1}/${when.getDate()} ${fmtT(d.lastOpen)}`;
+    const why = d.saved === false
+      ? L('前回のログインは、この端末に保存できていませんでした。もう一度ログインすると保存し直します。', '上次登入沒能儲存在這台裝置上。再登入一次就會重新儲存。', 'Login terakhir tidak tersimpan di perangkat ini. Masuk lagi untuk menyimpannya ulang.')
+      : L(`この端末では ${t} までログインしていましたが、ブラウザがログイン情報を消したようです。`, `這台裝置在 ${t} 前都是登入狀態，但瀏覽器似乎清除了登入資訊。`, `Perangkat ini masuk sampai ${t}, tetapi browser tampaknya menghapus info login.`);
+    return `<div class="auth-diag"><p>${why}</p><p>${L('Safari の場合は、①プライベートブラウズでない通常のタブで開く ②「設定」→「アプリ」→「Safari」の「すべての Cookie をブロック」をオフ ③ LINE などのアプリ内ではなく Safari で直接開く、を確認してください。', 'Safari 的話，請確認：①用一般分頁（不是私密瀏覽）開啟 ②「設定」→「App」→「Safari」中的「阻擋所有 Cookie」為關閉 ③不是在 LINE 等 App 內，而是直接用 Safari 開啟。', 'Untuk Safari, pastikan: ① buka di tab biasa (bukan Penjelajahan Pribadi) ② "Pengaturan" → "App" → "Safari": "Blokir Semua Cookie" mati ③ buka langsung di Safari, bukan di dalam LINE dll.')}</p></div>`;
+  }
 
   function errMsg(e) {
     const c = e && e.code;
@@ -1047,6 +1099,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <h1>${L('ふたごミルク帳', '雙胞胎餵奶紀錄', 'Catatan Susu Si Kembar')}</h1>
         <p>${L('家族専用の記録帳です。登録した Google アカウントでログインしてください。', '這是家人專用的紀錄。請使用已登記的 Google 帳號登入。', 'Catatan khusus keluarga. Masuk dengan akun Google yang terdaftar.')}</p>
         <button type="button" class="btn solid" data-act="signin">${L('Google でログイン', '使用 Google 登入', 'Masuk dengan Google')}</button>
+        ${authDiagHTML()}
         <div>${langSwitchHTML()}</div>
         <a class="linklike" href="help.html">${L('使い方を見る', '查看使用說明', 'Lihat cara pakai')}</a>
       </div></div>`;
