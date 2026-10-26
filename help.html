@@ -72,7 +72,7 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
     <div class="seg" role="group" aria-label="言語 / 語言 / Bahasa">
       <button type="button" data-lang="ja" aria-pressed="true">日本語</button>
       <button type="button" data-lang="zh" aria-pressed="false">繁體中文</button>
-      <button type="button" data-lang="id" aria-pressed="false">Bahasa Indonesia</button>
+      <button type="button" data-lang="id" aria-pressed="false" hidden>Bahasa Indonesia</button>
     </div>
   </div>
 
@@ -613,8 +613,11 @@ code { background: var(--surface-2); border: 1px solid var(--line); border-radiu
   // Shares the app's per-device language choice (same origin, same localStorage key).
   const get = () => { try { return JSON.parse(localStorage.getItem('futago-lang')); } catch { return null; } };
   const set = v => { try { localStorage.setItem('futago-lang', JSON.stringify(v)); } catch {} };
-  let lang = ['ja', 'zh', 'id'].includes(get()) ? get() : (/^zh/i.test(navigator.language || '') ? 'zh' : /^(id|ms)/i.test(navigator.language || '') ? 'id' : 'ja');
-  if (['#zh', '#ja', '#id'].includes(location.hash)) lang = location.hash.slice(1);
+  // Indonesian is written but switched off for now (same as the app); add 'id' here to offer it.
+  const LANGS = ['ja', 'zh'];
+  let lang = LANGS.includes(get()) ? get() : (/^zh/i.test(navigator.language || '') ? 'zh' : 'ja');
+  if (LANGS.includes(location.hash.slice(1))) lang = location.hash.slice(1);
+  if (LANGS.includes('id')) document.querySelector('[data-lang="id"]').hidden = false;
   function apply() {
     document.documentElement.lang = lang === 'zh' ? 'zh-Hant-TW' : lang;
     document.title = { zh: '雙胞胎餵奶紀錄 使用說明', id: 'Cara pakai Catatan Susu Si Kembar' }[lang] || 'ふたごミルク帳の使い方';

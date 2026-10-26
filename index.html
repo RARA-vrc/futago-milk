@@ -438,6 +438,35 @@ input, select, textarea { font-size: max(16px, 1em); }
 .cal-go .btn { padding: 0 8px; font-size: .88rem; }
 .log-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .log-tools .btn { padding: 0 8px; font-size: .9rem; }
+/* looking back: the day strip (recent days) and the month carousel share one cell style and one selection style */
+.dstrip { display: flex; flex-direction: column; gap: 4px; margin: 2px 0 6px; }
+.ds-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ds-head b { font-family: var(--f-display); font-size: 1rem; }
+.ds-cal { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 99px; min-height: 36px; padding: 0 12px; font-size: .84rem; font-weight: 700; }
+.ds-scroll { display: flex; gap: 6px; overflow-x: auto; direction: rtl; scroll-snap-type: x proximity; overscroll-behavior-x: contain; scrollbar-width: none; padding: 9px 2px 4px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 22px); mask-image: linear-gradient(to right, transparent 0, #000 22px); }
+.ds-scroll::-webkit-scrollbar { display: none; }
+.ds-d { direction: ltr; scroll-snap-align: end; flex: 0 0 46px; position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0 5px; border: 1.5px solid transparent; border-radius: 12px; background: var(--surface-2); line-height: 1; color: var(--ink); }
+.ds-d small { font-size: .66rem; color: var(--muted); }
+.ds-d b, .cal-d b { font-family: var(--f-display); font-size: 1.02rem; font-weight: 700; }
+.ds-latest { flex-basis: 52px; }
+.ds-d .bd { position: absolute; top: -8px; right: -3px; font-size: .74rem; }
+.ds-d.w0 small, .cal-d.w0 b { color: var(--danger); }
+.ds-d.w6 small, .cal-d.w6 b { color: var(--papa); }
+.ds-d.today { border-color: var(--ink); }
+.ds-d.sel, .cal-d.sel { background: var(--ink); border-color: var(--ink); box-shadow: none; }
+.ds-d.sel small, .ds-d.sel b, .cal-d.sel b { color: var(--surface) !important; }
+.cal-week { margin-bottom: -6px; }
+.cal-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.cal-track::-webkit-scrollbar { display: none; }
+.cal-month { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+.cal-nav b { min-width: 8.5em; }
+.cal-nav .cal-now { font-size: .82rem; min-width: 0; }
+/* long memos fold on the board; the writing area grows line by line */
+.memo-note p.clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 8; line-clamp: 8; overflow: hidden; }
+.memo-more { border: none; background: transparent; color: var(--mc); font-size: .8rem; font-weight: 700; padding: 2px 0; min-height: 30px; }
+#memo-text { resize: none; overflow: hidden; }
+.cal-memos li span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 .log-daybar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 12px; margin: 8px 0 4px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-weight: 700; font-family: var(--f-display); }
 .log-daybar .btn { min-height: 38px; font-size: .85rem; }
 .memo-empty { text-align: center; color: var(--muted); font-family: var(--hand); font-size: 1rem; margin: 4px 0; }
@@ -666,10 +695,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <button type="button" data-filter="imouto" aria-pressed="false" data-name="imouto">妹</button>
       </div>
     </div>
-    <div class="batch-entry log-tools">
-      <button type="button" class="btn ghost" data-act="cal" data-zh="📅 用月曆回顧" data-id="📅 Lihat lewat kalender">📅 カレンダーでさかのぼる</button>
-      <button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記" data-id="Catat sekaligus belakangan">あとからまとめて記録</button>
-    </div>
+    <div class="batch-entry"><button type="button" class="btn ghost" data-act="batch" data-zh="事後一次補記" data-id="Catat sekaligus belakangan">あとからまとめて記録</button></div>
     <div id="timeline"></div>
   </section>
 
@@ -749,7 +775,10 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   // ---------- language (per device): 'ja', 'zh' (Taiwanese Mandarin, Traditional Chinese) or 'id' (Indonesian) ----------
   // Every visible string is written as L(japanese, chinese, indonesian) next to where it is used.
-  const LANGS = ['ja', 'zh', 'id'];
+  // Indonesian (for the babysitter) is fully built but switched off for now — set to true to offer it
+  // in the language switch and to add it to memo translations.
+  const INDONESIAN = false;
+  const LANGS = INDONESIAN ? ['ja', 'zh', 'id'] : ['ja', 'zh'];
   let LANG = LANGS.includes(lsGet('futago-lang', '')) ? lsGet('futago-lang', '') : (/^zh/i.test(navigator.language || '') ? 'zh' : /^(id|ms)/i.test(navigator.language || '') ? 'id' : 'ja');
   const L = (ja, zh, id) => LANG === 'zh' ? zh : LANG === 'id' ? (id ?? ja) : ja;
   const ID_WD = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
@@ -788,7 +817,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     setLabels(); applyLang(); render(); renderRing();
     if (S.form && S.form.type === 'settings') renderSettings(); else renderForm();
   }
-  const langSwitchHTML = () => `<div class="seg" role="group" aria-label="言語 / 語言 / Bahasa">${[['ja', '日本語'], ['zh', '繁體中文'], ['id', 'Bahasa Indonesia']].map(([k, label]) =>
+  const langSwitchHTML = () => `<div class="seg" role="group" aria-label="言語 / 語言 / Bahasa">${[['ja', '日本語'], ['zh', '繁體中文'], ['id', 'Bahasa Indonesia']].filter(([k]) => LANGS.includes(k)).map(([k, label]) =>
     `<button type="button" data-lang="${k}" aria-pressed="${LANG === k}">${label}</button>`).join('')}</div>`;
 
   function dayLabel(ms) {
@@ -865,7 +894,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     costMonth: null, costView: 'bought',
     // Calendar back-numbers: logDay = the one day the 記録 tab shows (null = latest days); dayCache = older days read once.
     logDay: null, dayCache: {},
-    rxOpen: null, memoView: {},   // memo id → language picked with the memo's 🌐 switch (default: this device's language)
+    rxOpen: null, memoView: {}, memoOpen: {},   // memo id → language picked with the memo's 🌐 switch (default: this device's language)
     alarm: { pref: lsGet('futago-alarm-pref', false), active: false, lead: lsGet('futago-alarm-lead', 10), ack: lsGet('futago-alarm-ack', {}), snooze: {} },
     ringing: [],
     form: null,
@@ -1249,7 +1278,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       S.dayCache[k] = 'loading';
       S.db.collection('logs').where('at', '>=', k).where('at', '<', k + DAY).get().then(s => {
         S.dayCache[k] = s.docs.map(d => ({ ...d.data(), id: d.id })).filter(l => BABY_IDS.includes(l.baby) && TYPE_LABEL[l.type]).sort((a, b) => b.at - a.at);
-        renderTimeline(); if (S.form && S.form.type === 'cal') renderCal();
+        renderTimeline(); if (S.form && S.form.type === 'cal' && $('#cal-dig')) $('#cal-dig').innerHTML = calDigestHTML(S.form.sel);
       }).catch(() => { delete S.dayCache[k]; toast(L('過去の記録を読み込めませんでした。', '無法載入過去的紀錄。', 'Gagal memuat catatan lama.')); });
     }
     return null;
@@ -1265,24 +1294,24 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   function renderTimeline() {
     const el = $('#timeline');
     if (S.mode === 'loading') { el.innerHTML = `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
-    // A day picked in the calendar shows on its own, with a way back to the latest days.
-    let src = S.logs, bar = '';
+    // The day strip on top: "最新" shows the recent days in a row; a day (from the strip or the calendar) shows on its own.
+    const bar = `<div class="dstrip">${stripHTML('log', S.logDay)}</div>`;
+    const put = html => { el.innerHTML = bar + html; syncStrip('log'); };
+    let src = S.logs;
     if (S.logDay != null) {
-      bar = `<div class="log-daybar"><span>📅 ${L(`${dayLabel(S.logDay)}の記録`, `${dayLabel(S.logDay)}的紀錄`, `Catatan ${dayLabel(S.logDay)}`)}</span><button type="button" class="btn ghost" data-act="log-latest">${L('最新に戻る', '回到最新', 'Kembali ke terbaru')}</button></div>`;
       src = dayLogs(S.logDay);
-      if (!src) { el.innerHTML = bar + `<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`; return; }
+      if (!src) return put(`<p class="empty-note">${L('記録を読み込んでいます…', '正在載入紀錄…', 'Memuat catatan…')}</p>`);
     }
     const list = src.filter(l => S.filter === 'all' || l.baby === S.filter);
     if (!list.length) {
-      el.innerHTML = bar + `<p class="empty-note">${S.logDay != null ? L('この日の記録はありません。', '這天沒有紀錄。', 'Tidak ada catatan pada hari ini.') : L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。', 'Belum ada catatan. Tekan "Catat minum susu" di kartu pada tab "Kini" untuk mulai.')}</p>`;
-      return;
+      return put(`<p class="empty-note">${S.logDay != null ? L('この日の記録はありません。', '這天沒有紀錄。', 'Tidak ada catatan pada hari ini.') : L('まだ記録がありません。「いま」タブのカードから「授乳を記録」すると、ここに並びます。', '還沒有紀錄。在「現在」分頁點「記錄餵奶」後，就會顯示在這裡。', 'Belum ada catatan. Tekan "Catat minum susu" di kartu pada tab "Kini" untuk mulai.')}</p>`);
     }
     const groups = new Map();
     for (const l of list) { const k = startOfDay(l.at); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(l); }
     const keys = [...groups.keys()];
     const shown = S.logDay != null ? keys : keys.slice(0, S.daysShown);
     const ids = S.filter === 'all' ? BABY_IDS : [S.filter];
-    el.innerHTML = bar + shown.map(k => {
+    put(shown.map(k => {
       const sums = ids.map(id => {
         const st = dayStats(id, k, k + DAY, src);
         return `<span><em class="${id}">${esc(baby(id).name)}</em> ${L(`授乳${st.milkN}回`, `餵奶${st.milkN}次`, `Susu ${st.milkN} kali`)} ${st.ml}mL · ${L('尿', '尿', 'Pipis ')}${st.pee} · ${L('便', '便', 'BAB ')}${st.poo}</span>`;
@@ -1295,7 +1324,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
           <span class="d">${describe(l)}${l.note ? `<small>${esc(l.note)}</small>` : ''}</span>
           <span class="fix" aria-hidden="true">${L('修正', '修改', 'Ubah')}</span>
         </button></li>`).join('')}</ul></div>`;
-    }).join('') + (S.logDay == null && keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`, `Tampilkan hari sebelumnya (sisa ${keys.length - S.daysShown} hari)`)}</button></div>` : '');
+    }).join('') + (S.logDay == null && keys.length > S.daysShown ? `<div class="more"><button type="button" class="btn ghost" data-act="more">${L(`さらに前の日を表示（残り${keys.length - S.daysShown}日）`, `顯示更早的日子（還有${keys.length - S.daysShown}天）`, `Tampilkan hari sebelumnya (sisa ${keys.length - S.daysShown} hari)`)}</button></div>` : ''));
   }
 
   // ---------- trends: milk mL, pee and poo counts per day (last 14 days) or per month (last 6 months) ----------
@@ -2075,26 +2104,30 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     const key = [LANG, today, S.memoDay, S.memoWho, S.memoEdit || '', S.memoConfirmDel, ...MEMO_WHO.map(whoName)].join('|');
     if (force || key !== noteKey || !$('#memo-body')) {
       noteKey = key;
-      el.innerHTML = `<div class="memo-book">${memoTopHTML(today)}<div id="memo-body"></div></div>`;
+      el.innerHTML = `<div class="memo-book">${memoTitleHTML()}<div class="dstrip" id="memo-strip"></div>${memoTopHTML()}<div id="memo-body"></div></div>`;
+      growMemo($('#memo-text'));
     }
+    // The day strip and the notes follow the data; the notepad above stays put while someone is typing.
+    $('#memo-strip').innerHTML = stripHTML('memo', keyDay(S.memoDay));
+    syncStrip('memo');
     $('#memo-body').innerHTML = memoBodyHTML();
   }
-  function memoTopHTML(today) {
-    const isToday = S.memoDay === today, editing = S.memoEdit && S.memos.find(m => m.id === S.memoEdit);
-    return `<header class="memo-title"><span class="memo-star" aria-hidden="true">✦</span><h3>Today's Special Memo</h3><span class="memo-star b" aria-hidden="true">✦</span>
-        <p>${L('その日のできごとを、だれでも自由に書いて残せます。', '當天發生的事，誰都可以自由寫下來保存。', 'Tulis bebas kejadian hari ini — siapa saja boleh.')}</p></header>
-      <div class="memo-daynav">
-        <button type="button" class="icon-btn" data-mday="-1" aria-label="${L('前の日', '前一天', 'Hari sebelumnya')}">‹</button>
-        <button type="button" class="memo-date" data-act="cal" data-calk="${keyDay(S.memoDay)}" aria-label="${L('カレンダーを開く', '打開月曆', 'Buka kalender')}">📅 ${dayLabel(keyDay(S.memoDay))}</button>
-        <button type="button" class="icon-btn" data-mday="1" aria-label="${L('次の日', '後一天', 'Hari berikutnya')}" ${isToday ? 'disabled' : ''}>›</button>
-        ${isToday ? '' : `<button type="button" class="icon-btn" data-mday="today">${L('今日', '今天', 'Hari ini')}</button>`}
-      </div>
-      <div class="memo-compose paper w-${S.memoWho}" id="memo-compose">
+  // The writing area grows with the text (in whole ruled lines) instead of scrolling inside itself.
+  function growMemo(ta) {
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = `${Math.max(150, Math.ceil(ta.scrollHeight / 30) * 30)}px`;
+  }
+  const memoTitleHTML = () => `<header class="memo-title"><span class="memo-star" aria-hidden="true">✦</span><h3>Today's Special Memo</h3><span class="memo-star b" aria-hidden="true">✦</span>
+        <p>${L('その日のできごとを、だれでも自由に書いて残せます。', '當天發生的事，誰都可以自由寫下來保存。', 'Tulis bebas kejadian hari ini — siapa saja boleh.')}</p></header>`;
+  function memoTopHTML() {
+    const editing = S.memoEdit && S.memos.find(m => m.id === S.memoEdit);
+    return `<div class="memo-compose paper w-${S.memoWho}" id="memo-compose">
         <img class="memo-cat l" src="cat-hachiware.webp" alt="" aria-hidden="true" width="100" height="86">
         <img class="memo-cat r" src="cat-tabby.webp" alt="" aria-hidden="true" width="100" height="92">
         <span class="tape" aria-hidden="true"></span>
         <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記', 'Memo siapa')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${esc(whoName(w))}</button>`).join('')}</div>
-        <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記', 'Memo')}" placeholder="${L('はじめて笑った、よく飲んだ、ママおつかれさま…など', '第一次笑了、喝得很好、媽媽辛苦了…等等', 'Pertama kali tersenyum, minum banyak, terima kasih Mama…')}">${esc(S.memoDraft)}</textarea>
+        <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記', 'Memo')}">${esc(S.memoDraft)}</textarea>
         <div class="memo-actions">
           ${editing ? (S.memoConfirmDel
             ? `<button type="button" class="btn danger" data-act="memo-del-yes">${L('本当に削除する', '確定刪除', 'Ya, hapus')}</button><button type="button" class="btn ghost" data-act="memo-del-no">${L('やめる', '不刪除', 'Batal')}</button>`
@@ -2152,8 +2185,12 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   const trOk = m => m.trFor === m.text && m.tr && LANGS.includes(m.lang);
   const memoIn = (m, k) => (trOk(m) && k !== m.lang && m.tr[k]) || m.text;
   const memoText = m => memoIn(m, S.memoView[m.id] || LANG);
+  // A long memo folds to 8 lines on the board (about 18 full-width characters per line on a phone).
+  const memoLines = t => t.split('\n').reduce((n, l) => n + Math.max(1, Math.ceil([...l].length / 18)), 0);
   function memoTextHTML(m) {
-    const p = `<p>${esc(memoText(m))}</p>`;
+    const t = memoText(m), long = memoLines(t) > 8, open = S.memoOpen[m.id];
+    const p = `<p class="${long && !open ? 'clamp' : ''}">${esc(t)}</p>`
+      + (long ? `<button type="button" class="memo-more" data-mopen="${esc(m.id)}" aria-expanded="${!!open}">${open ? L('たたむ', '收合', 'Tutup') : L('続きを読む', '顯示全部', 'Baca selengkapnya')}</button>` : '');
     if (!trOk(m)) return p;
     const want = S.memoView[m.id] || LANG, cur = want !== m.lang && m.tr[want] ? want : m.lang;
     const langs = LANGS.filter(k => k === m.lang || m.tr[k]);
@@ -2161,9 +2198,13 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       `<button type="button" data-mview="${esc(m.id)}|${k}" aria-pressed="${k === cur}">${LANG_NAME[k]}${k === m.lang ? `<small>${L('原文', '原文', 'asli')}</small>` : ''}</button>`).join('')}</div>`;
   }
   const AI_MODEL = 'gemini-3.5-flash-lite', FB_MODULAR = '12.15.0';
-  const TR_PROMPT = `You translate short family diary notes about newborn twin girls between Japanese, Traditional Chinese as written in Taiwan (台灣華語), and Indonesian.
+  const TR_PROMPT = INDONESIAN
+    ? `You translate short family diary notes about newborn twin girls between Japanese, Traditional Chinese as written in Taiwan (台灣華語), and Indonesian.
 Detect the language of the note and return only JSON: {"lang":"ja" or "zh" or "id","ja":"<the note in Japanese>","zh":"<the note in Taiwan Mandarin, Traditional characters>","id":"<the note in natural, casual Indonesian>"}.
-The original language's field must be the note unchanged. Keep emoji, line breaks and numbers. Family words: 姉 = 姊姊 = Kakak, 妹 = 妹妹 = Adik, ママ = 媽媽 = Mama, パパ = 爸爸 = Papa. Keep the warm, casual tone.`;
+The original language's field must be the note unchanged. Keep emoji, line breaks and numbers. Family words: 姉 = 姊姊 = Kakak, 妹 = 妹妹 = Adik, ママ = 媽媽 = Mama, パパ = 爸爸 = Papa. Keep the warm, casual tone.`
+    : `You translate short family diary notes about newborn twin girls between Japanese and Traditional Chinese as written in Taiwan (台灣華語).
+Detect the language of the note and return only JSON: {"lang":"ja" or "zh","ja":"<the note in Japanese>","zh":"<the note in Taiwan Mandarin, Traditional characters>"}.
+The original language's field must be the note unchanged. Keep emoji, line breaks and numbers. Family words: 姉→姊姊, 妹→妹妹, ママ→媽媽, パパ→爸爸. Keep the warm, casual tone.`;
   let aiModel = null, aiLoad = null, aiOff = false;
   // The AI SDK is only loaded once a memo needs translating, as a separate app instance (modular SDK beside the compat one).
   function aiReady() {
@@ -2182,7 +2223,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     })());
   }
   const trQueue = new Set(), trFailed = new Set();
-  // Memos translated before Indonesian was added get the third language on their next pass.
+  // A memo missing any active language (e.g. after Indonesian is switched on) is translated again.
   const needsTr = m => !!m.text && (m.trFor !== m.text || !m.tr || LANGS.some(k => typeof m.tr[k] !== 'string'));
   let trBusy = false;
   function queueTranslations() {
@@ -2215,7 +2256,9 @@ The original language's field must be the note unchanged. Keep emoji, line break
     } finally { trBusy = false; }
   }
 
-  // ---------- calendar: back-numbers of memos and records ----------
+  // ---------- looking back: the day strip (recent days) and the month calendar (any day) ----------
+  // Both show a day the same way — weekday, date, a coloured dot per memo writer, 🎂 on the birthday — and share
+  // one selection, so moving between "the last few days" and "months ago" feels like one tool.
   function calMin() {
     const c = [Date.now()];
     BABY_IDS.forEach(id => { if (baby(id).birthAt) c.push(baby(id).birthAt); });
@@ -2223,33 +2266,107 @@ The original language's field must be the note unchanged. Keep emoji, line break
     S.memos.forEach(m => c.push(keyDay(m.day)));
     return startOfDay(Math.min(...c));
   }
-  function openCal(k) { const sel = startOfDay(k || Date.now()); S.form = { type: 'cal', month: monthStart(sel), sel }; renderCal(); }
-  function renderCal() {
-    const F = S.form, today = startOfDay(Date.now()), min = calMin();
-    const first = new Date(F.month), y = first.getFullYear(), mo = first.getMonth(), n = new Date(y, mo + 1, 0).getDate();
-    const birth = BABY_IDS.map(id => baby(id).birthAt).filter(Boolean).map(startOfDay);
-    const memoDays = new Map();
-    S.memos.forEach(m => { if (!memoDays.has(m.day)) memoDays.set(m.day, new Set()); memoDays.get(m.day).add(memoWho(m.who)); });
-    const wk = WEEK_HEAD();
-    let cells = '';
-    for (let i = 0; i < first.getDay(); i++) cells += '<span></span>';
-    for (let d = 1; d <= n; d++) {
-      const k = new Date(y, mo, d).getTime(), who = memoDays.get(dayKey(k));
-      const cls = ['cal-d', k === F.sel ? 'sel' : '', k === today ? 'today' : '', [0, 6].includes(new Date(k).getDay()) ? `w${new Date(k).getDay()}` : ''].filter(Boolean).join(' ');
-      cells += `<button type="button" class="${cls}" data-cald="${k}" ${k > today || k < min ? 'disabled' : ''}>${birth.includes(k) ? '<span class="bd" aria-hidden="true">🎂</span>' : ''}<span>${d}</span>
-        <span class="cal-dots">${who ? MEMO_WHO.filter(w => who.has(w)).map(w => `<i class="w-${w}"></i>`).join('') : ''}</span></button>`;
+  function memoWriters() {
+    const map = new Map();
+    S.memos.forEach(m => { if (!map.has(m.day)) map.set(m.day, new Set()); map.get(m.day).add(memoWho(m.who)); });
+    return map;
+  }
+  const birthDays = () => BABY_IDS.map(id => baby(id).birthAt).filter(Boolean).map(startOfDay);
+  const dotsHTML = who => `<span class="cal-dots">${who ? MEMO_WHO.filter(w => who.has(w)).map(w => `<i class="w-${w}"></i>`).join('') : ''}</span>`;
+
+  // Day strip: the last 60 days (further back if the chosen day is older), newest on the right, swiped sideways.
+  const STRIP_DAYS = 60, stripPos = {};
+  function stripHTML(kind, sel) {
+    const today = startOfDay(Date.now()), who = memoWriters(), birth = birthDays(), wk = WEEK_HEAD();
+    let from = Math.max(calMin(), today - (STRIP_DAYS - 1) * DAY);
+    if (sel != null && sel < from) from = sel;
+    const cells = [];
+    for (let k = today; k >= from; k = startOfDay(k - DAY / 2)) {
+      const wd = new Date(k).getDay();
+      cells.push(`<button type="button" class="ds-d w${wd}${k === sel ? ' sel' : ''}${k === today ? ' today' : ''}" data-dsel="${kind}|${k}" aria-pressed="${k === sel}" aria-label="${esc(dayLabel(k))}">${birth.includes(k) ? '<span class="bd" aria-hidden="true">🎂</span>' : ''}<small>${k === today ? L('今日', '今天', 'Kini') : wk[wd]}</small><b>${new Date(k).getDate()}</b>${dotsHTML(who.get(dayKey(k)))}</button>`);
     }
+    const latest = kind === 'log' ? `<button type="button" class="ds-d ds-latest${sel == null ? ' sel' : ''}" data-dsel="log|latest" aria-pressed="${sel == null}"><small>${L('すべて', '全部', 'Semua')}</small><b>${L('最新', '最新', 'Baru')}</b></button>` : '';
+    const title = sel == null ? L('最近の記録', '最近的紀錄', 'Catatan terbaru') : dayLabel(sel);
+    return `<div class="ds-head"><b>${title}</b><button type="button" class="ds-cal" data-act="cal" data-calk="${sel ?? today}">📅 ${L('カレンダー', '月曆', 'Kalender')}</button></div>
+      <div class="ds-scroll" id="ds-${kind}" role="group" aria-label="${L('日付', '日期', 'Tanggal')}">${latest}${cells.join('')}</div>`;
+  }
+  // Keep each strip's swipe position across redraws, and bring the chosen day into view if it is off-screen.
+  function syncStrip(kind) {
+    const sc = document.getElementById('ds-' + kind); if (!sc) return;
+    if (stripPos[kind] != null) sc.scrollLeft = stripPos[kind];
+    const sel = sc.querySelector('.sel');
+    if (sel && sc.clientWidth) {
+      const a = sel.getBoundingClientRect(), b = sc.getBoundingClientRect();
+      if (a.left < b.left || a.right > b.right) sc.scrollLeft += a.left - b.left - (b.width - a.width) / 2;
+    }
+    stripPos[kind] = sc.scrollLeft;
+    sc.onscroll = () => { stripPos[kind] = sc.scrollLeft; };
+  }
+
+  // Month calendar: every month from the first record to now side by side, swiped one month at a time.
+  function openCal(k) { const sel = startOfDay(k || Date.now()); S.form = { type: 'cal', month: monthStart(sel), sel }; renderCal(); }
+  function calMonthsList() {
+    const out = [], last = monthStart(Date.now());
+    for (let m = monthStart(calMin()); m <= last; m = monthStart(m, -1)) out.push(m);
+    return out;
+  }
+  function monthGridHTML(mStart, sel, today, min, who, birth) {
+    const first = new Date(mStart), y = first.getFullYear(), mo = first.getMonth(), n = new Date(y, mo + 1, 0).getDate();
+    let cells = '', count = 0;
+    for (let i = 0; i < first.getDay(); i++, count++) cells += '<span></span>';
+    for (let d = 1; d <= n; d++, count++) {
+      const k = new Date(y, mo, d).getTime(), wd = new Date(k).getDay();
+      cells += `<button type="button" class="cal-d w${wd}${k === sel ? ' sel' : ''}${k === today ? ' today' : ''}" data-cald="${k}" ${k > today || k < min ? 'disabled' : ''}>${birth.includes(k) ? '<span class="bd" aria-hidden="true">🎂</span>' : ''}<b>${d}</b>${dotsHTML(who.get(dayKey(k)))}</button>`;
+    }
+    for (; count < 42; count++) cells += '<span></span>';   // always six rows, so swiping never changes the height
+    return `<div class="cal-month" data-month="${mStart}"><div class="cal-grid">${cells}</div></div>`;
+  }
+  function renderCal() {
+    const F = S.form, today = startOfDay(Date.now()), min = calMin(), months = calMonthsList();
+    if (!months.includes(F.month)) F.month = months[months.length - 1];
+    const old = $('#cal-track'), keepX = old ? old.scrollLeft : null, keepY = $('.sheet.cal') ? $('.sheet.cal').scrollTop : 0;
+    const who = memoWriters(), birth = birthDays(), wk = WEEK_HEAD();
     $('#sheet-root').innerHTML = `<div class="overlay" data-act="close-bg"><div class="sheet cal" role="dialog" aria-label="${L('カレンダー', '月曆', 'Kalender')}">
       <div class="sheet-head"><h2>${L('カレンダー', '月曆', 'Kalender')}</h2><button type="button" class="icon-btn" data-act="close">${L('閉じる', '關閉', 'Tutup')}</button></div>
-      <div class="memo-daynav">
-        <button type="button" class="icon-btn" data-calm="1" aria-label="${L('前の月', '上個月', 'Bulan sebelumnya')}" ${F.month <= monthStart(min) ? 'disabled' : ''}>‹</button>
-        <b>${monthTitle(y, mo)}</b>
-        <button type="button" class="icon-btn" data-calm="-1" aria-label="${L('次の月', '下個月', 'Bulan berikutnya')}" ${F.month >= monthStart(today) ? 'disabled' : ''}>›</button>
+      <div class="memo-daynav cal-nav">
+        <button type="button" class="icon-btn" data-calm="1" aria-label="${L('前の月', '上個月', 'Bulan sebelumnya')}">‹</button>
+        <b id="cal-title"></b>
+        <button type="button" class="icon-btn" data-calm="-1" aria-label="${L('次の月', '下個月', 'Bulan berikutnya')}">›</button>
+        <button type="button" class="icon-btn cal-now" data-act="cal-today">${L('今日', '今天', 'Hari ini')}</button>
       </div>
-      <div class="cal-grid">${[...wk].map((w, i) => `<span class="cal-w w${i}">${w}</span>`).join('')}${cells}</div>
+      <div class="cal-grid cal-week">${wk.map((w, i) => `<span class="cal-w w${i}">${w}</span>`).join('')}</div>
+      <div class="cal-track" id="cal-track">${months.map(m => monthGridHTML(m, F.sel, today, min, who, birth)).join('')}</div>
       <p class="hint cal-legend">${MEMO_WHO.map(w => `<span><i class="w-${w}"></i>${esc(whoName(w))}</span>`).join('')}<span>${L('＝メモあり', '＝有筆記', '= ada memo')}</span></p>
-      ${calDigestHTML(F.sel)}
+      <div id="cal-dig">${calDigestHTML(F.sel)}</div>
     </div></div>`;
+    const tr = $('#cal-track');
+    tr.scrollLeft = keepX ?? months.indexOf(F.month) * tr.clientWidth;
+    $('.sheet.cal').scrollTop = keepY;
+    let ticking = false;
+    tr.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; calNav(); }); } }, { passive: true });
+    calNav();
+  }
+  // Title and arrows follow whichever month is showing after a swipe.
+  function calNav() {
+    const tr = $('#cal-track'); if (!tr || !S.form || S.form.type !== 'cal') return;
+    const i = Math.max(0, Math.min(tr.children.length - 1, Math.round(tr.scrollLeft / (tr.clientWidth || 1))));
+    const m = Number(tr.children[i].dataset.month), d = new Date(m);
+    S.form.month = m;
+    $('#cal-title').textContent = monthTitle(d.getFullYear(), d.getMonth());
+    $('[data-calm="1"]').disabled = i === 0;
+    $('[data-calm="-1"]').disabled = i === tr.children.length - 1;
+    $('.cal-now').hidden = i === tr.children.length - 1;
+  }
+  function calGo(i, smooth = true) {
+    const tr = $('#cal-track'); if (!tr) return;
+    tr.scrollTo({ left: Math.max(0, Math.min(tr.children.length - 1, i)) * tr.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+  }
+  // Picking a day only moves the highlight and refreshes the summary, so the month stays exactly where it is.
+  function calPick(k) {
+    S.form.sel = k;
+    document.querySelectorAll('.cal-d.sel').forEach(b => b.classList.remove('sel'));
+    const b = document.querySelector(`.cal-d[data-cald="${k}"]`); if (b) b.classList.add('sel');
+    $('#cal-dig').innerHTML = calDigestHTML(k);
   }
   // The chosen day at a glance: each twin's totals, the memos, and buttons into the 記録 / ノート tabs.
   function calDigestHTML(k) {
@@ -2872,19 +2989,29 @@ The original language's field must be the note unchanged. Keep emoji, line break
     }
     if (d.rxopen) { S.rxOpen = S.rxOpen === d.rxopen ? null : d.rxopen; return renderNote(); }
     if (d.rx) { const i = d.rx.indexOf('|'); return toggleRx(d.rx.slice(0, i), d.rx.slice(i + 1)); }
+    if (d.mopen) { S.memoOpen[d.mopen] = !S.memoOpen[d.mopen]; return renderNote(); }
     if (d.mview) { const i = d.mview.indexOf('|'); S.memoView[d.mview.slice(0, i)] = d.mview.slice(i + 1); return renderNote(); }
     // calendar
-    if (d.cald) { S.form.sel = Number(d.cald); return renderCal(); }
-    if (d.calm) { S.form.month = monthStart(S.form.month, Number(d.calm)); return renderCal(); }
+    if (d.cald) return calPick(Number(d.cald));
+    if (d.calm) { const tr = $('#cal-track'); return calGo(Math.round(tr.scrollLeft / tr.clientWidth) - Number(d.calm)); }
+    if (d.act === 'cal-today') { calGo($('#cal-track').children.length - 1); return calPick(startOfDay(Date.now())); }
+    // day strip (records / memo board)
+    if (d.dsel) {
+      const [kind, v] = d.dsel.split('|');
+      if (kind === 'log') { S.logDay = v === 'latest' ? null : Number(v); return renderTimeline(); }
+      S.memoDay = dayKey(Number(v));
+      if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; }
+      return renderNote();
+    }
     if (d.act === 'cal') return openCal(d.calk ? Number(d.calk) : (S.tab === 'log' && S.logDay != null ? S.logDay : Date.now()));
     if (d.act === 'cal-log' || d.act === 'cal-memo') {
       const k = S.form.sel; S.form = null; renderForm();
       if (d.act === 'cal-log') { S.logDay = k; S.tab = 'log'; renderTimeline(); }
       else { S.memoDay = dayKey(k); S.memoEdit = null; S.memoDraft = ''; S.noteMode = 'memo'; S.tab = 'note'; renderNote(true); }
       lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0);
+      syncStrip(S.tab === 'log' ? 'log' : 'memo');   // the strip was drawn while hidden; centre the chosen day now
       return;
     }
-    if (d.act === 'log-latest') { S.logDay = null; return renderTimeline(); }
     if (d.mwho) { S.memoWho = d.mwho; if (!S.memoEdit) lsSet('futago-memo-who', d.mwho); renderNote(true); const ta = $('#memo-text'); if (ta) ta.focus({ preventScroll: true }); return; }
     if (d.memo) {
       const m = S.memos.find(x => x.id === d.memo); if (!m) return;
@@ -2927,6 +3054,8 @@ The original language's field must be the note unchanged. Keep emoji, line break
       S.tab = d.tab; lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0);
       // The timetable opens at the いま line rather than at 12 hours ago.
       if (S.tab === 'plan') { renderPlan(); const line = $('.plan-now'); if (line) line.scrollIntoView({ block: 'center' }); }
+      if (S.tab === 'log') syncStrip('log');
+      if (S.tab === 'note') syncStrip('memo');
       return;
     }
     if (d.iostimer) return setIphoneTimer(d.iostimer);
@@ -3042,7 +3171,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
   });
   document.addEventListener('input', e => {
     const id = e.target.id;
-    if (id === 'memo-text') { S.memoDraft = e.target.value; return; }
+    if (id === 'memo-text') { S.memoDraft = e.target.value; growMemo(e.target); return; }
     if (S.form && S.form.type === 'cost' && (id === 'c-price' || id === 'c-qty' || id === 'c-name')) {
       readCost();
       // A name bought before brings back its last price (only while the price is still empty).
