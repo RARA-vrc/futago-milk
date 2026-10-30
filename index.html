@@ -464,6 +464,26 @@ input, select, textarea { font-size: max(16px, 1em); }
 .cal-nav .cal-now { font-size: .82rem; min-width: 0; }
 /* long memos fold on the board; the writing area grows line by line */
 .memo-note p.clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 8; line-clamp: 8; overflow: hidden; }
+/* memo photos: small prints on the note, thumbnails on the notepad, full screen on tap */
+.memo-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.memo-photos.n1 { grid-template-columns: 1fr; }
+.mph { display: block; padding: 4px; border: none; border-radius: 6px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.18); min-width: 0; }
+.mph img { display: block; width: 100%; aspect-ratio: 1 / 1; max-height: 340px; object-fit: cover; border-radius: 3px; background: var(--paper-line); }
+.mph.ph-fail img, .ma-thumb.ph-fail img { visibility: hidden; }
+.memo-attach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.memo-attach:empty { display: none; }
+.ma-thumb { position: relative; width: 64px; height: 64px; flex: none; }
+.ma-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); background: var(--paper-line); }
+.ma-del { position: absolute; top: -7px; right: -7px; width: 26px; height: 26px; padding: 0; border: none; border-radius: 50%; background: var(--ink); color: var(--surface); font-size: .95rem; line-height: 1; }
+.ma-add { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 1.5px dashed color-mix(in srgb, var(--mc) 50%, transparent); border-radius: 12px; color: var(--mc); font-family: var(--hand); font-size: .95rem; cursor: pointer; }
+.ma-busy { font-size: .85rem; color: var(--muted); }
+.overlay.lb { background: rgba(0,0,0,.92); z-index: 40; display: block; }
+.lb-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior: contain; }
+.lb-track::-webkit-scrollbar { display: none; }
+.lb-slide { flex: 0 0 100%; min-width: 0; height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; align-items: center; justify-content: center; padding: 12px; }
+.lb-slide img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
+.lb-close { position: absolute; z-index: 1; top: calc(10px + env(safe-area-inset-top, 0px)); right: 12px; width: 44px; height: 44px; padding: 0; border: none; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; font-size: 1.5rem; line-height: 1; }
+.lb-count { position: absolute; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); color: #fff; font-size: .9rem; background: rgba(0,0,0,.45); border-radius: 99px; padding: 3px 12px; pointer-events: none; }
 .memo-more { border: none; background: transparent; color: var(--mc); font-size: .8rem; font-weight: 700; padding: 2px 0; min-height: 30px; }
 #memo-text { resize: none; overflow: hidden; }
 .cal-memos li span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
@@ -894,6 +914,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     memos: [], expenses: [],
     noteMode: lsGet('futago-note-mode', 'memo') === 'cost' ? 'cost' : 'memo',
     memoDay: null, memoWho: lsGet('futago-memo-who', 'mama'), memoDraft: '', memoEdit: null, memoConfirmDel: false,
+    memoAttach: [], memoBusy: false, photoCache: {},   // photos on the notepad; compressing now; loaded photos by id
     costMonth: null, costView: 'bought',
     // Calendar back-numbers: logDay = the one day the 記録 tab shows (null = latest days); dayCache = older days read once.
     logDay: null, dayCache: {},
@@ -2164,6 +2185,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
     $('#memo-strip').innerHTML = stripHTML('memo', keyDay(S.memoDay));
     syncStrip('memo');
     $('#memo-body').innerHTML = memoBodyHTML();
+    hydratePhotos(el);
   }
   // The writing area grows with the text (in whole ruled lines) instead of scrolling inside itself.
   function growMemo(ta) {
@@ -2181,6 +2203,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
         <span class="tape" aria-hidden="true"></span>
         <div class="memo-who" role="group" aria-label="${L('だれのメモ', '誰的筆記', 'Memo siapa')}">${MEMO_WHO.map(w => `<button type="button" class="w-${w}" data-mwho="${w}" aria-pressed="${S.memoWho === w}">${esc(whoName(w))}</button>`).join('')}</div>
         <textarea id="memo-text" rows="4" maxlength="1000" aria-label="${L('メモ', '筆記', 'Memo')}">${esc(S.memoDraft)}</textarea>
+        <div class="memo-attach" id="memo-attach">${attachHTML()}</div>
         <div class="memo-actions">
           ${editing ? (S.memoConfirmDel
             ? `<button type="button" class="btn danger" data-act="memo-del-yes">${L('本当に削除する', '確定刪除', 'Ya, hapus')}</button><button type="button" class="btn ghost" data-act="memo-del-no">${L('やめる', '不刪除', 'Batal')}</button>`
@@ -2197,6 +2220,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
       ? `<div class="memo-list">${list.map((m, i) => `<article class="memo-note w-${memoWho(m.who)} t${i % 3}${m.id === S.memoEdit ? ' editing' : ''}">
           <span class="tape" aria-hidden="true"></span>
           <header>${whoIcon(memoWho(m.who))}<b>${esc(whoName(memoWho(m.who)))}</b>${dayKey(m.at) === m.day ? `<time>${fmtT(m.at)}</time>` : ''}</header>
+          ${memoPhotosHTML(m)}
           ${memoTextHTML(m)}
           <footer class="memo-foot">${rxHTML(m)}<span class="spacer"></span><button type="button" class="memo-edit" data-memo="${esc(m.id)}">${L('書き直す・削除', '修改・刪除', 'Ubah · hapus')}</button></footer>
           ${S.rxOpen === m.id ? `<div class="rx-pal" role="group" aria-label="${L('リアクション', '回應', 'Reaksi')}">${RX.map(e => `<button type="button" data-rx="${esc(m.id)}|${e}" aria-pressed="${rxMine(m, e)}">${e}</button>`).join('')}</div>` : ''}
@@ -2241,6 +2265,7 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
   // A long memo folds to 8 lines on the board (about 18 full-width characters per line on a phone).
   const memoLines = t => t.split('\n').reduce((n, l) => n + Math.max(1, Math.ceil([...l].length / 18)), 0);
   function memoTextHTML(m) {
+    if (!m.text) return '';   // a photo-only memo
     const t = memoText(m), long = memoLines(t) > 8, open = S.memoOpen[m.id];
     const p = `<p class="${long && !open ? 'clamp' : ''}">${esc(t)}</p>`
       + (long ? `<button type="button" class="memo-more" data-mopen="${esc(m.id)}" aria-expanded="${!!open}">${open ? L('たたむ', '收合', 'Tutup') : L('続きを読む', '顯示全部', 'Baca selengkapnya')}</button>` : '');
@@ -2431,24 +2456,152 @@ The original language's field must be the note unchanged. Keep emoji, line break
     return `<div class="cal-dig">
       <h3>${dayLabel(k)}${age ? `<small>${age}</small>` : ''}</h3>
       ${stats}
-      ${memos.length ? `<ul class="cal-memos">${memos.map(m => `<li class="w-${memoWho(m.who)}"><b>${esc(whoName(memoWho(m.who)))}</b><span>${esc(memoText(m))}</span></li>`).join('')}</ul>` : `<p class="hint">${L('この日のメモはありません。', '這天沒有筆記。', 'Tidak ada memo pada hari ini.')}</p>`}
+      ${memos.length ? `<ul class="cal-memos">${memos.map(m => `<li class="w-${memoWho(m.who)}"><b>${esc(whoName(memoWho(m.who)))}</b><span>${(m.photos || []).length ? `📷${m.photos.length} ` : ''}${esc(memoText(m))}</span></li>`).join('')}</ul>` : `<p class="hint">${L('この日のメモはありません。', '這天沒有筆記。', 'Tidak ada memo pada hari ini.')}</p>`}
       <div class="cal-go"><button type="button" class="btn" data-act="cal-log">${L('この日の記録を見る', '查看這天的紀錄', 'Lihat catatan hari itu')}</button><button type="button" class="btn" data-act="cal-memo">${L('この日のメモを開く', '打開這天的筆記', 'Buka memo hari itu')}</button></div>
     </div>`;
   }
-  function memoSave() {
-    const text = ($('#memo-text') || {}).value?.trim() || '';
-    if (!text) return toast(L('メモを書いてください。', '請先寫筆記。', 'Tulis memo dulu.'));
+  async function memoSave() {
+    if (S.memoBusy) return toast(L('写真を準備しています。少し待ってください。', '正在處理照片，請稍候。', 'Foto sedang disiapkan. Tunggu sebentar.'));
+    const text = ($('#memo-text') || {}).value?.trim() || '', items = S.memoAttach;
+    if (!text && !items.length) return toast(L('メモを書くか、写真を追加してください。', '請先寫筆記或加入照片。', 'Tulis memo atau tambahkan foto dulu.'));
     const edit = S.memoEdit && S.memos.find(m => m.id === S.memoEdit), now = Date.now();
+    const id = edit ? edit.id : (S.mode === 'db' ? S.db.collection('memos').doc().id : newId());
+    const added = items.filter(p => p.data), removedIds = ((edit && edit.photos) || []).map(p => p.id).filter(pid => !items.some(p => p.id === pid));
     // Reactions stay with an edited memo; its translation is redone for the new text.
-    const data = { day: edit ? edit.day : S.memoDay, who: S.memoWho, text, at: edit ? edit.at : now, updatedAt: now, ...(edit && edit.rx ? { rx: edit.rx } : {}) };
+    const data = { day: edit ? edit.day : S.memoDay, who: S.memoWho, text, at: edit ? edit.at : now, updatedAt: now,
+      ...(edit && edit.rx ? { rx: edit.rx } : {}), ...(items.length ? { photos: items.map(({ id: pid, w, h }) => ({ id: pid, w, h })) } : {}) };
     const before = edit ? (({ id: _drop, ...rest }) => rest)(edit) : null;
-    saveDoc('memos', edit ? edit.id : null, data).then(id => {
-      S.memoDraft = ''; S.memoEdit = null; S.memoConfirmDel = false; renderNote(true);
+    try {
+      const removed = await photosForUndo(removedIds, edit);
+      writeMemo(id, data, added, removedIds);
+      S.memoDraft = ''; S.memoAttach = []; S.memoEdit = null; S.memoConfirmDel = false; renderNote(true);
       toast(edit ? L('メモを書き直しました', '已更新筆記', 'Memo diperbarui') : L('メモを貼りました', '已貼上筆記', 'Memo ditempel'), {
         label: L('取り消す', '復原', 'Urungkan'),
-        fn: () => edit ? saveDoc('memos', id, before) : deleteDoc('memos', id),
+        fn: () => writeMemo(id, before, removed, added.map(p => p.id)),
       });
-    }).catch(e => toast(errMsg(e)));
+    } catch (e) { toast(errMsg(e)); }
+  }
+
+  // ---------- memo photos ----------
+  // Firebase Storage needs a paid plan, so each photo is a compressed JPEG in its own Firestore document (memoPhotos),
+  // protected by the same family-only rules and read only when its memo is on screen. The memo keeps just { id, w, h }.
+  // Re-encoding also strips the original file's metadata, such as where the photo was taken.
+  const MEMO_PHOTOS_MAX = 4, PHOTO_CHARS = 450000;
+  const PHOTO_STEPS = [[1600, 0.8], [1600, 0.65], [1280, 0.65], [1024, 0.6], [800, 0.55]];
+  function compressPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable photo')); };
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const c = document.createElement('canvas');
+        let out = null;
+        for (const [px, q] of PHOTO_STEPS) {
+          const r = Math.min(1, px / Math.max(img.naturalWidth, img.naturalHeight));
+          c.width = Math.round(img.naturalWidth * r); c.height = Math.round(img.naturalHeight * r);
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+          ctx.drawImage(img, 0, 0, c.width, c.height);
+          out = { data: c.toDataURL('image/jpeg', q), w: c.width, h: c.height };
+          if (out.data.length <= PHOTO_CHARS) break;
+        }
+        resolve(out);
+      };
+      img.src = url;
+    });
+  }
+  const photoLoads = {};
+  function loadPhoto(id) {
+    if (S.photoCache[id]) return Promise.resolve(S.photoCache[id]);
+    if (photoLoads[id]) return photoLoads[id];
+    // Photos never change, so this device's saved copy is used first to spare reads and data.
+    const read = S.mode === 'db'
+      ? (r => r.get({ source: 'cache' }).catch(() => r.get()).then(s => s.exists ? s.data().data : null))(S.db.collection('memoPhotos').doc(id))
+      : Promise.resolve(((S.local.memoPhotos || {})[id] || {}).data);
+    return photoLoads[id] = read.then(d => {
+      delete photoLoads[id];
+      if (!d) throw new Error('photo not found');
+      S.photoCache[id] = d;
+      return d;
+    }, e => { delete photoLoads[id]; throw e; });
+  }
+  // Photos about to be deleted are read first, so "取り消す" can put them back.
+  const photosForUndo = (ids, memo) => Promise.all(ids.map(pid => loadPhoto(pid).then(data => {
+    const p = ((memo && memo.photos) || []).find(x => x.id === pid) || {};
+    return { id: pid, data, w: p.w || 0, h: p.h || 0 };
+  })));
+  // One atomic write: new photos, the memo (null deletes it) and any photos it no longer uses.
+  function writeMemo(id, data, add, delIds) {
+    add.forEach(p => { S.photoCache[p.id] = p.data; });
+    if (S.mode === 'db') {
+      const b = S.db.batch(), photos = S.db.collection('memoPhotos'), ref = S.db.collection('memos').doc(id);
+      add.forEach(p => b.set(photos.doc(p.id), { memoId: id, data: p.data, w: p.w, h: p.h, at: Date.now() }));
+      if (data) b.set(ref, data); else b.delete(ref);
+      delIds.forEach(pid => b.delete(photos.doc(pid)));
+      bg(b.commit());
+    } else {
+      S.local.memoPhotos = S.local.memoPhotos || {}; S.local.memos = S.local.memos || {};
+      add.forEach(p => { S.local.memoPhotos[p.id] = { memoId: id, data: p.data, w: p.w, h: p.h }; });
+      if (data) S.local.memos[id] = data; else delete S.local.memos[id];
+      delIds.forEach(pid => { delete S.local.memoPhotos[pid]; });
+      lsSet(LS_DATA, S.local); fromLocal(); renderNote();
+    }
+  }
+  // Fill in every photo on screen that is not loaded yet; the space is already reserved, so nothing jumps.
+  function hydratePhotos(root) {
+    root.querySelectorAll('img[data-ph]:not([src])').forEach(img => {
+      const pid = img.dataset.ph;
+      loadPhoto(pid).then(d => { document.querySelectorAll(`img[data-ph="${pid}"]`).forEach(x => { x.src = d; }); })
+        .catch(() => { img.closest('.mph, .ma-thumb, .lb-slide')?.classList.add('ph-fail'); });
+    });
+  }
+  const phImg = (pid, extra = '') => `<img data-ph="${esc(pid)}" ${S.photoCache[pid] ? `src="${S.photoCache[pid]}"` : ''} alt="" ${extra}>`;
+  function memoPhotosHTML(m) {
+    const ps = m.photos || []; if (!ps.length) return '';
+    return `<div class="memo-photos n${ps.length}">${ps.map((p, i) => `<button type="button" class="mph" data-mph="${esc(m.id)}|${i}" aria-label="${L(`写真 ${i + 1} を大きく見る`, `放大第 ${i + 1} 張照片`, `Perbesar foto ${i + 1}`)}">${phImg(p.id, ps.length === 1 && p.w && p.h ? `style="aspect-ratio:${p.w}/${p.h}"` : '')}</button>`).join('')}</div>`;
+  }
+  // The thumbnails and "add photo" button on the notepad; redrawn on their own so typing is never interrupted.
+  function attachHTML() {
+    const items = S.memoAttach;
+    return `${items.map((p, i) => `<div class="ma-thumb">${p.data ? `<img src="${p.data}" alt="">` : phImg(p.id)}<button type="button" class="ma-del" data-mphdel="${i}" aria-label="${L('この写真を外す', '移除這張照片', 'Hapus foto ini')}">×</button></div>`).join('')}
+      ${S.memoBusy ? `<span class="ma-busy">${L('写真を準備中…', '正在處理照片…', 'Menyiapkan foto…')}</span>` : ''}
+      ${items.length < MEMO_PHOTOS_MAX && !S.memoBusy ? `<label class="ma-add" for="memo-file">📷 ${L('写真を追加', '加入照片', 'Tambah foto')}</label><input type="file" id="memo-file" accept="image/*" multiple hidden>` : ''}`;
+  }
+  function renderAttach() {
+    const el = $('#memo-attach'); if (!el) return;
+    el.innerHTML = attachHTML();
+    hydratePhotos(el);
+  }
+  document.addEventListener('change', async e => {
+    if (e.target.id !== 'memo-file') return;
+    const files = [...(e.target.files || [])]; if (!files.length) return;
+    const room = MEMO_PHOTOS_MAX - S.memoAttach.length;
+    if (files.length > room) toast(L(`写真は1つのメモに${MEMO_PHOTOS_MAX}枚までです。`, `每則筆記最多 ${MEMO_PHOTOS_MAX} 張照片。`, `Maksimal ${MEMO_PHOTOS_MAX} foto per memo.`));
+    S.memoBusy = true; renderAttach();
+    for (const file of files.slice(0, room)) {
+      try {
+        const p = await compressPhoto(file);
+        const id = S.mode === 'db' ? S.db.collection('memoPhotos').doc().id : newId();
+        S.memoAttach.push({ id, ...p });
+      } catch { toast(L('この写真は読み込めませんでした。別の写真を選んでください。', '無法讀取這張照片，請選擇其他照片。', 'Foto ini tidak bisa dibaca. Pilih foto lain.')); }
+    }
+    S.memoBusy = false; renderAttach();
+  });
+  // Full-screen viewer: swipe between a memo's photos; tap outside a photo or × to close.
+  function renderLightbox() {
+    const F = S.form, ps = (S.memos.find(m => m.id === F.memo) || {}).photos || [];
+    if (!ps.length) { S.form = null; return renderForm(); }
+    $('#sheet-root').innerHTML = `<div class="overlay lb" role="dialog" aria-label="${L('写真', '照片', 'Foto')}">
+      <button type="button" class="lb-close" data-act="close" aria-label="${L('閉じる', '關閉', 'Tutup')}">×</button>
+      <div class="lb-track" id="lb-track">${ps.map(p => `<div class="lb-slide" data-act="close-bg">${phImg(p.id)}</div>`).join('')}</div>
+      ${ps.length > 1 ? `<div class="lb-count num" id="lb-count"></div>` : ''}
+    </div>`;
+    const tr = $('#lb-track'), count = $('#lb-count');
+    const show = () => { if (count) count.textContent = `${Math.round(tr.scrollLeft / (tr.clientWidth || 1)) + 1} / ${ps.length}`; };
+    tr.scrollLeft = F.i * tr.clientWidth;
+    tr.addEventListener('scroll', show, { passive: true });
+    show();
+    hydratePhotos(tr);
   }
 
   // Expenses: things bought (counted in the month's total) and a list of things still to buy.
@@ -2655,6 +2808,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     if (F.type === 'photo') return renderPhoto();
     if (F.type === 'cost') return renderCostForm();
     if (F.type === 'cal') return renderCal();
+    if (F.type === 'lightbox') return renderLightbox();
     const b = baby(F.baby);
     let body = '';
     if (F.type === 'milk') {
@@ -3037,7 +3191,7 @@ The original language's field must be the note unchanged. Keep emoji, line break
     if (d.mday) {
       const today = dayKey(Date.now());
       S.memoDay = d.mday === 'today' ? today : dayKey(keyDay(S.memoDay) + Number(d.mday) * DAY + 2 * HOUR);
-      if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; }
+      if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoAttach = []; S.memoConfirmDel = false; }
       return renderNote(true);
     }
     if (d.rxopen) { S.rxOpen = S.rxOpen === d.rxopen ? null : d.rxopen; return renderNote(); }
@@ -3053,22 +3207,24 @@ The original language's field must be the note unchanged. Keep emoji, line break
       const [kind, v] = d.dsel.split('|');
       if (kind === 'log') { S.logDay = v === 'latest' ? null : Number(v); return renderTimeline(); }
       S.memoDay = dayKey(Number(v));
-      if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; }
+      if (S.memoEdit) { S.memoEdit = null; S.memoDraft = ''; S.memoAttach = []; S.memoConfirmDel = false; }
       return renderNote();
     }
     if (d.act === 'cal') return openCal(d.calk ? Number(d.calk) : (S.tab === 'log' && S.logDay != null ? S.logDay : Date.now()));
     if (d.act === 'cal-log' || d.act === 'cal-memo') {
       const k = S.form.sel; S.form = null; renderForm();
       if (d.act === 'cal-log') { S.logDay = k; S.tab = 'log'; renderTimeline(); }
-      else { S.memoDay = dayKey(k); S.memoEdit = null; S.memoDraft = ''; S.noteMode = 'memo'; S.tab = 'note'; renderNote(true); }
+      else { S.memoDay = dayKey(k); S.memoEdit = null; S.memoDraft = ''; S.memoAttach = []; S.noteMode = 'memo'; S.tab = 'note'; renderNote(true); }
       lsSet('futago-tab', S.tab); applyTab(); window.scrollTo(0, 0);
       syncStrip(S.tab === 'log' ? 'log' : 'memo');   // the strip was drawn while hidden; centre the chosen day now
       return;
     }
     if (d.mwho) { S.memoWho = d.mwho; if (!S.memoEdit) lsSet('futago-memo-who', d.mwho); renderNote(true); const ta = $('#memo-text'); if (ta) ta.focus({ preventScroll: true }); return; }
+    if (d.mphdel !== undefined) { S.memoAttach.splice(Number(d.mphdel), 1); return renderAttach(); }
+    if (d.mph) { const i = d.mph.lastIndexOf('|'); S.form = { type: 'lightbox', memo: d.mph.slice(0, i), i: Number(d.mph.slice(i + 1)) }; return renderLightbox(); }
     if (d.memo) {
       const m = S.memos.find(x => x.id === d.memo); if (!m) return;
-      S.memoEdit = m.id; S.memoDraft = m.text; S.memoWho = memoWho(m.who); S.memoConfirmDel = false; renderNote(true);
+      S.memoEdit = m.id; S.memoDraft = m.text; S.memoAttach = (m.photos || []).map(p => ({ ...p })); S.memoWho = memoWho(m.who); S.memoConfirmDel = false; renderNote(true);
       const c = $('#memo-compose'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' });
       return;
     }
@@ -3079,14 +3235,19 @@ The original language's field must be the note unchanged. Keep emoji, line break
     if (d.cpreset) { const [cat, ...n] = d.cpreset.split('|'); return openCost(null, { status: 'want', cat, name: n.join('|') }); }
     switch (d.act) {
       case 'memo-save': return memoSave();
-      case 'memo-cancel': S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false; return renderNote(true);
+      case 'memo-cancel': S.memoEdit = null; S.memoDraft = ''; S.memoAttach = []; S.memoConfirmDel = false; return renderNote(true);
       case 'memo-del': S.memoConfirmDel = true; return renderNote(true);
       case 'memo-del-no': S.memoConfirmDel = false; return renderNote(true);
       case 'memo-del-yes': {
         const m = S.memos.find(x => x.id === S.memoEdit);
-        S.memoEdit = null; S.memoDraft = ''; S.memoConfirmDel = false;
-        if (m) { const { id, ...prev } = m; deleteDoc('memos', id); toast(L('メモを削除しました', '已刪除筆記', 'Memo dihapus'), { label: L('取り消す', '復原', 'Urungkan'), fn: () => saveDoc('memos', id, prev) }); }
-        return renderNote(true);
+        if (!m) { S.memoEdit = null; S.memoDraft = ''; S.memoAttach = []; S.memoConfirmDel = false; return renderNote(true); }
+        const { id, ...prev } = m, ids = (m.photos || []).map(p => p.id);
+        photosForUndo(ids, m).then(saved => {
+          writeMemo(id, null, [], ids);
+          S.memoEdit = null; S.memoDraft = ''; S.memoAttach = []; S.memoConfirmDel = false; renderNote(true);
+          toast(L('メモを削除しました', '已刪除筆記', 'Memo dihapus'), { label: L('取り消す', '復原', 'Urungkan'), fn: () => writeMemo(id, prev, saved, []) });
+        }).catch(e => toast(errMsg(e)));
+        return;
       }
       case 'cost-add': return openCost(null);
     }

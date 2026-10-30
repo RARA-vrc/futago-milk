@@ -43,6 +43,15 @@ service cloud.firestore {
         && request.resource.data.at is number;
     }
 
+    // ノート：メモの写真（圧縮した JPEG を1枚1ドキュメントで保存。写真は書き換えない）
+    match /memoPhotos/{photoId} {
+      allow read, delete: if isFamily();
+      allow create: if isFamily()
+        && request.resource.data.memoId is string
+        && request.resource.data.data is string
+        && request.resource.data.data.size() <= 1000000;
+    }
+
     // ノート：費用（買ったもの・買うものリスト）
     match /expenses/{expenseId} {
       allow read, delete: if isFamily();
