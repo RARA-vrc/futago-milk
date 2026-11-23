@@ -800,9 +800,9 @@ label.btn { display: flex; align-items: center; justify-content: center; cursor:
 
   // ---------- language (per device): 'ja', 'zh' (Taiwanese Mandarin, Traditional Chinese) or 'id' (Indonesian) ----------
   // Every visible string is written as L(japanese, chinese, indonesian) next to where it is used.
-  // Indonesian (for the babysitter) is fully built but switched off for now — set to true to offer it
-  // in the language switch and to add it to memo translations.
-  const INDONESIAN = false;
+  // Indonesian (for the babysitter): offered in the language switch and added to memo translations.
+  // Set to false to hide it again.
+  const INDONESIAN = true;
   const LANGS = INDONESIAN ? ['ja', 'zh', 'id'] : ['ja', 'zh'];
   let LANG = LANGS.includes(lsGet('futago-lang', '')) ? lsGet('futago-lang', '') : (/^zh/i.test(navigator.language || '') ? 'zh' : /^(id|ms)/i.test(navigator.language || '') ? 'id' : 'ja');
   const L = (ja, zh, id) => LANG === 'zh' ? zh : LANG === 'id' ? (id ?? ja) : ja;
